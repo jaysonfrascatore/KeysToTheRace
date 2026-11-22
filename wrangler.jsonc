@@ -1,6 +1,6 @@
 // Cloudflare settings for Keys to the Race.
-//   Live:     npx wrangler deploy                 (serves ./public)
-//   Staging:  npx wrangler deploy --env staging   (serves ./build/site-staging, a test copy)
+// Cloudflare deploys from GitHub on every change to main. Other branches get their own
+// preview address (the staging site). By hand: npx wrangler deploy
 {
   "name": "keystotherace",
   "compatibility_date": "2026-11-10",
@@ -11,16 +11,5 @@
     "html_handling": "auto-trailing-slash",
     // Unknown addresses show public/404.html
     "not_found_handling": "404-page"
-  },
-  "env": {
-    "staging": {
-      // A separate address (keystotherace-staging.<you>.workers.dev) for checking a model run before it goes live
-      "name": "keystotherace-staging",
-      "assets": {
-        "directory": "./build/site-staging",
-        "html_handling": "auto-trailing-slash",
-        "not_found_handling": "404-page"
-      }
-    }
   }
 }

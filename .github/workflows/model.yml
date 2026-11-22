@@ -1,14 +1,11 @@
 # Keys to the Race: model runs
 #
-# Every day: test the model, run it in STAGING, and publish the staging site
-# (keystotherace-staging.<you>.workers.dev). Nothing live changes.
+# Cloudflare deploys the site by itself whenever main changes (connect the repository once in
+# Cloudflare: Workers & Pages > Create > Import a repository). This workflow only runs the model.
 #
-# To go LIVE: Actions tab > "Model" > Run workflow > target: live.
-# That reruns the tests, publishes the numbers to public/data/, commits them,
-# and deploys the live site. (To make live automatic, change `default: staging` to `live`
-# and add `|| github.event_name == 'schedule'` to the live job's `if`.)
-#
-# Needs two repository secrets: CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.
+# Every day: run the tests and a STAGING run. The report shows on the Actions page; nothing live changes.
+# To go LIVE: Actions tab > "Model" > Run workflow > target: live. That reruns the tests, publishes the
+# numbers to public/data/ and commits them to main, and Cloudflare deploys the update.
 name: Model
 
 on:
@@ -24,7 +21,7 @@ on:
         options: [staging, live]
   push:
     branches: [main]
-    paths: ["config/**", "engine/**", "public/data/news.csv", "public/data/polls.csv"]
+    paths: ["config/**", "engine/**"]
 
 permissions:
   contents: write
@@ -39,33 +36,26 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: "22" }
       - run: pip install -r requirements.txt
-      - name: Tests (rules, Python vs. website parity, simulator)
+      - name: Tests (rules, Python vs. website, simulator)
         working-directory: engine
         run: python -m unittest discover -s tests -v
 
   staging:
     needs: test
+    if: github.event_name != 'workflow_dispatch' || inputs.target == 'staging'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
-      - uses: actions/setup-node@v4
-        with: { node-version: "22" }
       - run: pip install -r requirements.txt
       - name: Run the model (staging)
         working-directory: engine
         run: |
           python -m ktr run --env staging
-          python -m ktr site
           cat ../build/staging/report.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with: { name: staging-run, path: build/staging }
-      - name: Deploy the staging site
-        run: npx wrangler@3 deploy --env staging
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
   live:
     needs: test
@@ -81,15 +71,10 @@ jobs:
         run: |
           python -m ktr run --env live
           cat ../build/staging/report.md >> "$GITHUB_STEP_SUMMARY"
-      - name: Save the new numbers
+      - name: Save the new numbers (Cloudflare deploys them)
         run: |
           git config user.name "ktr-model"
           git config user.email "ktr-model@users.noreply.github.com"
-          git add public/data public/*/index.html public/index.html
+          git add public
           git diff --cached --quiet || git commit -m "Model run $(date -u +%F)"
           git push
-      - name: Deploy the live site
-        run: npx wrangler@3 deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

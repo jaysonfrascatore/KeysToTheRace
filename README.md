@@ -84,19 +84,15 @@ They check the Statement Scale rules, the 64.9% gate, that history is append-onl
 simulator adds up, and (with Node.js installed) that the Python engine and the website's
 JavaScript give the same numbers for every candidate on every day, with the same weights.
 
-### On GitHub
+### On GitHub and Cloudflare
 
-Push this folder to a GitHub repository and add two secrets (Settings > Secrets > Actions):
-`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. Then:
-
-- Every morning the workflow tests the model, runs staging and deploys the staging site
-  (keystotherace-staging.<you>.workers.dev). The run's report shows on the Actions page.
-- To go live: Actions > Model > Run workflow > target: live. It reruns the tests,
-  commits the new numbers and deploys the live site.
-
-Staging by hand: `cd engine && python -m ktr run --env staging && python -m ktr site`,
-then `npx wrangler deploy --env staging` from the top folder.
-
+- Cloudflare deploys the site straight from this repository. Connect it once: Cloudflare dashboard >
+  Workers & Pages > Create > Import a repository > KeysToTheRace. It reads `wrangler.jsonc` and serves
+  `public/`. Every change to `main` goes live in about a minute; any other branch gets its own preview address,
+  which is the staging site.
+- Every morning, the Model workflow runs the tests and a staging run. The report shows on the Actions page.
+- To publish new numbers: Actions > Model > Run workflow > target: live. It commits the numbers to `main`,
+  and Cloudflare deploys them.
 
 ## Key Legislation
 
