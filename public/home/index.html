@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home</title>
+<meta name="description" content="What Keys to the Race is, what it tracks, how it keeps score, and what it will do on the road to 2028.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<meta name="theme-color" content="#0b0a08">
+<script>
+/* Theme: dark by default; the sun/moon button switches it and the choice is saved.
+   Add ?theme=light or ?theme=dark to the URL to preview. */
+(function () {
+  let t = "dark";
+  try { t = localStorage.getItem("ktr-theme") || "dark"; } catch (e) {}
+  const q = new URLSearchParams(location.search).get("theme");
+  if (q === "light" || q === "dark") t = q;
+  const h = document.documentElement;
+  h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+})();
+</script>
+</head>
+<body>
+
+<header class="nav" data-nav data-root="../" data-active="home"></header>
+
+<main>
+<section class="page-hero">
+  <div class="wrap" data-head>
+    <h1>Unlocking every <span>possibility.</span></h1>
+    <p>Keys to the Race is a home for election data, from the Florida Keys to the White House. It follows the 2028 race every day, from the first sign that someone might run to the final electoral vote.</p>
+    <nav class="jump"><a href="#about">What it is</a><a href="#inside">What's inside</a><a href="#score">How we keep score</a><a href="#ahead">The road ahead</a></nav>
+  </div>
+</section>
+
+<section class="block" id="about">
+  <div class="wrap about" data-reveal>
+    <div>
+      <div class="eyebrow">What it is</div>
+      <h2 class="about-h">Every race has keys. <em>We track every one.</em></h2>
+    </div>
+    <div class="about-copy">
+      <p>Presidential races aren't decided on Election Day. They're decided in hundreds of smaller moments: a trip to New Hampshire, a book tour, a fundraising quarter, a debate night, a governor's endorsement. Keys to the Race tracks those moments as they happen and shows what each one is worth.</p>
+      <p>Every candidate gets an <b>Index score</b> for where they stand and how viable they are, and a <b>Launch Watch</b> reading for the chance they run. Every poll is weighted by the pollster's grade. Every state gets a forecast, built from 11,111 simulated elections.</p>
+      <p>And because it started in Florida, Florida never leaves the frame: county turnout, the Legislature, and the races that shape the state.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="inside">
+  <div class="wrap" data-reveal>
+    <div class="sec-head"><div><div class="eyebrow">What's inside</div><h2>The keys, <em>one by one.</em></h2></div></div>
+    <div class="inside-grid">
+      <a class="key-card" data-page="candidates/"><div class="eyebrow">Key Candidates</div><h3>The Candidate Index</h3><p>Every 2028 hopeful, scored daily, with Launch Watch odds, a profile and a chart for each.</p><span class="go">Open →</span></a>
+      <a class="key-card" data-page="polls/"><div class="eyebrow">Key Polls</div><h3>Every poll, graded</h3><p>Primary and general election averages, each poll weighted by its pollster's grade.</p><span class="go">Open →</span></a>
+      <a class="key-card" data-page="races/"><div class="eyebrow">Key Races</div><h3>Who's likely to win</h3><p>The presidential race, the Senate and the contests that decide control.</p><span class="go">Open →</span></a>
+      <a class="key-card" data-page="matchups/"><div class="eyebrow">Key Matchups</div><h3>Electoral Analysis</h3><p>The forecast map, every combination of the states in play, and a map you can build yourself.</p><span class="go">Open →</span></a>
+      <a class="key-card" data-page="legislation/"><div class="eyebrow">Key Legislation</div><h3>Every bill, every member</h3><p>A whip count for each big bill: all 100 senators and 435 House members, and the chance it passes.</p><span class="go">Open →</span></a>
+      <a class="key-card" data-page="tools/"><div class="eyebrow">Key Tools</div><h3>Will they run, and why?</h3><p>The chain reaction, Launch Watch, the Decision Maze and the Primary Path.</p><span class="go">Open →</span></a>
+      <a class="key-card" data-page="dates/"><div class="eyebrow">Key Dates</div><h3>The calendar</h3><p>The countdown to Election Day and every deadline, debate and primary along the way.</p><span class="go">Open →</span></a>
+      <a class="key-card" data-page="florida/"><div class="eyebrow">The Florida Keys</div><h3>Florida, county by county</h3><p>Florida Vote Tracker, the Legislature, and build-your-own forecasts.</p><span class="go">Open →</span></a>
+      <a class="key-card" data-page="collection/"><div class="eyebrow">The Collection</div><h3>Every project</h3><p>Live trackers, archives and everything in the workshop.</p><span class="go">Open →</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="score">
+  <div class="wrap" data-reveal>
+    <div class="sec-head"><div><div class="eyebrow">How we keep score</div><h2>No number <em>without a reason.</em></h2><p>Five rules every page follows.</p></div></div>
+    <div class="rules5">
+      <div><b>01</b><h4>Every number has a rule</h4><p>Weights are written down, from 0.25 for a weak signal up to the biggest factors, and the same rule applies to every candidate.</p></div>
+      <div><b>02</b><h4>Every rule has a reason</h4><p>Each weight comes with the evidence behind it, from past elections to how much early polls tend to miss.</p></div>
+      <div><b>03</b><h4>Every source is linked</h4><p>Polls, news and filings link back to where they came from, so anyone can check the work.</p></div>
+      <div><b>04</b><h4>History isn't rewritten</h4><p>Each day's reading is saved as it was. Changing a weight later changes today, not the past.</p></div>
+      <div><b>05</b><h4>Polls are graded</h4><p>A polls count fully, B 0.85, C 0.65, D 0.25. Each pollster's latest poll from the last 30 days counts once.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="ahead">
+  <div class="wrap" data-reveal>
+    <div class="sec-head"><div><div class="eyebrow">The road ahead</div><h2>What it will do, <em>stage by stage.</em></h2><p>The site grows with the race. Each stage opens when the race reaches it.</p></div></div>
+    <ol class="timeline" id="timeline"></ol>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap about" data-reveal>
+    <div><div class="eyebrow">Who's behind it</div><h2 class="about-h">Built by <em>Jayson Frascatore.</em></h2></div>
+    <div class="about-copy">
+      <p>Keys to the Race is built and run by Jayson Frascatore, the creator of Florida Vote Tracker and The 29th Vote. It brings those projects, and every one that comes next, under one roof.</p>
+      <div class="ctas" style="justify-content:flex-start;margin-top:18px"><a class="btn-gold" href="../">Enter Key Candidates</a><a class="btn-line" data-page="collection/">See the Collection</a></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer data-footer data-root="../"></footer>
+
+<script>window.PAGE_ROOT = "../";</script>
+<script src="../assets/nav.js"></script>
+<script src="../assets/common.js"></script>
+<script>
+const STEPS = [
+  { when: "November 2026", title: "Tracking begins", text: "The Candidate Index and Launch Watch start with the first polls after the midterms. The forecast opens with 11,111 simulations.", now: true },
+  { when: "Now to 2027", title: "Decision Maze", text: "Launch Watch follows every sign of a run until each candidate announces or rules it out." },
+  { when: "Early 2027", title: "Public launch", text: "The full site goes live at its own address, with daily updates and the news by day." },
+  { when: "2027", title: "Authentication Key", text: "The first primary debates, each scored with the Debate Impact Score. The Florida Legislature and Senate 2028 trackers open." },
+  { when: "March 2028", title: "Dice Roll", text: "Super Tuesday, simulated state by state and delegate by delegate." },
+  { when: "Spring 2028", title: "Key Maker", text: "Endorsements and the race to a majority of delegates." },
+  { when: "Summer 2028", title: "Endgame Key", text: "The final candidates and the conventions." },
+  { when: "Fall 2028", title: "The general election", text: "Electoral Analysis updates daily: every state, every combination, and Florida Vote Tracker 2028." },
+  { when: "November 7, 2028", title: "Election Day", text: "Results as they come in, and the final word on every forecast." },
+  { when: "Beyond 2028", title: "The next race", text: "The archive stays, and the Collection keeps growing with every cycle after." }
+];
+$("#timeline").innerHTML = STEPS.map(s => `<li class="${s.now ? "now" : ""}"><span class="t-when">${s.when}</span><div><h4>${s.title}${s.now ? ' <span class="chip live">Live</span>' : ""}</h4><p>${s.text}</p></div></li>`).join("");
+</script>
+</body>
+</html>

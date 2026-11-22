@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Key Races</title>
+<meta name="description" content="The 2028 presidential forecast, the Senate and the races that decide control.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.now-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.now{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius);padding:20px;border-top:3px solid var(--p)}
+.now .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.now .big{font-size:30px;font-weight:800;color:var(--p);margin-top:8px}
+.now p{font-size:13px;color:var(--ink-2);margin-top:6px}
+.odds{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.odds div{display:grid;grid-template-columns:150px 1fr 48px;gap:10px;align-items:center;font-size:14px}
+.odds .t{height:12px;border-radius:3px;background:repeating-linear-gradient(45deg,var(--line) 0 4px,transparent 4px 8px)}
+.odds .v{font-family:var(--mono);color:var(--ink-3);text-align:right}
+@media (max-width:960px){ .now-grid{grid-template-columns:1fr} }
+@media (max-width:560px){ .odds div{grid-template-columns:110px 1fr 40px} }
+</style>
+<meta name="theme-color" content="#0b0a08">
+<script>
+/* Theme: dark by default; the sun/moon button switches it and the choice is saved.
+   Add ?theme=light or ?theme=dark to the URL to preview. */
+(function () {
+  let t = "dark";
+  try { t = localStorage.getItem("ktr-theme") || "dark"; } catch (e) {}
+  const q = new URLSearchParams(location.search).get("theme");
+  if (q === "light" || q === "dark") t = q;
+  const h = document.documentElement;
+  h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+})();
+</script>
+</head>
+<body>
+
+<header class="nav" data-nav data-root="../" data-active="races"></header>
+
+<section class="page-hero">
+  <div class="wrap" data-head>
+    <div class="eyebrow">Key Races</div>
+    <h1>Who's likely to win, <span>and why.</span></h1>
+    <p>The 2028 presidential forecast, the fight for the Senate, and the governor and Florida races that decide who holds power. The forecast goes live after it's tested against past elections.</p>
+    <nav class="jump"><a href="#now">Where it stands</a><a href="#president">President</a><a href="#senate">Senate</a><a href="#more">Governors and Florida</a></nav>
+  </div>
+</section>
+
+<section class="block" id="now">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Where it stands today</div>
+        <h2>The polling leaders</h2>
+        <p>Straight from Key Polls, weighted by pollster grade. This is today's polling, not a forecast.</p>
+      </div>
+    </div>
+    <div class="now-grid" id="nowGrid"></div>
+  </div>
+</section>
+
+<section class="block" id="president">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">2028 presidential forecast</div>
+        <h2>Chances to win the nomination</h2>
+        <p>Odds come from the Candidate Index once the backtest is published. Until then, the bars stay empty on purpose.</p>
+      </div>
+      <div><span class="chip soon">Coming soon</span></div>
+    </div>
+    <div class="soon-grid">
+      <div class="soon"><div class="eyebrow" style="color:var(--dem)">Democratic nomination</div><div class="odds" id="oddsD"></div></div>
+      <div class="soon"><div class="eyebrow" style="color:var(--rep)">Republican nomination</div><div class="odds" id="oddsR"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="senate">
+  <div class="wrap">
+    <div class="soon-grid">
+      <div class="soon">
+        <div class="eyebrow">Senate 2028</div>
+        <h3>The path to the majority</h3>
+        <p>A probability for every 2028 Senate race and the combinations that hand either party control.</p>
+        <ul><li>Race ratings from Safe to Toss-up</li><li>Paths to 51 seats</li><li>Matchup polls on <a data-page="matchups/" data-root="../" href="#" style="color:var(--foam)">Key Matchups</a></li></ul>
+        <span class="chip soon">Coming soon</span>
+      </div>
+      <div class="soon">
+        <div class="eyebrow">White House forecast</div>
+        <h3>Who wins in November 2028</h3>
+        <p>State-by-state odds for each likely matchup, built on polls, past results and the national environment.</p>
+        <ul><li>Electoral vote odds for every matchup</li><li>The tipping-point state</li><li>Try your own map on <a data-page="matchups/" data-root="../" href="#" style="color:var(--foam)">Key Matchups</a></li></ul>
+        <span class="chip soon">Coming soon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="more">
+  <div class="wrap">
+    <div class="soon-grid">
+      <div class="soon">
+        <div class="eyebrow">Governors</div>
+        <h3>Governor races</h3>
+        <p>Ratings and polls for every governor's race on the ballot.</p>
+        <span class="chip soon">Coming soon</span>
+      </div>
+      <div class="soon">
+        <div class="eyebrow">The Florida Keys</div>
+        <h3>Florida races</h3>
+        <p>Statewide races, the Florida House and Senate, and county-level tracking.</p>
+        <a class="btn chip" data-page="florida/" data-root="../" href="#" style="padding:8px 12px">Open the Florida Keys →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer data-footer data-root="../"></footer>
+
+<script type="text/plain" id="pollsters-fallback">
+pollster,grade,rated_by,source_url
+AtlasIntel,A+,Silver Bulletin 2025 pollster ratings,https://atlasintel.org/media/atlasintel-has-an-a-rating-and-is-the-no1-pollster-in-america-according-to-the-2025-us-pollster-ratings
+McLaughlin & Associates,D,Listed as D-rated by Political Polls,https://x.com/PpollingNumbers/status/2118805862596612366
+</script>
+<script type="text/plain" id="polls-fallback">
+poll_id,pollster,start_date,end_date,release_date,race,matchup,population,total_sample,sample_type,moe,candidate,party,pct,rounded,source_url
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Jon Ossoff,D,18.2,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Alexandria Ocasio-Cortez,D,17.6,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Pete Buttigieg,D,15.8,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Kamala Harris,D,12.6,0,https://www.yahoo.com/news/politics/articles/surprising-potential-candidates-top-2028-192934067.html
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Mark Kelly,D,9.1,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Gavin Newsom,D,9.0,0,https://www.yahoo.com/news/politics/articles/surprising-potential-candidates-top-2028-192934067.html
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Andy Beshear,D,4,1,https://www.realclearpolling.com/polls/president/democratic-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Josh Shapiro,D,3.4,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,JB Pritzker,D,2.5,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Cory Booker,D,2,1,https://www.realclearpolling.com/polls/president/democratic-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Gretchen Whitmer,D,0,1,https://www.realclearpolling.com/polls/president/democratic-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Undecided,,2.3,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Marco Rubio,R,45.6,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,JD Vance,R,32.9,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Ron DeSantis,R,4.5,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Tucker Carlson,R,3,1,https://www.realclearpolling.com/polls/president/republican-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Donald Trump Jr.,R,2.3,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Ted Cruz,R,1.4,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Glenn Youngkin,R,1,1,https://www.realclearpolling.com/polls/president/republican-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Josh Hawley,R,0,1,https://www.realclearpolling.com/polls/president/republican-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Undecided,,6.4,0,https://www.pollcheck.co.uk/us/primaries/republican/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,vance-ocasio-cortez,Likely voters,1000,LV,,JD Vance,R,49,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,vance-ocasio-cortez,Likely voters,1000,LV,,Alexandria Ocasio-Cortez,D,39,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,rubio-ocasio-cortez,Likely voters,1000,LV,,Marco Rubio,R,48,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,rubio-ocasio-cortez,Likely voters,1000,LV,,Alexandria Ocasio-Cortez,D,38,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+</script>
+
+<script src="../assets/nav.js"></script>
+<script src="../assets/common.js"></script>
+<script src="../assets/polls-core.js"></script>
+<script>
+Promise.all([loadCSV(DATA_URL, "polls-fallback"), loadCSV(GRADES_URL, "pollsters-fallback")]).then(([rows, graded]) => {
+  GRADES = Object.fromEntries(graded.map(g => [g.pollster, g.grade]));
+  const polls = buildPolls(rows);
+  const lead = (race, p) => {
+    const end = latestFor(polls, race); if (!end) return null;
+    const avg = averageAsOf(polls, race, end);
+    const l = avg.list.filter(c => c.name !== "Undecided").sort((a, b) => b.pct - a.pct);
+    return { l, avg };
+  };
+  const cards = [];
+  [["dem_primary", "D", "Democratic primary"], ["rep_primary", "R", "Republican primary"]].forEach(([race, p, label]) => {
+    const x = lead(race, p); if (!x) return;
+    const gap = x.l[0].pct - x.l[1].pct;
+    cards.push(`<div class="now" style="--p:${pColor(p)}"><div class="lbl">${label}</div><div class="big">${last(x.l[0].name)} +${gap.toFixed(1)}</div><p>${x.l[0].name} ${pct(x.l[0].pct)}, ${x.l[1].name} ${pct(x.l[1].pct)}. ${confidence(x.avg.weight)[1]}.</p></div>`);
+    // empty odds rows for the forecast, top five names
+    $(p === "D" ? "#oddsD" : "#oddsR").innerHTML = x.l.slice(0, 5).map(c => `<div><span>${c.name}</span><span class="t"></span><span class="v">—</span></div>`).join("");
+  });
+  const gens = [...new Set(polls.flatMap(p => Object.keys(p.races)).filter(k => k.startsWith("general:")))];
+  if (gens.length){
+    const k = gens[0], avg = averageAsOf(polls, k, latestFor(polls, k));
+    const R = avg.list.find(c => c.party === "R"), D = avg.list.find(c => c.party === "D"), m = R.pct - D.pct;
+    cards.push(`<div class="now" style="--p:${m >= 0 ? "var(--rep)" : "var(--dem)"}"><div class="lbl">General matchup</div><div class="big">${last(m >= 0 ? R.name : D.name)} +${Math.abs(m).toFixed(1)}</div><p>${R.name} vs. ${D.name}. ${confidence(avg.weight)[1]}. <a data-page="matchups/" data-root="../" href="${pageLink("../", "matchups/")}" style="color:var(--foam)">Build the map →</a></p></div>`);
+  }
+  $("#nowGrid").innerHTML = cards.join("");
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+// Keys to the Race: live tracker (a Cloudflare Worker that runs on a schedule)
+// Deploy: npx wrangler kv namespace create TRACKER   (paste the id below)
+//         npx wrangler secret put FEC_API_KEY        (free key from api.data.gov)
+//         npx wrangler deploy
+{
+  "name": "ktr-live-tracker",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "triggers": { "crons": ["*/30 * * * *"] },          // every 30 minutes
+  "kv_namespaces": [{ "binding": "TRACKER", "id": "PASTE_KV_ID_HERE" }]
+}

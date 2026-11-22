@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Key Matchups</title>
+<meta name="description" content="The 2028 presidential forecast: Electoral Vote Probability, 11,111 simulations, a build-your-own map, primary maps and Senate matchups.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+/* ---------- Key Matchups only ---------- */
+:root{
+  --safeR:#a32a28; --likelyR:#cf5550; --leanR:#e8a19b;
+  --toss:#c9a24a;
+  --leanD:#a3bde9; --likelyD:#5b8ad6; --safeD:#2a5db8;
+  --none:#e6dfd0; --mapStroke:var(--bg);
+}
+html.dark{ --none:#2a261f; --leanR:#d98a84; --leanD:#8eaee6; }
+.mode-tabs{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.mode-tabs a{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:11px 18px;border-radius:999px;border:1px solid var(--line-2);color:var(--ink-2);transition:all .3s}
+.mode-tabs a.on{background:var(--gold-grad);color:var(--on-accent);border-color:transparent;box-shadow:0 8px 22px -10px color-mix(in srgb,var(--gold) 70%,transparent)}
+.hidden{display:none!important}
+.panel{background:linear-gradient(180deg,var(--panel),var(--bg-2));border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow-sm);min-width:0}
+.panel h3{font-family:var(--serif);font-size:26px;font-weight:600;line-height:1.1}
+.panel .sub{font-size:13.5px;color:var(--ink-3);margin-top:4px}
+
+/* Topline */
+.topline{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:end}
+.odds{display:flex;flex-direction:column;gap:4px}
+.odds.r{text-align:right;align-items:flex-end}
+.odds .who{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}
+.odds b{font-family:var(--serif);font-size:clamp(46px,7vw,84px);font-weight:500;line-height:.9}
+.odds .evs{font-size:13px;color:var(--ink-3)}
+.odds.d .who,.odds.d b{color:var(--dem)} .odds.r .who,.odds.r b{color:var(--rep)}
+.mid{text-align:center;padding-bottom:10px}
+.mid .n{font-family:var(--serif);font-size:30px;color:var(--gold)}
+.mid .l{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+
+/* EV bar */
+.evbar{position:relative;display:flex;height:30px;border-radius:6px;overflow:hidden;margin-top:22px;background:var(--soft)}
+.evbar span{height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);transition:width .5s var(--ease);overflow:hidden;white-space:nowrap}
+.evbar span.toss{color:var(--on-accent);text-shadow:none}
+.evbar .mark{position:absolute;left:50%;top:-6px;bottom:-6px;width:2px;background:var(--ink)}
+.ev-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font-size:12px;color:var(--ink-3)}
+.ev-legend span{display:flex;align-items:center;gap:6px}
+.ev-legend i{width:12px;height:12px;border-radius:3px}
+.ev-legend b{color:var(--ink)}
+.ev270{display:flex;justify-content:space-between;font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--faint);margin-top:6px;text-transform:uppercase}
+
+/* Map + side */
+.map-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start;margin-top:22px}
+.usmap{width:100%;height:auto;display:block}
+.usmap path{stroke:var(--bg);stroke-linejoin:round;stroke-width:1;cursor:pointer;transition:fill .35s,opacity .2s}
+.usmap path:hover,.usmap path.sel{stroke:var(--ink);stroke-width:2}
+.usmap text{font-family:var(--sans);font-size:11px;font-weight:800;fill:#fff;stroke:rgba(0,0,0,.4);stroke-width:2.4px;paint-order:stroke;pointer-events:none;text-anchor:middle}
+.usmap text .ev{font-size:9px;font-weight:600;opacity:.9}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.st-chip{font-size:11px;font-weight:800;padding:6px 9px;border-radius:999px;color:#fff;text-shadow:0 0 3px rgba(0,0,0,.45);border:1px solid transparent;min-width:54px;text-align:center}
+.st-chip small{opacity:.85;font-weight:600}
+.st-chip.toss{color:var(--on-accent);text-shadow:none}
+.detail .big{font-family:var(--serif);font-size:44px;line-height:1;margin-top:6px}
+.detail dl{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;margin-top:14px;font-size:13.5px}
+.detail dt{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding-top:2px}
+.detail dd{text-align:right;font-weight:700}
+.pbar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin-top:12px;background:var(--soft)}
+.pbar i{display:block;height:100%}
+.rchip{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:999px;color:#fff;white-space:nowrap}
+.rchip.toss{color:var(--on-accent)}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+.tbl th{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);text-align:left;padding:12px 10px;border-bottom:1px solid var(--line-2)}
+.tbl td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .num{text-align:right;font-weight:700;white-space:nowrap}
+.tbl .why{color:var(--ink-3);font-size:13px;max-width:460px}
+.tbl tfoot td{font-weight:800;border-top:1px solid var(--line-2)}
+.tbl tbody tr.click{cursor:pointer} .tbl tbody tr.click:hover{background:color-mix(in srgb,var(--gold) 6%,transparent)}
+.wpill{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;border:1px solid var(--gold);color:var(--gold)}
+
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}
+.rule{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--bg-2)}
+.rule h4{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.rule p{font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.rule .scale{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px;align-items:center}
+.rule .mini-tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
+.rule .mini-tbl td,.rule .mini-tbl th{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right}
+.rule .mini-tbl th{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.rule .mini-tbl td:first-child,.rule .mini-tbl th:first-child{text-align:left}
+@media (max-width:760px){.rules{grid-template-columns:1fr}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+.combo-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.combo-stats div{border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.combo-stats b{display:block;font-family:var(--serif);font-size:34px;line-height:1}
+.combo-stats span{font-size:11px;color:var(--ink-3)}
+.combo{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.combo:last-child{border-bottom:0}
+.combo .p{margin-left:auto;font-weight:800;color:var(--gold)}
+.combo .tag{font-size:10.5px;font-weight:800;padding:3px 7px;border-radius:5px;color:#fff}
+.combo .ev{font-weight:800;min-width:74px}
+svg.chart{width:100%;height:auto;display:block;overflow:visible}
+svg.chart text{font-family:var(--sans);font-size:11px;fill:var(--ink-3)}
+svg.chart .gl{stroke:var(--line);stroke-width:1}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes halo{0%{r:5;opacity:.7}100%{r:16;opacity:0}}
+.blink{animation:blink 2.6s ease-in-out infinite}
+.halo{animation:halo 2.6s ease-out infinite}
+@media (prefers-reduced-motion:reduce){.blink,.halo{animation:none}}
+
+/* Build tool */
+.palette{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.swatch{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;padding:7px 11px;border-radius:999px;border:1px solid var(--line-2);color:var(--ink-2);transition:all .25s}
+.swatch i{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.swatch.on{border-color:var(--gold);color:var(--ink);background:color-mix(in srgb,var(--gold) 12%,transparent);box-shadow:0 0 0 1px var(--gold)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.controls label{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line-2);border-radius:999px;padding:9px 14px;font-size:13.5px;max-width:100%}
+.btn{font-size:12px;font-weight:700;letter-spacing:.06em;padding:9px 14px;border-radius:999px;border:1px solid var(--line-2);color:var(--ink-2);transition:all .25s}
+.btn:hover{color:var(--gold);border-color:var(--gold)}
+.poll-line{display:flex;justify-content:space-between;font-size:14px;padding:8px 0;border-bottom:1px solid var(--line)}
+.m-bar{display:flex;height:22px;border-radius:5px;overflow:hidden;margin-top:10px;background:var(--soft)}
+.m-bar span{display:flex;align-items:center;font-size:11px;font-weight:800;color:#fff;padding:0 6px;white-space:nowrap}
+.m-bar .r{background:var(--rep)} .m-bar .d{background:var(--dem);justify-content:flex-end}
+.m-bar .o{flex:1;background:repeating-linear-gradient(45deg,var(--line) 0 4px,transparent 4px 8px)}
+.conf{white-space:nowrap;display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--line-2)}
+.conf.low{border-color:var(--gold);color:var(--gold)} .conf.med{border-color:var(--dem);color:var(--dem)} .conf.high{border-color:var(--up);color:var(--up)}
+.key-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:12px;color:var(--ink-3)}
+.key-row span{display:flex;align-items:center;gap:6px}
+.key-row i{width:14px;height:10px;border-radius:2px;display:inline-block}
+.tally{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.tally div{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.tally i{width:12px;height:12px;border-radius:3px;display:inline-block;margin-right:8px;vertical-align:-1px}
+@media (max-width:980px){ .map-grid,.grid2{grid-template-columns:1fr} }
+@media (max-width:560px){ .topline{grid-template-columns:1fr 1fr} .mid{grid-column:1/-1;order:3} .combo-stats b{font-size:26px} }
+</style>
+<meta name="theme-color" content="#0b0a08">
+<script>
+/* Theme: dark by default; the sun/moon button switches it and the choice is saved.
+   Add ?theme=light or ?theme=dark to the URL to preview. */
+(function () {
+  let t = "dark";
+  try { t = localStorage.getItem("ktr-theme") || "dark"; } catch (e) {}
+  const q = new URLSearchParams(location.search).get("theme");
+  if (q === "light" || q === "dark") t = q;
+  const h = document.documentElement;
+  h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+})();
+</script>
+</head>
+<body>
+
+<header class="nav" data-nav data-root="../" data-active="matchups"></header>
+
+<main>
+<section class="page-hero">
+  <div class="wrap" data-head>
+    <h1>Electoral <span>Analysis.</span></h1>
+    <p>The Keys to the Race forecast for 2028: every state's chance, every combination of the states in play, and 11,111 simulated elections. Or build your own map.</p>
+    <nav class="mode-tabs" style="margin-top:24px" id="modeTabs">
+      <a href="#forecast" data-mode="forecast" class="on">Current Forecast</a>
+      <a href="#build" data-mode="build">Build Your Map</a>
+      <a href="#primary" data-mode="primary">Primary Map</a>
+      <a href="#senate" data-mode="senate">Senate 2028</a>
+    </nav>
+  </div>
+</section>
+
+<!-- ============ CURRENT FORECAST ============ -->
+<section class="block mode" id="forecast">
+  <div class="wrap">
+    <div class="panel" data-reveal>
+      <div class="topline">
+        <div class="odds d"><span class="who">Democratic nominee</span><b id="fD">–</b><span class="evs" id="fDev"></span></div>
+        <div class="mid"><div class="n" id="fSims">11,111</div><div class="l">simulations</div><div class="l" style="margin-top:6px" id="fTie"></div></div>
+        <div class="odds r"><span class="who">Republican nominee</span><b id="fR">–</b><span class="evs" id="fRev"></span></div>
+      </div>
+      <div class="evbar" id="fBar"><i class="mark"></i></div>
+      <div class="ev270"><span>538 electoral votes</span><span>270 to win</span></div>
+      <div class="ev-legend" id="fLegend"></div>
+
+      <div class="map-grid">
+        <div style="min-width:0">
+          <svg class="usmap" id="fMap" role="img" aria-label="2028 forecast map by state"></svg>
+          <div class="chips" id="fChips"></div>
+          <p class="note">Click any state for its forecast. Maine and Nebraska also award one electoral vote per district.</p>
+        </div>
+        <aside class="detail panel" id="fDetail" style="box-shadow:none"></aside>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel" data-reveal>
+        <div class="eyebrow">Electoral Vote Probability</div>
+        <h3>Every combination</h3>
+        <p class="sub" id="evpcSub"></p>
+        <div class="combo-stats" id="evpcStats"></div>
+        <div class="eyebrow" style="margin-top:8px">Most likely combinations</div>
+        <div id="evpcList"></div>
+      </div>
+      <div class="panel" data-reveal>
+        <div class="eyebrow">11,111 simulations</div>
+        <h3>Where the electoral votes land</h3>
+        <p class="sub" id="histSub"></p>
+        <svg class="chart" id="histChart" viewBox="0 0 560 260" role="img" aria-label="Distribution of Democratic electoral votes across simulations"></svg>
+        <div class="eyebrow" style="margin-top:16px">Tipping-point states</div>
+        <p class="sub">The state that delivered the 270th electoral vote, and how often.</p>
+        <div id="tipList" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:20px" data-reveal>
+      <div class="eyebrow">States in play</div>
+      <h3>The battleground</h3>
+      <p class="sub">Every state rated Lean or Toss-up, plus the closest Likely states. Click a row to see it on the map.</p>
+      <div class="tbl-wrap" style="margin-top:12px"><table class="tbl" id="playTbl"></table></div>
+    </div>
+
+    <div class="panel" style="margin-top:20px" data-reveal>
+      <div class="eyebrow">Forecast over time</div>
+      <h3>How the race has moved</h3>
+      <p class="sub">Each point is the forecast using the results through that year. Today adds the factors and the polls below.</p>
+      <svg class="chart" id="trendChart" viewBox="0 0 900 280" role="img" aria-label="Chance to win over time"></svg>
+    </div>
+
+    <div class="panel" style="margin-top:20px" data-reveal id="method">
+      <div class="eyebrow">How the forecast is built</div>
+      <h3>Weights, factors and why</h3>
+      <p class="sub">Every weight follows a written rule, and every adjustment points to the evidence behind it. Margins are Democrat minus Republican.</p>
+      <div class="rules" id="rules"></div>
+      <div class="eyebrow" style="margin-top:28px">1. Recent cycles</div>
+      <div class="tbl-wrap"><table class="tbl" id="cycTbl"></table></div>
+      <div class="eyebrow" style="margin-top:24px">2. Factors</div>
+      <div class="tbl-wrap"><table class="tbl" id="facTbl"></table></div>
+      <div class="eyebrow" style="margin-top:24px">3. Polling, 4. two years out, 5. state lean</div>
+      <div class="tbl-wrap"><table class="tbl" id="stepTbl"></table></div>
+      <p class="note">Statewide 2026 results join the state leans once they're certified. Margins are rounded; district margins are approximate.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BUILD YOUR MAP ============ -->
+<section class="block mode hidden" id="build">
+  <div class="wrap">
+    <div class="panel">
+      <div class="eyebrow">Build your map</div>
+      <h3>Pick a color, then click states</h3>
+      <div class="palette" id="bPalette" style="margin-top:14px" role="radiogroup" aria-label="Rating to paint"></div>
+      <div class="controls">
+        <label>Start from</label>
+        <button class="btn" id="bForecast">Current Forecast</button>
+        <button class="btn" id="b2024">2024 results</button>
+        <button class="btn" id="bBlank">Blank map</button>
+        <label for="matchupSel" style="margin-left:auto">Matchup</label>
+        <select id="matchupSel"></select>
+      </div>
+      <div class="topline" style="margin-top:20px">
+        <div class="odds d"><span class="who" id="dName">Democrat</span><b id="bD">0</b></div>
+        <div class="mid"><div class="n" id="bT">0</div><div class="l">toss-up</div></div>
+        <div class="odds r"><span class="who" id="rName">Republican</span><b id="bR">0</b></div>
+      </div>
+      <div class="evbar" id="bBar"><i class="mark"></i></div>
+      <div class="ev270"><span>Likely and Lean count toward each side</span><span>270 to win</span></div>
+      <div class="map-grid">
+        <div style="min-width:0">
+          <svg class="usmap" id="bMap" role="img" aria-label="Clickable US electoral map"></svg>
+          <div class="chips" id="bChips"></div>
+        </div>
+        <aside class="panel" id="pollSide" style="box-shadow:none"></aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRIMARY ============ -->
+<section class="block mode hidden" id="primary">
+  <div class="wrap map-grid" style="margin-top:0">
+    <div class="panel">
+      <div class="controls" style="margin-top:0">
+        <label>Party</label>
+        <div class="seg" id="primParty"><button data-p="D" class="on">Democrats</button><button data-p="R">Republicans</button></div>
+        <button class="btn" id="primReset">Clear map</button>
+      </div>
+      <svg class="usmap" id="primmap" role="img" aria-label="Clickable primary map" style="margin-top:14px"></svg>
+      <div class="chips" id="primChips"></div>
+      <div class="key-row" id="primKey"></div>
+    </div>
+    <aside class="panel">
+      <div class="eyebrow">States won</div>
+      <div class="tally" id="primTally"></div>
+      <p class="note">Candidates come from the current Key Polls average, top four plus "Other." Delegate counts appear once each party publishes its 2028 delegate allocations and calendar.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ SENATE ============ -->
+<section class="block mode hidden" id="senate">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">Senate 2028</div><h2>General election matchups</h2><p>Each 2028 Senate matchup gets the same grade-weighted average and split bar as the presidential matchups, as soon as polls are released.</p></div></div>
+    <div id="senateList"></div>
+  </div>
+</section>
+</main>
+
+<footer data-footer data-root="../"></footer>
+
+<!-- Offline copies of the CSVs, used only when opened straight from a computer. Synced by tools/sync_fallback.py -->
+<script type="text/plain" id="pollsters-fallback">
+pollster,grade,rated_by,source_url
+AtlasIntel,A+,Silver Bulletin 2025 pollster ratings,https://atlasintel.org/media/atlasintel-has-an-a-rating-and-is-the-no1-pollster-in-america-according-to-the-2025-us-pollster-ratings
+McLaughlin & Associates,D,Listed as D-rated by Political Polls,https://x.com/PpollingNumbers/status/2118805862596612366
+</script>
+<script type="text/plain" id="polls-fallback">
+poll_id,pollster,start_date,end_date,release_date,race,matchup,population,total_sample,sample_type,moe,candidate,party,pct,rounded,source_url
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Jon Ossoff,D,18.2,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Alexandria Ocasio-Cortez,D,17.6,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Pete Buttigieg,D,15.8,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Kamala Harris,D,12.6,0,https://www.yahoo.com/news/politics/articles/surprising-potential-candidates-top-2028-192934067.html
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Mark Kelly,D,9.1,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Gavin Newsom,D,9.0,0,https://www.yahoo.com/news/politics/articles/surprising-potential-candidates-top-2028-192934067.html
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Andy Beshear,D,4,1,https://www.realclearpolling.com/polls/president/democratic-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Josh Shapiro,D,3.4,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,JB Pritzker,D,2.5,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Cory Booker,D,2,1,https://www.realclearpolling.com/polls/president/democratic-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Gretchen Whitmer,D,0,1,https://www.realclearpolling.com/polls/president/democratic-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Undecided,,2.3,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Marco Rubio,R,45.6,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,JD Vance,R,32.9,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Ron DeSantis,R,4.5,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Tucker Carlson,R,3,1,https://www.realclearpolling.com/polls/president/republican-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Donald Trump Jr.,R,2.3,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Ted Cruz,R,1.4,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Glenn Youngkin,R,1,1,https://www.realclearpolling.com/polls/president/republican-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Josh Hawley,R,0,1,https://www.realclearpolling.com/polls/president/republican-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Undecided,,6.4,0,https://www.pollcheck.co.uk/us/primaries/republican/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,vance-ocasio-cortez,Likely voters,1000,LV,,JD Vance,R,49,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,vance-ocasio-cortez,Likely voters,1000,LV,,Alexandria Ocasio-Cortez,D,39,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,rubio-ocasio-cortez,Likely voters,1000,LV,,Marco Rubio,R,48,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,rubio-ocasio-cortez,Likely voters,1000,LV,,Alexandria Ocasio-Cortez,D,38,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+</script>
+
+
+<script>window.PAGE_ROOT = "../";</script>
+<script src="../assets/nav.js"></script>
+<script src="../assets/common.js"></script>
+<script src="../assets/polls-core.js"></script>
+<script src="../assets/us-map.js"></script>
+<script src="../assets/forecast.js"></script>
+<script>
+/* ========================================================= */
+const EV = Object.fromEntries(Object.entries(STATES).map(([k, v]) => [k, v[0]]));
+const SMALL = "VT NH MA RI CT NJ DE MD DC".split(" ");
+const DISTRICTS = ["ME-1","ME-2","NE-1","NE-2","NE-3"];
+const R7 = ["safeD","likelyD","leanD","toss","leanR","likelyR","safeR"];
+const RLABEL = { safeD:"Safe D", likelyD:"Likely D", leanD:"Lean D", toss:"Toss-up", leanR:"Lean R", likelyR:"Likely R", safeR:"Safe R" };
+const RCOL = r => r ? `var(--${r})` : "var(--none)";
+const pc = p => (p * 100 >= 99.5 ? ">99" : p * 100 < 0.5 ? "<1" : Math.round(p * 100)) + "%";
+const pc1 = p => (p * 100).toFixed(1) + "%";
+
+function drawMap(svgSel, fillFor, onClick){
+  const svg = $(svgSel);
+  svg.setAttribute("viewBox", `0 0 ${US_MAP.width} ${US_MAP.height}`);
+  svg.innerHTML = Object.entries(US_MAP.paths).map(([ab, d]) =>
+    `<path data-st="${ab}" d="${d}" fill="${fillFor(ab)}"><title>${STATE_NAMES[ab] || ab}${EV[ab] ? " · " + EV[ab] + " electoral votes" : ""}</title></path>`).join("") +
+    Object.entries(US_MAP.centers).filter(([ab]) => !SMALL.includes(ab) && ab !== "HI").map(([ab, [x, y]]) =>
+    `<text x="${x}" y="${y}">${ab}<tspan class="ev" x="${x}" dy="11">${EV[ab] || ""}</tspan></text>`).join("");
+  svg.querySelectorAll("path").forEach(p => p.addEventListener("click", () => onClick(p.dataset.st)));
+}
+function chipRow(sel, list, fillFor, ratingOf, onClick){
+  $(sel).innerHTML = list.map(ab => `<button class="st-chip ${ratingOf(ab) === "toss" ? "toss" : ""}" data-st="${ab}" style="background:${fillFor(ab)}">${ab} <small>${EV[ab]}</small></button>`).join("");
+  $$(sel + " .st-chip").forEach(b => b.addEventListener("click", () => onClick(b.dataset.st)));
+}
+function evBar(sel, counts){
+  $(sel).innerHTML = R7.map(r => counts[r] ? `<span class="${r === "toss" ? "toss" : ""}" style="width:${counts[r] / 538 * 100}%;background:${RCOL(r)}" title="${RLABEL[r]}: ${counts[r]}">${counts[r] >= 18 ? counts[r] : ""}</span>` : "").join("") + `<i class="mark"></i>`;
+}
+
+/* =========================================================
+   CURRENT FORECAST
+   ========================================================= */
+let F = null, selected = null;
+function renderForecast(){
+  const { sim, states, ev, nat, trend } = F;
+  const dEV = Math.round(sim.mean), rEV = 538 - dEV;
+  $("#fD").textContent = pc1(sim.pD); $("#fR").textContent = pc1(sim.pR);
+  $("#fDev").textContent = `Average ${dEV} electoral votes`; $("#fRev").textContent = `Average ${rEV} electoral votes`;
+  $("#fTie").textContent = `269–269 tie: ${pc1(sim.pTie)}`;
+  $("#fSims").textContent = sim.n.toLocaleString();
+  const counts = Object.fromEntries(R7.map(r => [r, states.filter(s => s.rating === r).reduce((t, s) => t + s.ev, 0)]));
+  evBar("#fBar", counts);
+  $("#fLegend").innerHTML = R7.map(r => `<span><i style="background:${RCOL(r)}"></i>${RLABEL[r]} <b>${counts[r]}</b></span>`).join("");
+  const byId = Object.fromEntries(states.map(s => [s.st, s]));
+  const fill = st => byId[st] ? RCOL(byId[st].rating) : "var(--none)";
+  drawMap("#fMap", fill, showState);
+  chipRow("#fChips", [...SMALL, ...DISTRICTS], fill, st => byId[st] && byId[st].rating, showState);
+  showState(sim.tipping[0] ? sim.tipping[0].st : "PA");
+
+  // EVPC
+  $("#evpcSub").innerHTML = `${ev.toss.length} states are in play (Toss-up or Lean): ${ev.toss.map(s => `<b>${s.st}</b>`).join(", ")}. Every other state goes to the side it's rated for, which starts the Democrat at ${ev.baseD} and the Republican at ${ev.baseR}. That leaves 2<sup>${ev.toss.length}</sup> = <b>${ev.total.toLocaleString()}</b> ways the states in play can fall.`;
+  $("#evpcStats").innerHTML = `
+    <div><b style="color:var(--dem)">${ev.dCombos}</b><span>combinations where the Democrat wins<br><b style="color:var(--ink)">${pc1(ev.pD)}</b> likely</span></div>
+    <div><b style="color:var(--gold)">${ev.tieCombos}</b><span>end 269–269<br><b style="color:var(--ink)">${pc1(ev.pT)}</b> likely</span></div>
+    <div><b style="color:var(--rep)">${ev.rCombos}</b><span>combinations where the Republican wins<br><b style="color:var(--ink)">${pc1(ev.pR)}</b> likely</span></div>`;
+  $("#evpcList").innerHTML = ev.likely.map(c => `<div class="combo">
+      <span class="ev" style="color:${c.d >= 270 ? "var(--dem)" : c.d === 269 ? "var(--gold)" : "var(--rep)"}">${c.d >= 270 ? "D " + c.d : c.d === 269 ? "Tie" : "R " + (538 - c.d)}</span>
+      ${c.dStates.map(s => `<span class="tag" style="background:var(--dem)">${s}</span>`).join("")}${c.rStates.map(s => `<span class="tag" style="background:var(--rep)">${s}</span>`).join("")}
+      <span class="p">${pc1(c.p)}</span></div>`).join("");
+
+  drawHist(sim);
+  $("#histSub").textContent = `The Democrat's electoral votes in each simulated election. Median ${sim.median}. Blue bars are Democratic wins, red Republican, gold a tie.`;
+  $("#tipList").innerHTML = sim.tipping.slice(0, 6).map(t => `<div class="poll-line"><span><b>${byId[t.st].name}</b> <span style="color:var(--ink-3)">· ${byId[t.st].ev} EV</span></span><span style="font-weight:800;color:var(--gold)">${pc1(t.share)}</span></div>`).join("");
+
+  // States in play table
+  const play = states.filter(s => s.pD > 0.1 && s.pD < 0.9).sort((a, b) => Math.abs(a.margin) - Math.abs(b.margin));
+  $("#playTbl").innerHTML = `<thead><tr><th>State</th><th class="num">EV</th><th class="num">2024</th><th class="num">Forecast</th><th style="min-width:160px">Chance</th><th>Rating</th><th class="num">Tipping point</th></tr></thead><tbody>${play.map(s => {
+    const tp = (sim.tipping.find(t => t.st === s.st) || { share: 0 }).share;
+    return `<tr class="click" data-st="${s.st}"><td><b>${s.name}</b></td><td class="num">${s.ev}</td><td class="num">${fmtM(s.m24)}</td><td class="num" style="color:${s.margin >= 0 ? "var(--dem)" : "var(--rep)"}">${fmtM(s.margin)}</td>
+      <td><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800"><span style="color:var(--dem)">${pc(s.pD)}</span><span style="color:var(--rep)">${pc(1 - s.pD)}</span></div><div class="pbar" style="margin-top:4px"><i style="width:${s.pD * 100}%;background:var(--dem)"></i><i style="flex:1;background:var(--rep)"></i></div></td>
+      <td><span class="rchip ${s.rating === "toss" ? "toss" : ""}" style="background:${RCOL(s.rating)}">${RLABEL[s.rating]}</span></td><td class="num">${tp ? pc1(tp) : "—"}</td></tr>`; }).join("")}</tbody>`;
+  $$("#playTbl tr.click").forEach(tr => tr.addEventListener("click", () => { showState(tr.dataset.st); $("#fMap").scrollIntoView({ behavior: "smooth", block: "center" }); }));
+
+  drawTrend(trend);
+  renderMethod(nat);
+}
+
+function showState(st){
+  const s = F.states.find(x => x.st === st); if (!s) return;
+  selected = st;
+  $$("#fMap path").forEach(p => p.classList.toggle("sel", p.dataset.st === st));
+  const tp = (F.sim.tipping.find(t => t.st === st) || { share: 0 }).share;
+  $("#fDetail").innerHTML = `
+    <div class="eyebrow">${s.ev} electoral vote${s.ev === 1 ? "" : "s"}</div>
+    <h3 style="margin-top:6px">${s.name}</h3>
+    <span class="rchip ${s.rating === "toss" ? "toss" : ""}" style="background:${RCOL(s.rating)};margin-top:10px">${RLABEL[s.rating]}</span>
+    <div class="big" style="color:${s.margin >= 0 ? "var(--dem)" : "var(--rep)"}">${fmtM(s.margin)}</div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:800;margin-top:14px"><span style="color:var(--dem)">D ${pc(s.pD)}</span><span style="color:var(--rep)">R ${pc(1 - s.pD)}</span></div>
+    <div class="pbar"><i style="width:${s.pD * 100}%;background:var(--dem)"></i><i style="flex:1;background:var(--rep)"></i></div>
+    <dl>
+      <dt>2020 result</dt><dd>${fmtM(s.m20)}</dd>
+      <dt>2024 result</dt><dd>${fmtM(s.m24)}</dd>
+      <dt>Lean vs. nation</dt><dd>${fmtM(s.lean)}</dd>
+      <dt>National environment</dt><dd>${fmtM(F.nat.env)}</dd>
+      <dt>Won in simulations</dt><dd>D ${pc1(F.sim.stWins[st])}</dd>
+      <dt>Tipping point</dt><dd>${tp ? pc1(tp) + " of sims" : "Rarely"}</dd>
+    </dl>
+    <p class="note">Forecast = lean ${fmtM(s.lean)} + environment ${fmtM(F.nat.env)}.</p>`;
+}
+
+function drawHist(sim){
+  const W = 560, H = 260, L = 34, B = 30, T = 10, R = 8;
+  const bins = []; for (let e = 0; e <= 538; e += 10) bins.push({ e, c: sim.hist.slice(e, e + 10).reduce((t, x) => t + x, 0) });
+  const max = Math.max(...bins.map(b => b.c)) || 1;
+  const x = e => L + (e / 540) * (W - L - R), y = c => H - B - (c / max) * (H - B - T);
+  const bw = (W - L - R) / 54 - 1.5;
+  let g = "";
+  [0, 0.5, 1].forEach(f => { const yy = y(max * f); g += `<line class="gl" x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}"/><text x="${L - 6}" y="${yy + 4}" text-anchor="end">${(max * f / sim.n * 100).toFixed(1)}%</text>`; });
+  bins.forEach(b => { const col = b.e + 9 < 269 ? "var(--rep)" : b.e >= 270 ? "var(--dem)" : "var(--gold)"; g += `<rect x="${x(b.e) + .75}" y="${y(b.c)}" width="${bw}" height="${H - B - y(b.c)}" rx="1.5" fill="${col}" opacity=".9"><title>${b.e}–${b.e + 9} D electoral votes: ${(b.c / sim.n * 100).toFixed(1)}%</title></rect>`; });
+  g += `<line x1="${x(270)}" x2="${x(270)}" y1="${T - 4}" y2="${H - B}" stroke="var(--gold)" stroke-width="2" stroke-dasharray="4 4"/><text x="${x(270) + 6}" y="${T + 8}" fill="var(--gold)" style="fill:var(--gold);font-weight:800">270</text>`;
+  [0, 100, 200, 300, 400, 538].forEach(e => g += `<text x="${x(e)}" y="${H - 10}" text-anchor="middle">${e}</text>`);
+  $("#histChart").innerHTML = g;
+}
+
+function drawTrend(trend){
+  const el = $("#trendChart"), W = Math.max(330, Math.min(1000, el.clientWidth || 900)), H = W < 640 ? 240 : 280, L = 40, R = 76, T = 16, B = 34;
+  el.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const n = trend.length, x = i => L + i * (W - L - R) / (n - 1), y = p => T + (1 - p) * (H - T - B);
+  let g = "";
+  [0, .25, .5, .75, 1].forEach(p => g += `<line class="gl" x1="${L}" x2="${W - R}" y1="${y(p)}" y2="${y(p)}" ${p === .5 ? 'stroke-dasharray="4 4" style="stroke:var(--line-2)"' : ""}/><text x="${L - 8}" y="${y(p) + 4}" text-anchor="end">${p * 100}%</text>`);
+  trend.forEach((t, i) => g += `<text x="${x(i)}" y="${H - 10}" text-anchor="middle" ${t.today ? 'style="fill:var(--gold);font-weight:800"' : ""}>${W < 500 && !t.today ? "'" + t.label.slice(2) : t.label}</text>`);
+  [["pD", "var(--dem)", "D"], ["pR", "var(--rep)", "R"]].forEach(([k, c, lab]) => {
+    const pts = trend.map((t, i) => [x(i), y(t[k])]);
+    g += `<polyline fill="none" stroke="${c}" stroke-width="2.6" stroke-linejoin="round" points="${pts.map(p => p.join(",")).join(" ")}"/>`;
+    pts.slice(0, -1).forEach(([px, py], i) => g += `<circle cx="${px}" cy="${py}" r="3.5" fill="${c}"><title>${trend[i].label}: ${lab} ${pc1(trend[i][k])}</title></circle>`);
+    const [ex, ey] = pts.at(-1);
+    g += `<circle class="halo" cx="${ex}" cy="${ey}" r="5" fill="none" stroke="${c}" stroke-width="2"/><circle class="blink" cx="${ex}" cy="${ey}" r="5.5" fill="${c}"/>`;
+    g += `<text x="${ex + 12}" y="${ey + 4}" style="fill:${c};font-weight:800;font-size:13px">${lab} ${pc1(trend.at(-1)[k])}</text>`;
+  });
+  $("#trendChart").innerHTML = g;
+}
+
+function renderMethod(nat){
+  const wsum = nat.cycles.reduce((t, c) => t + c.weight, 0);
+  const avgSwing = [[0.5,-2.4],[-2.4,7.3],[7.3,3.9],[3.9,2.1],[2.1,4.5],[4.5,-1.5]].reduce((t, [a, b]) => t + Math.abs(b - a), 0) / 6;
+  $("#rules").innerHTML = `
+    <div class="rule"><h4>The confidence scale</h4><div class="scale">${CONFIDENCE.map(([w, t]) => `<span class="wpill">${w.toFixed(2)}</span><span>${t}</span>`).join("")}</div>
+      <p style="margin-top:10px">Every factor's weight comes from this scale. A factor's effect is its points times its weight, so a shaky signal can only move the forecast a little.</p></div>
+    <div class="rule"><h4>The recency rule</h4><p>Each election counts 0.25 less than the one after it, and never less than 0.25: 2026 counts 1, 2024 counts 0.75, 2022 counts 0.5, and 2020 and 2018 count 0.25. Coalitions have shifted fast since 2016, so older results age quickly. State leans follow the same rule (2024 at 0.75, 2020 at 0.25).</p></div>
+    <div class="rule"><h4>The midterm rule</h4><p>Midterms punish the president's party, then it recovers. Since 1998 it has gained back <b>${MIDTERM_RECOVERY} points</b> on average from the midterm House vote to the next presidential popular vote, so each midterm is moved ${MIDTERM_RECOVERY} points toward the president's party before it's counted.</p>
+      <table class="mini-tbl"><thead><tr><th>Midterm</th><th>President's party</th><th>House vote</th><th>Next pres.</th><th>Recovered</th></tr></thead><tbody>${MIDTERM_HISTORY.map(h => `<tr><td>${h.mid}</td><td>${h.party}</td><td>${fmtM(h.midterm)}</td><td>${fmtM(h.next)}</td><td style="color:${h.recovery >= 0 ? "var(--up)" : "var(--down)"}">${h.recovery >= 0 ? "+" : ""}${h.recovery.toFixed(1)}</td></tr>`).join("")}</tbody></table></div>
+    <div class="rule"><h4>Two years out, and how wrong it can be</h4><p><b>Pull to a tie (${FC.pullToTie}).</b> No popular vote since 2000 has been decided by more than 7.3 points, so a big lead this early is kept at ${FC.pullToTie * 100}%. This rises to 1 by Election Day.</p>
+      <p style="margin-top:8px"><b>National error (${FC.nationalError} points).</b> The popular vote margin has moved ${avgSwing.toFixed(1)} points on average from one presidential election to the next since 2000, and up to 9.7 (2004 to 2008).</p>
+      <p style="margin-top:8px"><b>State error (${FC.stateError} points).</b> On top of the national swing, a state typically moves a few points on its own. Every simulation draws both, so states move together like they do on a real election night.</p></div>`;
+  $("#cycTbl").innerHTML = `<thead><tr><th>Year</th><th>Result</th><th class="num">Margin</th><th class="num">Midterm rule</th><th class="num">Counted as</th><th class="num">Weight</th><th class="num">Share</th><th>Note</th></tr></thead><tbody>${nat.cycles.map(c =>
+    `<tr><td><b>${c.year}</b></td><td>${c.kind}: ${c.label}</td><td class="num" style="color:${c.margin >= 0 ? "var(--dem)" : "var(--rep)"}">${fmtM(c.margin)}${c.projected ? "*" : ""}</td><td class="num">${c.inParty ? `${c.adjusted > c.margin ? "+" : "−"}${MIDTERM_RECOVERY} to ${c.inParty}` : "—"}</td><td class="num" style="color:${c.adjusted >= 0 ? "var(--dem)" : "var(--rep)"}">${fmtM(c.adjusted)}</td><td class="num"><span class="wpill">${c.weight}</span></td><td class="num">${(c.weight / wsum * 100).toFixed(0)}%</td><td class="why">${c.note}</td></tr>`).join("")}</tbody>
+    <tfoot><tr><td colspan="4">Weighted national starting point</td><td class="num">${fmtM(nat.base)}</td><td class="num">${wsum}</td><td></td><td class="why">* Projected, not final.</td></tr></tfoot>`;
+  $("#facTbl").innerHTML = `<thead><tr><th>Factor</th><th class="num">Points</th><th class="num">Weight</th><th class="num">Effect</th><th>Why</th></tr></thead><tbody>${nat.factors.map(f =>
+    `<tr><td><b>${f.name}</b></td><td class="num">${f.pts ? fmtM(f.pts) : "0"}</td><td class="num"><span class="wpill">${f.weight}</span></td><td class="num" style="color:${f.effect > 0 ? "var(--dem)" : f.effect < 0 ? "var(--rep)" : "var(--ink-3)"}">${f.effect ? (f.effect > 0 ? "+" : "") + f.effect.toFixed(2) : "0"}</td><td class="why">${f.why}</td></tr>`).join("")}</tbody>
+    <tfoot><tr><td>After factors</td><td></td><td></td><td class="num">${fmtM(nat.afterFactors)}</td><td class="why">Starting point ${fmtM(nat.base)} plus every effect.</td></tr></tfoot>`;
+  const p = nat.poll;
+  $("#stepTbl").innerHTML = `<thead><tr><th>Step</th><th class="num">Setting</th><th class="num">Result</th><th>Why</th></tr></thead><tbody>
+    <tr><td><b>Polling</b></td><td class="num">${p ? `<span class="wpill">${p.weight.toFixed(3)}</span>` : "—"}</td><td class="num">${fmtM(nat.afterPolls)}</td><td class="why">${p ? `${p.n} general election matchup${p.n === 1 ? "" : "s"} average ${fmtM(p.margin)}. Polling gets 0.25 on the confidence scale this far out (early polls miss by a lot), times the pollsters' grade weight (${p.gradeW.toFixed(2)}), so it moves the number by ${p.effect.toFixed(2)}.` : "No general election polls yet."}</td></tr>
+    <tr><td><b>Two years out</b></td><td class="num"><span class="wpill">${FC.pullToTie}</span></td><td class="num">${fmtM(nat.env)}</td><td class="why">No popular vote since 2000 has been decided by more than 7.3 points, so the model keeps ${FC.pullToTie * 100}% of the gap from a tie this far out. This setting rises toward 1 as Election Day gets closer.</td></tr>
+    <tr><td><b>State lean</b></td><td class="num"><span class="wpill">0.25 / 0.75</span></td><td class="num">Per state</td><td class="why">Each state's margin minus the national margin in 2020 and 2024, weighted by the recency rule. Its forecast is its lean plus the national environment.</td></tr></tbody>`;
+}
+
+/* =========================================================
+   BUILD YOUR MAP
+   ========================================================= */
+let rating = {}, brush = "toss";
+const WON_2024 = { R: "AL AK AZ AR FL GA ID IN IA KS KY LA MI MS MO MT NE NV NC ND OH OK PA SC SD TN TX UT WV WI WY ME-2 NE-1 NE-3".split(" "),
+                   D: "CA CO CT DE DC HI IL ME MD MA MN NH NJ NM NY OR RI VT VA WA ME-1 NE-2".split(" ") };
+function fromForecast(){ rating = Object.fromEntries(F.states.map(s => [s.st, s.rating])); }
+function from2024(){ rating = {}; F.states.forEach(s => { const m = s.m24; rating[s.st] = Math.abs(m) < 5 ? (m > 0 ? "leanD" : "leanR") : Math.abs(m) < 10 ? (m > 0 ? "likelyD" : "likelyR") : (m > 0 ? "safeD" : "safeR"); }); }
+function blank(){ rating = {}; Object.keys(EV).forEach(s => rating[s] = "toss"); }
+function paint(st){ rating[st] = brush; paintBuild(); }
+function paintBuild(){
+  $$("#bMap path").forEach(p => p.setAttribute("fill", RCOL(rating[p.dataset.st])));
+  chipRow("#bChips", [...SMALL, ...DISTRICTS], s => RCOL(rating[s]), s => rating[s], paint);
+  const c = Object.fromEntries(R7.map(r => [r, 0]));
+  Object.entries(EV).forEach(([s, v]) => { if (rating[s]) c[rating[s]] += v; });
+  const d = c.safeD + c.likelyD + c.leanD, r = c.safeR + c.likelyR + c.leanR;
+  $("#bD").textContent = (d >= 270 ? "✓ " : "") + d; $("#bR").textContent = r + (r >= 270 ? " ✓" : ""); $("#bT").textContent = c.toss;
+  evBar("#bBar", c);
+}
+function buildPalette(){
+  $("#bPalette").innerHTML = R7.map(r => `<button class="swatch ${r === brush ? "on" : ""}" data-r="${r}" role="radio" aria-checked="${r === brush}"><i style="background:${RCOL(r)}"></i>${RLABEL[r]}</button>`).join("");
+  $$("#bPalette .swatch").forEach(b => b.addEventListener("click", () => { brush = b.dataset.r; buildPalette(); }));
+}
+
+let POLLS = [], MATCHUPS = [];
+function matchupInfo(key){
+  const avg = averageAsOf(POLLS, key, latestFor(POLLS, key));
+  return { key, avg, R: avg.list.find(c => c.party === "R"), D: avg.list.find(c => c.party === "D") };
+}
+function renderPollSide(){
+  const key = $("#matchupSel").value, side = $("#pollSide");
+  if (!key || key === "custom"){
+    $("#rName").textContent = "Republican nominee"; $("#dName").textContent = "Democratic nominee";
+    side.innerHTML = `<div class="eyebrow">Custom map</div><h3 style="margin-top:6px">No matchup selected</h3><p class="note">Pick a matchup to see its poll average here.</p>`;
+    return;
+  }
+  const { avg, R, D } = matchupInfo(key);
+  const m = R.pct - D.pct, [cc, cl] = confidence(avg.weight);
+  $("#rName").textContent = R.name; $("#dName").textContent = D.name;
+  side.innerHTML = `
+    <div class="eyebrow">Poll average</div>
+    <h3 style="margin-top:6px">${D.name} vs. ${R.name}</h3>
+    <div style="font-family:var(--serif);font-weight:600;font-size:34px;margin-top:8px;color:${m >= 0 ? "var(--rep)" : "var(--dem)"}">${m === 0 ? "Tied" : `${last(m >= 0 ? R.name : D.name)} +${Math.abs(m).toFixed(1)}`}</div>
+    <span class="conf ${cc}" style="margin-top:6px">${cl}</span>
+    <div class="m-bar"><span class="d" style="width:${D.pct}%;justify-content:flex-start">${pct(D.pct)}</span><span class="o"></span><span class="r" style="width:${R.pct}%;justify-content:flex-end">${pct(R.pct)}</span></div>
+    <div style="margin-top:14px">${avg.used.map(p => `<div class="poll-line"><span>${p.pollster} ${gradeBadge(p.pollster)}</span><span style="font-size:12px">${fd(p.end)}</span></div>`).join("")}</div>
+    <p class="note">${avg.n} poll${avg.n === 1 ? "" : "s"}, total weight ${avg.weight.toFixed(2)}. A national poll doesn't call states, so the map is yours to set.</p>
+    <a class="btn" style="display:inline-block;margin-top:12px" href="${pageLink("../", "polls/")}">All matchup polls →</a>`;
+}
+
+/* =========================================================
+   PRIMARY MAP
+   ========================================================= */
+let primParty = "D", primPick = { D: {}, R: {} }, palette = { D: [], R: [] };
+const PRIM_COLORS = { D: ["#2F6FD0", "#12A6CC", "#8E5BC8", "#2e9e5b", "#8c949e"], R: ["#D64545", "#e76f51", "#b7791f", "#b5179e", "#8c949e"] };
+function buildPrimPalette(){
+  ["D", "R"].forEach(p => {
+    const race = p === "D" ? "dem_primary" : "rep_primary";
+    const end = latestFor(POLLS, race);
+    const top = end ? averageAsOf(POLLS, race, end).list.filter(c => c.name !== "Undecided").sort((a, b) => b.pct - a.pct).slice(0, 4).map(c => c.name) : [];
+    palette[p] = [...top, "Other"].map((name, i) => ({ name, color: PRIM_COLORS[p][i] }));
+  });
+}
+const primFill = st => { const i = primPick[primParty][st]; return i == null ? "var(--none)" : palette[primParty][i].color; };
+function primCycle(st){
+  const cur = primPick[primParty][st];
+  const next = cur == null ? 0 : cur + 1;
+  if (next >= palette[primParty].length) delete primPick[primParty][st]; else primPick[primParty][st] = next;
+  paintPrimary();
+}
+function paintPrimary(){
+  $$("#primmap path").forEach(p => p.setAttribute("fill", primFill(p.dataset.st)));
+  chipRow("#primChips", SMALL, primFill, () => "", primCycle);
+  $("#primKey").innerHTML = palette[primParty].map(c => `<span><i style="background:${c.color}"></i>${c.name}</span>`).join("") + `<span>Click a state to cycle through the field.</span>`;
+  const counts = palette[primParty].map(() => 0);
+  Object.values(primPick[primParty]).forEach(i => counts[i]++);
+  const open = Object.keys(US_MAP.paths).length - Object.keys(primPick[primParty]).length;
+  $("#primTally").innerHTML = palette[primParty].map((c, i) => `<div><span><i style="background:${c.color}"></i>${c.name}</span><b>${counts[i]}</b></div>`).join("") +
+    `<div style="color:var(--ink-3)"><span><i style="background:var(--none)"></i>Not called</span><b>${open}</b></div>`;
+}
+
+/* =========================================================
+   SENATE 2028
+   ========================================================= */
+function renderSenate(){
+  const keys = [...new Set(POLLS.flatMap(p => Object.keys(p.races)).filter(k => k.startsWith("senate:")))];
+  if (!keys.length){
+    $("#senateList").innerHTML = `<div class="empty" style="display:flex;gap:18px;align-items:center;padding:26px;border:1px dashed var(--line-2);border-radius:var(--radius);color:var(--ink-2)">
+      <div><b style="color:var(--ink)">No 2028 Senate matchup polls yet.</b><br>Add rows to data/polls.csv with race <span class="mono">senate</span> and a matchup like <span class="mono">fl-name-vs-name</span>, and each one shows up here automatically.</div></div>`;
+    return;
+  }
+  $("#senateList").innerHTML = keys.map(k => { const { avg, R, D } = matchupInfo(k); const m = R.pct - D.pct;
+    return `<div class="side" style="margin-bottom:12px"><h3>${k.split(":")[1].split("-")[0].toUpperCase()}: ${R.name} vs. ${D.name}</h3><div class="m-bar"><span class="r" style="width:${R.pct}%">${pct(R.pct)}</span><span class="o"></span><span class="d" style="width:${D.pct}%">${pct(D.pct)}</span></div><p class="note">${last(m >= 0 ? R.name : D.name)} +${Math.abs(m).toFixed(1)} · ${avg.n} poll(s)</p></div>`; }).join("");
+}
+
+
+/* =========================================================
+   MODE TABS
+   ========================================================= */
+const MODES = ["forecast", "build", "primary", "senate"];
+function setMode(mode){
+  if (mode === "general") mode = "forecast";
+  if (!MODES.includes(mode)) mode = "forecast";
+  $$(".mode").forEach(s => s.classList.toggle("hidden", s.id !== mode));
+  $$("#modeTabs a").forEach(a => a.classList.toggle("on", a.dataset.mode === mode));
+}
+$$("#modeTabs a").forEach(a => a.addEventListener("click", e => { e.preventDefault(); try { history.replaceState(null, "", "#" + a.dataset.mode); } catch (x) {} setMode(a.dataset.mode); }));
+window.addEventListener("hashchange", () => setMode(location.hash.slice(1)));
+setMode(location.hash.slice(1));
+
+/* =========================================================
+   GO
+   ========================================================= */
+Promise.all([loadCSV(DATA_URL, "polls-fallback"), loadCSV(GRADES_URL, "pollsters-fallback")]).then(([rows, graded]) => {
+  GRADES = Object.fromEntries(graded.map(g => [g.pollster, g.grade]));
+  rows.forEach(r => { if (r.race === "senate") { r.race = "general"; r.matchup = "senate~" + r.matchup; } });
+  POLLS = buildPolls(rows).map(p => { Object.keys(p.races).forEach(k => { if (k.includes("senate~")) { p.races["senate:" + k.split("senate~")[1]] = p.races[k]; delete p.races[k]; } }); return p; });
+
+  F = runForecast(POLLS);
+  renderForecast();
+
+  fromForecast();
+  buildPalette();
+  drawMap("#bMap", s => RCOL(rating[s]), paint);
+  paintBuild();
+  $("#bForecast").addEventListener("click", () => { fromForecast(); paintBuild(); });
+  $("#b2024").addEventListener("click", () => { from2024(); paintBuild(); });
+  $("#bBlank").addEventListener("click", () => { blank(); paintBuild(); });
+
+  MATCHUPS = [...new Set(POLLS.flatMap(p => Object.keys(p.races)).filter(k => k.startsWith("general:")))];
+  $("#matchupSel").innerHTML = `<option value="custom">No matchup</option>` + MATCHUPS.map(k => { const { R, D } = matchupInfo(k); return `<option value="${k}">${D.name} vs. ${R.name}</option>`; }).join("");
+  $("#matchupSel").addEventListener("change", renderPollSide);
+  renderPollSide();
+
+  buildPrimPalette();
+  drawMap("#primmap", primFill, primCycle);
+  paintPrimary();
+  $$("#primParty button").forEach(b => b.addEventListener("click", () => { primParty = b.dataset.p; $$("#primParty button").forEach(x => x.classList.toggle("on", x === b)); paintPrimary(); }));
+  $("#primReset").addEventListener("click", () => { primPick[primParty] = {}; paintPrimary(); });
+  renderSenate();
+});
+</script>
+</body>
+</html>

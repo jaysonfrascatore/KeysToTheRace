@@ -1,0 +1,227 @@
+{
+  "_about": "Keys to the Race model settings. Every weight the model uses lives here. The Python engine reads this file directly. The website's JavaScript keeps its own copy of the Stage 1 numbers, and the test suite fails if the two ever disagree. Change a number here, run the tests, then run staging before live.",
+  "version": "2.0",
+
+  "stage1": {
+    "_about": "Stage 1: will they run? News or a quote -> the Decision Maze -> the probability they run -> the Index (once it unlocks).",
+    "method": "v2",
+    "_method": "Written next to every logged day. Bump it (v3, v4...) whenever a Stage 1 weight changes, so the log shows which method made each day.",
+    "launchWatchStart": "2026-06-01",
+    "base": 0.25,
+    "intentScale": 0.50,
+    "strengthScale": 0.20,
+    "ruledOut": 0.03,
+    "indexUnlock": 0.649,
+    "_phases": "The Index unlocks in two stages: Contender above 64.9% to run (provisional Contender Index), Candidate at a formal declaration (official Candidate Index).",
+    "announce": {
+      "_about": "Chance they announce in the next 30 days = chance they run x the share of announcements that land in the next 30 days (from this calendar of usual timing in open-seat cycles), sped up by intent signals from the last 30 days: share = 1 - (1 - base)^exp(boost x recent intent points).",
+      "window": 30, "boost": 0.35,
+      "calendar": { "2026-11": 1, "2026-12": 3, "2027-01": 12, "2027-02": 14, "2027-03": 14, "2027-04": 13, "2027-05": 10,
+                    "2027-06": 9, "2027-07": 8, "2027-08": 5, "2027-09": 4, "2027-10": 3, "2027-11": 2, "2027-12": 2 }
+    },
+    "keyStates": ["IA", "NH", "SC", "NV", "OH", "TX", "MI", "PA"],
+    "elements": {
+      "noise":        { "ring": 1, "w": 0.25, "kind": "intent" },
+      "book":         { "ring": 2, "w": 0.50, "kind": "intent" },
+      "favorability": { "ring": 2, "w": 0.50, "kind": "strength" },
+      "congress":     { "ring": 2, "w": 0.50, "kind": "strength" },
+      "national":     { "ring": 2, "w": 0.50, "kind": "strength" },
+      "ads":          { "ring": 3, "w": 0.75, "kind": "intent" },
+      "fundraising":  { "ring": 3, "w": 0.75, "kind": "intent" },
+      "polling":      { "ring": 4, "w": 1.00, "kind": "strength" },
+      "travel":       { "ring": 4, "w": 1.00, "kind": "intent" },
+      "nextInLine":   { "ring": 4, "w": 1.00, "kind": "strength" },
+      "homeState":    { "ring": 5, "w": 1.25, "kind": "strength" },
+      "midterms":     { "ring": 6, "w": 1.50, "kind": "strength" },
+      "statement":    { "ring": 7, "w": 2.00, "kind": "intent" }
+    },
+    "standingFrom": { "midterms": "2026-11-03" },
+    "statementScale": {
+      "preparing": 1.00, "seriously": 0.75, "considering": 0.50, "timeline": 0.25, "deflect": 0.00,
+      "focused": -0.25, "no_plans": -0.50, "backs_rival": -0.50, "not_running": -0.75, "pledge": -1.00, "reaffirm": null
+    },
+    "signals": { "travel": ["travel", 1], "ads": ["ads", 1], "book": ["book", 1], "noise": ["noise", 1], "noise_neg": ["noise", -1] },
+    "status": {
+      "undeclared": 0.80, "exploring": 0.90, "declared": 1.00, "ruled_out": 0.15, "dropped": 0.00
+    },
+    "newsHalfLife": 10,
+    "standing": {
+      "Jon Ossoff":               { "congress": 1, "homeState": 1, "midterms": 1 },
+      "Alexandria Ocasio-Cortez": { "congress": 1, "national": 1, "homeState": 0.5, "midterms": 0.5 },
+      "Pete Buttigieg":           { "national": 1, "homeState": 1, "midterms": 0.5 },
+      "Kamala Harris":            { "national": 1, "nextInLine": 1, "homeState": 0.5, "midterms": 0.5 },
+      "Mark Kelly":               { "congress": 1, "homeState": 0.5, "midterms": 0.5 },
+      "Gavin Newsom":             { "national": 1, "homeState": 0.5, "midterms": 0.5 },
+      "Andy Beshear":             {},
+      "Josh Shapiro":             { "homeState": 1, "midterms": 1 },
+      "JB Pritzker":              { "homeState": 0.5 },
+      "Cory Booker":              { "congress": 1, "national": 1 },
+      "Gretchen Whitmer":         { "homeState": 1 },
+      "Marco Rubio":              { "national": 1, "homeState": 0.5 },
+      "JD Vance":                 { "national": 1, "nextInLine": 1, "homeState": 0.5 },
+      "Ron DeSantis":             { "national": 1, "homeState": 0.5 },
+      "Tucker Carlson":           { "national": 1 },
+      "Donald Trump Jr.":         { "national": 1, "homeState": 0.5 },
+      "Ted Cruz":                 { "congress": 1, "national": 1, "homeState": 0.5 },
+      "Glenn Youngkin":           {},
+      "Josh Hawley":              { "congress": 1 }
+    },
+    "home": {
+      "Jon Ossoff": "GA", "Alexandria Ocasio-Cortez": "NY", "Pete Buttigieg": "MI", "Kamala Harris": "CA", "Mark Kelly": "AZ",
+      "Gavin Newsom": "CA", "Andy Beshear": "KY", "Josh Shapiro": "PA", "JB Pritzker": "IL", "Cory Booker": "NJ",
+      "Gretchen Whitmer": "MI", "Marco Rubio": "FL", "JD Vance": "OH", "Ron DeSantis": "FL", "Tucker Carlson": "DC",
+      "Donald Trump Jr.": "FL", "Ted Cruz": "TX", "Glenn Youngkin": "VA", "Josh Hawley": "MO"
+    }
+  },
+
+  "polls": {
+    "trackingStarts": "2026-10-28",
+    "windowDays": 30,
+    "gradeWeights": { "A": 1.00, "B": 0.85, "C": 0.65, "D": 0.25 },
+    "noGradeWeight": 0.25,
+    "races": { "dem_primary": "D", "rep_primary": "R" }
+  },
+
+  "stage2": {
+    "_about": "Stage 2: once they're in, can they win? Every simulation draws who runs (declared candidates always run, everyone else runs at their Launch Watch chance), then plays out the early states in date order and Super Tuesday, with dropouts and their voters moving to the candidates closest to them.",
+    "simulations": 11111,
+    "scenarioSimulations": 3333,
+    "seed": 2028,
+    "strengthScale": 0.12,
+    "_factors": "Each factor has a weight and a reading from -1 to +1 for each candidate. Points = weight x reading, and every point lifts a candidate's vote share by about 12%. Factors with no data yet read 0 until the first numbers are in.",
+    "factors": {
+      "fundraising":    { "w": 0.75, "label": "Fundraising",         "source": "pending" },
+      "sentiment":      { "w": 0.50, "label": "Public sentiment",    "source": "news impact over the last 30 days" },
+      "policy":         { "w": 0.50, "label": "Policy fit",          "source": "distance from the party's center on the lane map" },
+      "rank":           { "w": 0.50, "label": "Rank in the party",   "source": "next in line = 1, national figure = 0.5" },
+      "favorability":   { "w": 0.50, "label": "Favorability",        "source": "pending" },
+      "nameRecognition":{ "w": 0.50, "label": "Name recognition",    "source": "national figure = 1, member of Congress = 0.25" }
+    },
+    "_days": "Days remaining sets the uncertainty. A year out, a 20% candidate's real support could be anywhere from about 9% to 45%. It narrows as the first contest gets closer.",
+    "nationalErrorFloor": 0.25,
+    "nationalErrorPerYear": 0.60,
+    "stateError": 0.35,
+    "homeStateBoost": 0.90,
+    "homeRegionBoost": 0.20,
+    "fitScale": 0.60,
+    "winnerBounce": 0.15,
+    "laggardPenalty": 0.10,
+    "dropout": {
+      "_about": "After each early contest: anyone under 8% twice in a row, or under 5% from the third contest on, drops out 60% of the time. After Super Tuesday: anyone who won no state there and took under 20% drops out 80% of the time.",
+      "lowShare": 0.08, "veryLowShare": 0.05, "earlyChance": 0.60,
+      "superTuesdayShare": 0.20, "superTuesdayChance": 0.80
+    },
+    "transfers": { "_about": "Where a dropout's voters go: candidates closer on the lane map get more, scaled by their own strength.", "sigma": 0.60, "strengthPower": 0.50, "laneShare": 0.60, "_laneShare": "60% of a dropout's voters follow the lane map; the other 40% split by size, like the field as a whole." },
+    "endorsements": { "_about": "Who a dropout endorses: closer candidates and stronger ones, plus a fixed chance of no endorsement.", "sigma": 0.55, "strengthPower": 0.30, "none": 0.35 },
+    "attention": { "_about": "Attention Index = share of the party's total attention, so each party adds to 100. Attention = chance they run x (0.4 nominee + 0.4 past Super Tuesday + 0.2 wins an early state), all if they run.", "nominee": 0.4, "pastSuperTuesday": 0.4, "earlyWin": 0.2 },
+    "restOfCalendarWeight": 0.60,
+    "regions": {
+      "Northeast": ["CT","DE","DC","ME","MD","MA","NH","NJ","NY","PA","RI","VT"],
+      "South": ["AL","AR","FL","GA","KY","LA","MS","NC","OK","SC","TN","TX","VA","WV"],
+      "Midwest": ["IL","IN","IA","KS","MI","MN","MO","NE","ND","OH","SD","WI"],
+      "West": ["AK","AZ","CA","CO","HI","ID","MT","NV","NM","OR","UT","WA","WY"]
+    },
+    "parties": {
+      "D": {
+        "dims": ["progressive", "black", "latino", "working", "establishment"],
+        "_lanes": "Lane map: editorial estimates from -1 to +1 of where each candidate's coalition sits. Used for state fit, policy fit, where dropouts' voters go and endorsements. Revise freely.",
+        "lanes": {
+          "Kamala Harris":            [ 0.1,  0.9,  0.4, -0.2,  0.9],
+          "Pete Buttigieg":           [ 0.0, -0.6, -0.2, -0.4,  0.5],
+          "Alexandria Ocasio-Cortez": [ 1.0,  0.1,  0.6,  0.2, -0.8],
+          "Gavin Newsom":             [ 0.3,  0.0,  0.3, -0.3,  0.6],
+          "Mark Kelly":               [-0.5, -0.2,  0.3,  0.3,  0.2],
+          "Josh Shapiro":             [-0.4,  0.0, -0.1,  0.4,  0.4],
+          "Gretchen Whitmer":         [ 0.0,  0.1, -0.1,  0.5,  0.3],
+          "Cory Booker":              [ 0.2,  0.7,  0.1, -0.1,  0.3],
+          "JB Pritzker":              [ 0.4,  0.1,  0.1,  0.1,  0.3],
+          "Andy Beshear":             [-0.6, -0.1, -0.3,  0.8,  0.1],
+          "Jon Ossoff":               [ 0.3,  0.5, -0.1,  0.1, -0.4]
+        },
+        "calendar": [
+          { "state": "SC", "date": "2028-01-22", "confirmed": true,  "delegates": 55 },
+          { "state": "NV", "date": "2028-02-01", "confirmed": true,  "delegates": 36 },
+          { "state": "NH", "date": "2028-02-08", "confirmed": false, "delegates": 24, "note": "February; exact date not set" },
+          { "state": "NM", "date": "2028-02-15", "confirmed": false, "delegates": 34, "note": "February; exact date not set" },
+          { "state": "MI", "date": "2028-02-22", "confirmed": false, "delegates": 117, "note": "February; exact date not set" },
+          { "state": "VA", "date": "2028-02-29", "confirmed": false, "delegates": 99, "note": "February; exact date not set" }
+        ],
+        "superTuesday": { "date": "2028-03-07", "states": { "CA": 424, "TX": 244, "NC": 116, "MA": 92, "MN": 75, "CO": 72, "TN": 63, "AL": 52, "OK": 36, "AR": 31, "UT": 30, "ME": 24, "VT": 16 } },
+        "stateFit": {
+          "SC": { "black": 1.0, "latino": -0.6, "progressive": -0.4, "working": 0.2, "establishment": 0.4 },
+          "NV": { "latino": 0.8, "working": 0.6, "black": -0.1, "establishment": 0.1 },
+          "NH": { "black": -0.9, "latino": -0.7, "progressive": 0.3, "working": -0.1, "establishment": -0.2 },
+          "NM": { "latino": 1.0, "black": -0.8, "progressive": 0.1, "working": 0.2 },
+          "MI": { "black": 0.3, "working": 0.6, "progressive": 0.1 },
+          "VA": { "black": 0.5, "establishment": 0.3, "progressive": -0.2, "working": -0.3 },
+          "CA": { "latino": 0.6, "progressive": 0.3, "black": -0.3 },
+          "TX": { "latino": 0.7, "black": 0.2 },
+          "NC": { "black": 0.6, "establishment": 0.2 },
+          "AL": { "black": 1.0, "latino": -0.6, "progressive": -0.4 },
+          "TN": { "black": 0.5 },
+          "AR": { "black": 0.4, "working": 0.3 },
+          "OK": { "working": 0.5, "black": -0.1 },
+          "CO": { "progressive": 0.3, "latino": 0.3, "black": -0.6 },
+          "UT": { "black": -0.8, "latino": 0.1 },
+          "MA": { "progressive": 0.4, "black": -0.4, "establishment": 0.1 },
+          "MN": { "progressive": 0.3, "working": 0.3, "black": -0.4 },
+          "ME": { "progressive": 0.3, "black": -0.9, "working": 0.2 },
+          "VT": { "progressive": 0.9, "black": -0.9 }
+        }
+      },
+      "R": {
+        "dims": ["maga", "evangelical", "establishment", "libertarian"],
+        "lanes": {
+          "JD Vance":         [ 0.8,  0.4,  0.2,  0.0],
+          "Marco Rubio":      [ 0.2,  0.4,  0.8, -0.1],
+          "Ted Cruz":         [ 0.5,  0.8,  0.1,  0.3],
+          "Ron DeSantis":     [ 0.5,  0.5,  0.2,  0.2],
+          "Donald Trump Jr.": [ 1.0,  0.1, -0.3,  0.1],
+          "Tucker Carlson":   [ 0.9,  0.2, -0.8,  0.5],
+          "Josh Hawley":      [ 0.6,  0.7, -0.2, -0.4],
+          "Glenn Youngkin":   [-0.2,  0.3,  0.8,  0.1]
+        },
+        "calendar": [
+          { "state": "IA", "date": "2028-01-17", "confirmed": false, "delegates": 40, "note": "Expected first; date not set" },
+          { "state": "NH", "date": "2028-01-25", "confirmed": false, "delegates": 22, "note": "Expected; date not set" },
+          { "state": "NV", "date": "2028-02-08", "confirmed": false, "delegates": 26, "note": "Expected; date not set" },
+          { "state": "SC", "date": "2028-02-26", "confirmed": false, "delegates": 50, "note": "Expected; date not set" }
+        ],
+        "superTuesday": { "date": "2028-03-07", "states": { "CA": 169, "TX": 161, "NC": 74, "TN": 58, "AL": 50, "VA": 48, "OK": 43, "AR": 40, "UT": 40, "MA": 40, "MN": 39, "CO": 37, "ME": 20, "VT": 17 } },
+        "stateFit": {
+          "IA": { "evangelical": 0.9, "establishment": -0.1, "maga": 0.1 },
+          "NH": { "establishment": 0.7, "libertarian": 0.6, "evangelical": -0.8, "maga": -0.3 },
+          "NV": { "maga": 0.4, "libertarian": 0.3, "evangelical": -0.2 },
+          "SC": { "evangelical": 0.7, "maga": 0.3 },
+          "TX": { "evangelical": 0.4, "maga": 0.2 },
+          "CA": { "establishment": 0.3, "evangelical": -0.3 },
+          "NC": { "evangelical": 0.3 },
+          "VA": { "establishment": 0.5, "evangelical": 0.1 },
+          "TN": { "evangelical": 0.6, "maga": 0.3 },
+          "AL": { "evangelical": 0.8, "maga": 0.4 },
+          "OK": { "evangelical": 0.7, "maga": 0.4 },
+          "AR": { "evangelical": 0.7, "maga": 0.3 },
+          "MA": { "establishment": 0.6, "evangelical": -0.7, "maga": -0.4 },
+          "MN": { "establishment": 0.2 },
+          "CO": { "libertarian": 0.4, "establishment": 0.2 },
+          "UT": { "establishment": 0.5, "maga": -0.6, "evangelical": 0.3 },
+          "ME": { "establishment": 0.3, "libertarian": 0.3, "evangelical": -0.5 },
+          "VT": { "establishment": 0.6, "maga": -0.6, "evangelical": -0.8 }
+        }
+      }
+    }
+  },
+  "legislation": {
+    "_about": "Key Legislation: every member's chance of voting yes on each big bill, then 11,111 simulated roll calls for the chance it passes. Same idea as The 29th Vote. Data lives in public/data/legislation/: members.csv, bills.csv, positions.csv (one row per vote, statement or signal) and log.csv (append-only daily history).",
+    "method": "v1",
+    "simulations": 11111,
+    "seed": 535,
+    "pointScale": 1.5,
+    "_weights": "Each signal has a reading from -1 (no) to +1 (yes). Points = weight x reading. Their latest statement stands (a public switch replaces what came before); other signals of the same kind are averaged. A recorded vote on the bill itself locks the member.",
+    "weights": { "statement": 2.00, "priorVote": 1.00, "leadership": 0.50, "policy": 0.50 },
+    "categories": { "yes": 0.85, "leanYes": 0.60, "leanNo": 0.40, "no": 0.15 },
+    "partyError": 0.60,
+    "absence": { "house": 0.025, "senate": 0.02 },
+    "rebuildFrom": "2026-10-01"
+  }
+}

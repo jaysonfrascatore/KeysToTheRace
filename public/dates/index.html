@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Key Dates</title>
+<meta name="description" content="Countdown to Election Day 2028, filing deadlines, debates and the campaign trail.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<meta name="theme-color" content="#0b0a08">
+<script>
+/* Theme: dark by default; the sun/moon button switches it and the choice is saved.
+   Add ?theme=light or ?theme=dark to the URL to preview. */
+(function () {
+  let t = "dark";
+  try { t = localStorage.getItem("ktr-theme") || "dark"; } catch (e) {}
+  const q = new URLSearchParams(location.search).get("theme");
+  if (q === "light" || q === "dark") t = q;
+  const h = document.documentElement;
+  h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+})();
+</script>
+</head>
+<body>
+
+<header class="nav" data-nav data-root="../" data-active="dates"></header>
+
+<section class="page-hero">
+  <div class="wrap hero-grid">
+    <div data-head>
+      <div class="eyebrow">Key Dates</div>
+      <h1>Every date <span>that moves the race.</span></h1>
+      <p>Filing deadlines, debates, primaries and Election Day. Primary dates are added as states set their 2028 calendars.</p>
+      <nav class="jump"><a href="#calendar">Calendar</a><a href="#debates">Debates</a><a href="#trail">Campaign trail</a></nav>
+    </div>
+    <div class="countdown">
+      <div class="eyebrow">Election Day · Nov 7, 2028</div>
+      <div class="cd-row">
+        <div class="cd-cell"><b id="cdD">000</b><span>DAYS</span></div>
+        <div class="cd-cell"><b id="cdH">00</b><span>HRS</span></div>
+        <div class="cd-cell"><b id="cdM">00</b><span>MIN</span></div>
+        <div class="cd-cell"><b id="cdS">00</b><span>SEC</span></div>
+      </div>
+      <div class="next-up"><span>Next on the calendar</span><span class="mono" id="nextEvent">—</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="calendar">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">Calendar</div><h2>Coming up</h2></div></div>
+    <div class="cal-wrap">
+      <table class="cal">
+        <thead><tr><th>Date</th><th>What</th><th>Type</th><th>Days away</th></tr></thead>
+        <tbody id="calBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="debates">
+  <div class="wrap">
+    <div class="soon-grid">
+      <div class="soon" id="trail">
+        <div class="eyebrow">Debates</div>
+        <h3>Primary debates</h3>
+        <p>Dates, hosts, qualifying rules, and who made the stage.</p>
+        <span class="chip soon">Coming soon</span>
+      </div>
+      <div class="soon">
+        <div class="eyebrow">Campaign trail</div>
+        <h3>Every stop, mapped</h3>
+        <p>Rallies, town halls and early-state trips, logged for the Organization score.</p>
+        <span class="chip soon">Coming soon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer data-footer data-root="../"></footer>
+<script src="../assets/nav.js"></script>
+<script src="../assets/common.js"></script>
+<script>
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const now = new Date();
+$("#calBody").innerHTML = CALENDAR.filter(e => new Date(e.date + "T23:59:59") >= now).map(e => {
+  const d = new Date(e.date + "T12:00:00");
+  return `<tr><td class="num">${MON[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}</td><td>${e.label}</td><td>${e.kind}</td><td class="num">${Math.ceil((d - now) / 864e5)}</td></tr>`;
+}).join("");
+startCountdown();
+</script>
+</body>
+</html>

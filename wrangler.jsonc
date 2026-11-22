@@ -1,0 +1,26 @@
+// Cloudflare settings for Keys to the Race.
+//   Live:     npx wrangler deploy                 (serves ./public)
+//   Staging:  npx wrangler deploy --env staging   (serves ./build/site-staging, a test copy)
+{
+  "name": "keystotherace",
+  "compatibility_date": "2026-11-10",
+  "assets": {
+    // Everything inside public/ goes live. tools/, engine/ and this file stay private.
+    "directory": "./public",
+    // /polls/ serves public/polls/index.html
+    "html_handling": "auto-trailing-slash",
+    // Unknown addresses show public/404.html
+    "not_found_handling": "404-page"
+  },
+  "env": {
+    "staging": {
+      // A separate address (keystotherace-staging.<you>.workers.dev) for checking a model run before it goes live
+      "name": "keystotherace-staging",
+      "assets": {
+        "directory": "./build/site-staging",
+        "html_handling": "auto-trailing-slash",
+        "not_found_handling": "404-page"
+      }
+    }
+  }
+}

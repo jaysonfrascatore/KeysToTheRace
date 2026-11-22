@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Key Polls: 2028</title>
+<meta name="description" content="Every 2028 presidential primary and general election poll, with grade-weighted averages.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+/* ---------- Polls page only ---------- */
+.p-hero-grid{display:flex;flex-direction:column;align-items:center;gap:22px}
+.p-hero .eyebrow{display:none}
+.latest{width:100%;max-width:520px;text-align:left;border:1.5px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+.latest h3{font-size:20px;font-weight:600;margin-top:6px}
+.latest dl{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin-top:14px;font-size:14px}
+.latest dt{color:var(--ink-3)}
+.latest dd{font-weight:700;font-size:13.5px;text-align:right}
+
+.races{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.race{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius);padding:20px;border-top:3px solid var(--p)}
+.race-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.race-head > div:first-child{min-width:0}
+.lead{flex:none}
+.race-head h3{font-family:var(--serif);font-weight:600;font-size:34px;line-height:1}
+.race-head .basis{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;margin-top:6px}
+.lead{text-align:right}
+.lead b{display:block;font-size:26px;font-weight:800;line-height:1.1;color:var(--p)}
+.lead span{font-size:12px;color:var(--ink-3)}
+.bars{margin-top:18px;display:flex;flex-direction:column;gap:9px}
+.bar-row{display:grid;grid-template-columns:178px 1fr 52px;align-items:center;gap:10px;font-size:14px}
+.bar-row .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-row.first .nm{font-weight:600}
+.track{height:14px;background:var(--bg);border-radius:3px;overflow:hidden}
+.fill{height:100%;background:var(--p);border-radius:3px;transform-origin:left;animation:grow .7s ease-out both}
+.bar-row:not(.first) .fill{opacity:.55}
+.bar-row.und .fill{background:var(--ink-3);opacity:.5}
+.bar-row.und .nm{color:var(--ink-3)}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media (prefers-reduced-motion:reduce){.fill{animation:none}}
+.bar-row .pct{font-family:var(--mono);font-size:13px;text-align:right}
+.moe-band{font-size:12px;color:var(--ink-3);margin-top:14px;border-top:1px solid var(--line);padding-top:12px;line-height:1.5}
+
+.trend-wrap{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius);padding:20px}
+.trend-tabs{margin-bottom:12px}
+#trend{width:100%;height:320px;display:block}
+.empty{display:flex;align-items:center;gap:18px;padding:26px;border:1px dashed var(--line-2);border-radius:var(--radius);color:var(--ink-2)}
+.empty svg{flex:none;width:44px;height:44px}
+.empty b{color:var(--ink)}
+
+.log{width:100%;border-collapse:collapse;font-size:14px}
+.log-wrap{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius);overflow-x:auto}
+.log th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:400;text-align:left;padding:12px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.log td{padding:13px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.log tr:last-child td{border-bottom:0}
+.log td:first-child{white-space:normal;min-width:150px}
+.log td:first-child .tag{margin-left:0;margin-top:4px;display:inline-block}
+.log .num{font-size:12px}
+.log .num{font-family:var(--mono);font-size:13px}
+.log a{color:var(--foam);text-decoration:underline;text-underline-offset:3px}
+.tag{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:4px;border:1px solid var(--foam);color:var(--foam);margin-left:8px}
+
+.method{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.method table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+.method td{padding:5px 0;border-bottom:1px solid var(--line)}
+.method tr:last-child td{border-bottom:0}
+.method td:last-child{font-family:var(--mono);text-align:right;color:var(--ink)}
+
+.grade{display:inline-block;min-width:26px;text-align:center;font-size:11px;font-weight:800;padding:2px 6px;border-radius:4px;border:1px solid var(--g);color:var(--g)}
+.grade.gA{--g:var(--foam)} .grade.gB{--g:#4d7cc7} .grade.gC{--g:var(--gold)} .grade.gD,.grade.gN{--g:var(--ink-3)}
+
+.gen{display:flex;flex-direction:column;gap:12px}
+.matchup{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+.m-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.m-top h3{font-size:17px;font-weight:600}
+.m-top h3 .vs{color:var(--ink-3);font-weight:400;margin:0 6px}
+.m-margin{font-size:20px;font-weight:800}
+.m-bar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin-top:12px;background:var(--bg)}
+.m-bar span{display:flex;align-items:center;font-size:12px;font-weight:800;color:#fff;padding:0 8px;white-space:nowrap;transform-origin:left;animation:grow .7s ease-out both}
+.m-bar .r{background:var(--rep)} .m-bar .d{background:var(--dem);justify-content:flex-end;transform-origin:right}
+.m-bar .o{flex:1;background:repeating-linear-gradient(45deg,var(--line) 0 4px,transparent 4px 8px)}
+.m-names{display:flex;justify-content:space-between;font-size:13px;margin-top:7px;color:var(--ink-2)}
+.m-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3)}
+.conf{white-space:nowrap;display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid var(--line-2)}
+.conf.low{border-color:var(--gold);color:var(--gold)} .conf.med{border-color:#4d7cc7;color:#4d7cc7} .conf.high{border-color:var(--foam);color:var(--foam)}
+.method div{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius);padding:18px;font-size:14px;color:var(--ink-2)}
+.method h4{color:var(--ink);font-size:15px;margin-bottom:6px}
+
+@media (max-width:960px){
+  .p-hero-grid,.races,.method{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .bar-row{grid-template-columns:128px 1fr 46px;font-size:13px}
+  .lead{text-align:left}
+  .race-head{flex-direction:column}
+  .race-head h3{font-size:28px}
+}
+</style>
+<meta name="theme-color" content="#0b0a08">
+<script>
+/* Theme: dark by default; the sun/moon button switches it and the choice is saved.
+   Add ?theme=light or ?theme=dark to the URL to preview. */
+(function () {
+  let t = "dark";
+  try { t = localStorage.getItem("ktr-theme") || "dark"; } catch (e) {}
+  const q = new URLSearchParams(location.search).get("theme");
+  if (q === "light" || q === "dark") t = q;
+  const h = document.documentElement;
+  h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+})();
+</script>
+</head>
+<body>
+
+<header class="nav" data-nav data-root="../" data-active="polls"></header>
+
+<section class="p-hero">
+  <div class="wrap p-hero-grid">
+    <div data-head>
+      <div class="eyebrow">Key Polls · 2028 Presidential Race</div>
+      <h1>The polls, <span>as they come in.</span></h1>
+      <p>Every national 2028 primary and general election poll since AtlasIntel's survey that closed Nov. 1, 2026, weighted by pollster grade. Each new poll updates the averages and the trend lines.</p>
+    </div>
+    <aside class="latest" id="latest"></aside>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Polling average</div>
+        <h2>Where the races stand</h2>
+        <p id="avgNote">—</p>
+      </div>
+    </div>
+    <div class="races" id="races"></div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Hypothetical general election</div>
+        <h2>2028 matchups</h2>
+        <p>Head-to-head polls for possible November 2028 pairings. Striped space is undecided or other.</p>
+      </div>
+    </div>
+    <div class="gen" id="gen"></div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Trend</div>
+        <h2>Who's gaining</h2>
+        <p>Each line is a candidate's average over time.</p>
+      </div>
+      <div class="seg" id="trendTabs">
+        <button data-r="dem_primary" data-p="D" class="on">Democrats</button>
+        <button data-r="rep_primary" data-p="R">Republicans</button>
+      </div>
+    </div>
+    <div class="trend-wrap" id="trendWrap"></div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Poll log</div>
+        <h2>Every poll</h2>
+        <p>Newest first. Click a source to check the numbers.</p>
+      </div>
+    </div>
+    <div class="log-wrap">
+      <table class="log">
+        <thead><tr><th>Pollster</th><th>Grade</th><th>Field dates</th><th>Sample</th><th>MoE</th><th>Dem primary</th><th>GOP primary</th><th>General</th><th>Source</th></tr></thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="eyebrow">Method</div><h2>How the average works</h2></div></div>
+    <div class="method">
+      <div><h4>Weighted by pollster grade</h4>Better pollsters count for more. A pollster's grade sets how much its poll moves the average.
+        <table>
+          <tr><td>A (including A+ and A&minus;)</td><td>1.00</td></tr>
+          <tr><td>B</td><td>0.85</td></tr>
+          <tr><td>C</td><td>0.65</td></tr>
+          <tr><td>D</td><td>0.25</td></tr>
+          <tr><td>No grade</td><td>0.25</td></tr>
+        </table>
+      </div>
+      <div><h4>One vote per pollster</h4>Each pollster's most recent poll from the last 30 days counts once, so a pollster that releases every week can't swamp the average. Confidence is the total weight behind a number: under 1.0 is low, 1.0 to 2.0 is medium, 2.0 or more is high.</div>
+      <div><h4>Primary voters only</h4>Primary questions are asked of each party's voters, a smaller group than the full sample. The real margin of error on these numbers is wider than the poll's headline figure.</div>
+      <div><h4>Rounded figures</h4>Numbers marked with * were only published rounded to the nearest point. They're shown as published. Bars for both parties use the same scale.</div>
+    </div>
+  </div>
+</section>
+
+<footer data-footer data-root="../"></footer>
+
+<!--
+  Offline copy of data/polls.csv, used only when the page is opened straight
+  from your computer (browsers block reading the CSV from file://).
+  On the live site the page always reads data/polls.csv.
+-->
+<script type="text/plain" id="pollsters-fallback">
+pollster,grade,rated_by,source_url
+AtlasIntel,A+,Silver Bulletin 2025 pollster ratings,https://atlasintel.org/media/atlasintel-has-an-a-rating-and-is-the-no1-pollster-in-america-according-to-the-2025-us-pollster-ratings
+McLaughlin & Associates,D,Listed as D-rated by Political Polls,https://x.com/PpollingNumbers/status/2118805862596612366
+</script>
+<script type="text/plain" id="polls-fallback">
+poll_id,pollster,start_date,end_date,release_date,race,matchup,population,total_sample,sample_type,moe,candidate,party,pct,rounded,source_url
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Jon Ossoff,D,18.2,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Alexandria Ocasio-Cortez,D,17.6,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Pete Buttigieg,D,15.8,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Kamala Harris,D,12.6,0,https://www.yahoo.com/news/politics/articles/surprising-potential-candidates-top-2028-192934067.html
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Mark Kelly,D,9.1,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Gavin Newsom,D,9.0,0,https://www.yahoo.com/news/politics/articles/surprising-potential-candidates-top-2028-192934067.html
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Andy Beshear,D,4,1,https://www.realclearpolling.com/polls/president/democratic-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Josh Shapiro,D,3.4,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,JB Pritzker,D,2.5,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Cory Booker,D,2,1,https://www.realclearpolling.com/polls/president/democratic-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Gretchen Whitmer,D,0,1,https://www.realclearpolling.com/polls/president/democratic-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,dem_primary,,Self-identified Democrats (from U.S. adults),3566,Adults,2.0,Undecided,,2.3,0,https://www.pollcheck.co.uk/us/primaries/democratic/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Marco Rubio,R,45.6,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,JD Vance,R,32.9,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Ron DeSantis,R,4.5,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Tucker Carlson,R,3,1,https://www.realclearpolling.com/polls/president/republican-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Donald Trump Jr.,R,2.3,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Ted Cruz,R,1.4,0,https://www.pollcheck.co.uk/us/primaries/republican/
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Glenn Youngkin,R,1,1,https://www.realclearpolling.com/polls/president/republican-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Josh Hawley,R,0,1,https://www.realclearpolling.com/polls/president/republican-primary/2028/national
+atlas-2026-11-01,AtlasIntel,2026-10-28,2026-11-01,2026-11-01,rep_primary,,Self-identified Republicans (from U.S. adults),3566,Adults,2.0,Undecided,,6.4,0,https://www.pollcheck.co.uk/us/primaries/republican/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,vance-ocasio-cortez,Likely voters,1000,LV,,JD Vance,R,49,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,vance-ocasio-cortez,Likely voters,1000,LV,,Alexandria Ocasio-Cortez,D,39,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,rubio-ocasio-cortez,Likely voters,1000,LV,,Marco Rubio,R,48,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,rubio-ocasio-cortez,Likely voters,1000,LV,,Alexandria Ocasio-Cortez,D,38,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+</script>
+
+<script src="../assets/nav.js"></script>
+<script src="../assets/polls-core.js"></script>
+<script>
+/* =========================================================
+   RENDER
+   ========================================================= */
+function renderLatest(p){
+  const host = (() => { try { return new URL([...p.sources][0]).hostname.replace("www.",""); } catch { return ""; } })();
+  document.getElementById("latest").innerHTML = `
+    <div class="eyebrow">Latest poll <span class="tag">New</span></div>
+    <h3>${p.pollster}</h3>
+    <dl>
+      <dt>Grade</dt><dd>${gradeBadge(p.pollster)} &nbsp;weight ${weightOf(p.pollster).toFixed(2)}</dd>
+      <dt>In the field</dt><dd>${range(p.start, p.end)}</dd>
+      <dt>Released</dt><dd>${fd(p.released)}, ${day(p.released).getFullYear()}</dd>
+      <dt>Full sample</dt><dd>${p.sample.toLocaleString()} ${p.sampleType === "LV" ? "likely voters" : p.sampleType === "RV" ? "registered voters" : "U.S. adults"}</dd>
+      <dt>Margin of error</dt><dd>${isNaN(p.moe) ? "Not published" : `±${p.moe.toFixed(1)} pts (full sample)`}</dd>
+      <dt>Asked about</dt><dd>${Object.keys(p.races).some(k => k.startsWith("general:")) ? "General matchups" : ""}${Object.keys(p.races).some(k => !k.startsWith("general:")) ? (Object.keys(p.races).some(k => k.startsWith("general:")) ? ", primaries" : "Primaries") : ""}</dd>
+    </dl>`;
+}
+
+function renderRaces(polls){
+  let ns = [];
+  // One shared scale for both parties, so 18% and 46% look as different as they are
+  const allMax = Math.max(...Object.keys(RACES).flatMap(k => averageAsOf(polls, k, latestFor(polls, k)).list.map(c => c.pct)));
+  const scale = Math.ceil(allMax / 10) * 10;
+  document.getElementById("races").innerHTML = Object.entries(RACES).map(([key, R]) => {
+    const avg = averageAsOf(polls, key, latestFor(polls, key));
+    const [cc, cl] = confidence(avg.weight);
+    ns.push(avg.n);
+    const cands = avg.list.filter(c => c.name !== "Undecided").sort((a,b) => b.pct - a.pct);
+    const und = avg.list.find(c => c.name === "Undecided");
+    const gap = cands[0].pct - cands[1].pct;
+    const close = gap < 2 * avg.moe;
+    const rows = [...cands, ...(und ? [und] : [])].map((c,i) => `
+      <div class="bar-row ${i === 0 ? "first" : ""} ${c.name === "Undecided" ? "und" : ""}">
+        <span class="nm" title="${c.name}">${c.name}</span>
+        <span class="track"><span class="fill" style="display:block;width:${(c.pct / scale * 100).toFixed(1)}%;animation-delay:${i*40}ms"></span></span>
+        <span class="pct">${pct(c.pct, c.rounded)}</span>
+      </div>`).join("");
+    return `
+      <article class="race" style="--p:${R.color}">
+        <div class="race-head">
+          <div>
+            <h3>${R.label}</h3>
+            <div class="basis">AVERAGE OF ${avg.n} POLL${avg.n === 1 ? "" : "S"} · WEIGHT ${avg.weight.toFixed(2)} · <span class="conf ${cc}">${cl}</span></div>
+          </div>
+          <div class="lead">
+            <b>${last(cands[0].name)} +${gap.toFixed(1)}</b>
+            <span>over ${cands[1].name}</span>
+          </div>
+        </div>
+        <div class="bars">${rows}</div>
+        <p class="moe-band">${close
+          ? `A ${gap.toFixed(1)}-point gap is a statistical tie. Treat the top two as even.`
+          : `A ${gap.toFixed(1)}-point lead is well beyond the margin of error.`}</p>
+      </article>`;
+  }).join("");
+  const n = Math.max(...ns);
+  document.getElementById("avgNote").textContent = n === 1
+    ? "Only one poll so far, so the average is that poll. It gets steadier as more pollsters report."
+    : `Built from ${n} pollsters' most recent surveys in the last ${WINDOW_DAYS} days.`;
+}
+
+function renderTrend(polls, race){
+  const R = RACES[race];
+  const dates = [...new Set(polls.filter(p => p.races[race]).map(p => p.end))].sort();
+  const wrap = document.getElementById("trendWrap");
+  if (dates.length < 2){
+    wrap.innerHTML = `
+      <div class="empty">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><path d="M4 30c6 0 7-12 15-12s8 9 13 9 6-5 8-7" fill="none" stroke="var(--foam)" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="4 5"/></svg>
+        <div><b>The trend line starts with the next poll.</b><br>One poll is a snapshot. Once a second ${R.label} poll comes in, every candidate's line draws itself here.</div>
+      </div>`;
+    return;
+  }
+  const series = {};
+  dates.forEach(d => averageAsOf(polls, race, d).list.forEach(c => {
+    if (c.name === "Undecided") return;
+    (series[c.name] ??= []).push({ d, v: c.pct });
+  }));
+  const latest = averageAsOf(polls, race, dates.at(-1)).list.filter(c => c.name !== "Undecided").sort((a,b) => b.pct - a.pct).slice(0, TREND_TOP);
+  const W = 900, H = 320, pad = { l: 36, r: 150, t: 14, b: 28 };
+  const t0 = day(dates[0]), t1 = day(dates.at(-1));
+  const x = d => pad.l + (day(d) - t0) / (t1 - t0 || 1) * (W - pad.l - pad.r);
+  const top = Math.ceil(Math.max(...latest.flatMap(c => series[c.name].map(p => p.v))) / 10) * 10;
+  const y = v => pad.t + (1 - v / top) * (H - pad.t - pad.b);
+  let g = "";
+  for (let v = 0; v <= top; v += 10){
+    g += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" ${v ? 'stroke-dasharray="2 4"' : ""}/>`;
+    g += `<text x="${pad.l - 8}" y="${y(v) + 4}" text-anchor="end" fill="var(--ink-3)" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="10">${v}%</text>`;
+  }
+  [dates[0], dates.at(-1)].forEach((d,i) => g += `<text x="${x(d)}" y="${H - 8}" text-anchor="${i ? "end" : "start"}" fill="var(--ink-3)" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="10">${fd(d)}</text>`);
+  const labels = [];
+  latest.forEach((c,i) => {
+    const pts = series[c.name], col = i === 0 ? R.hex : TREND_COLORS[i % TREND_COLORS.length];
+    g += `<path d="${pts.map((p,k) => `${k ? "L" : "M"}${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join("")}" fill="none" stroke="${col}" stroke-width="${i === 0 ? 3.5 : 2}" stroke-linejoin="round"/>`;
+    const e = pts.at(-1);
+    g += `<circle cx="${x(e.d)}" cy="${y(e.v)}" r="3.5" fill="${col}"/>`;
+    labels.push({ x: x(e.d) + 10, y: y(e.v) + 4, col, text: `${last(c.name)} ${e.v.toFixed(1)}` });
+  });
+  // Nudge end labels apart so close candidates don't overlap
+  labels.sort((a,b) => a.y - b.y);
+  for (let k = 1; k < labels.length; k++) labels[k].y = Math.max(labels[k].y, labels[k-1].y + 15);
+  labels.forEach(l => g += `<text x="${l.x}" y="${l.y}" fill="${l.col}" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600">${l.text}</text>`);
+  wrap.innerHTML = `<svg id="trend" viewBox="0 0 ${W} ${H}" role="img" aria-label="${R.label} polling average over time">${g}</svg>`;
+}
+
+function renderGenerals(polls){
+  const keys = [...new Set(polls.flatMap(p => Object.keys(p.races)).filter(k => k.startsWith("general:")))];
+  const host = document.getElementById("gen");
+  if (!keys.length){ host.innerHTML = `<div class="empty"><div><b>No matchup polls yet.</b></div></div>`; return; }
+  host.innerHTML = keys.map(k => {
+    const avg = averageAsOf(polls, k, latestFor(polls, k));
+    const R = avg.list.find(c => c.party === "R"), D = avg.list.find(c => c.party === "D");
+    if (!R || !D) return "";
+    const m = R.pct - D.pct, lead = m >= 0 ? R : D, col = m >= 0 ? "var(--rep)" : "var(--dem)";
+    const [cc, cl] = confidence(avg.weight);
+    const who = avg.used.map(p => `${p.pollster} ${gradeBadge(p.pollster)}`).join(", ");
+    return `
+      <article class="matchup">
+        <div class="m-top">
+          <h3><span style="color:var(--rep)">${R.name}</span><span class="vs">vs</span><span style="color:var(--dem)">${D.name}</span></h3>
+          <span class="m-margin" style="color:${col}">${m === 0 ? "Tied" : `${last(lead.name)} +${Math.abs(m).toFixed(1)}`}</span>
+        </div>
+        <div class="m-bar" role="img" aria-label="${R.name} ${R.pct.toFixed(1)}%, ${D.name} ${D.pct.toFixed(1)}%">
+          <span class="r" style="width:${R.pct}%">${pct(R.pct)}</span>
+          <span class="o"></span>
+          <span class="d" style="width:${D.pct}%">${pct(D.pct)}</span>
+        </div>
+        <div class="m-names"><span>${R.name} (R)</span><span>${D.name} (D)</span></div>
+        <div class="m-meta"><span class="conf ${cc}">${cl}</span><span>${avg.n} poll${avg.n === 1 ? "" : "s"} · weight ${avg.weight.toFixed(2)}</span><span>${who}</span></div>
+      </article>`;
+  }).join("");
+}
+
+function renderLog(polls){
+  const leader = (p, race) => {
+    const l = (p.races[race] || []).filter(c => c.name !== "Undecided").sort((a,b) => b.pct - a.pct);
+    return l.length > 1 ? `${last(l[0].name)} +${(l[0].pct - l[1].pct).toFixed(1)}` : "—";
+  };
+  const general = p => {
+    const g = Object.keys(p.races).filter(k => k.startsWith("general:")).map(k => {
+      const R = p.races[k].find(c => c.party === "R"), D = p.races[k].find(c => c.party === "D");
+      const m = R.pct - D.pct;
+      return `<span title="${R.name} ${R.pct}%, ${D.name} ${D.pct}%" style="color:${m >= 0 ? "var(--rep)" : "var(--dem)"}">${last(m >= 0 ? R.name : D.name)} +${Math.abs(m).toFixed(0)}</span> <span style="color:var(--ink-3)">v. ${SHORT[m >= 0 ? D.name : R.name] || last(m >= 0 ? D.name : R.name)}</span>`;
+    });
+    return g.length ? g.join("<br>") : "—";
+  };
+  document.getElementById("logBody").innerHTML = polls.map((p,i) => `
+    <tr>
+      <td><b>${p.pollster}</b>${i === 0 ? '<br><span class="tag">Latest</span>' : ""}</td>
+      <td>${gradeBadge(p.pollster)}</td>
+      <td class="num" title="${range(p.start, p.end)}">${fd(p.start)}–${fd(p.end)}</td>
+      <td class="num">${p.sample.toLocaleString()} ${p.sampleType || ""}</td>
+      <td class="num">${isNaN(p.moe) ? "—" : "±" + p.moe.toFixed(1)}</td>
+      <td class="num" style="color:var(--dem)">${leader(p, "dem_primary")}</td>
+      <td class="num" style="color:var(--rep)">${leader(p, "rep_primary")}</td>
+      <td class="num">${general(p)}</td>
+      <td>${[...new Map([...p.sources].map(s => [sourceName(s), s]))].map(([n,s]) => `<a href="${s}" target="_blank" rel="noopener">${n}</a>`).join(" · ")}</td>
+    </tr>`).join("");
+}
+
+/* =========================================================
+   GO
+   ========================================================= */
+Promise.all([loadCSV(DATA_URL, "polls-fallback"), loadCSV(GRADES_URL, "pollsters-fallback")]).then(([rows, graded]) => {
+  GRADES = Object.fromEntries(graded.map(g => [g.pollster, g.grade]));
+  const polls = buildPolls(rows);
+  if (!polls.length) return;
+  renderLatest(polls[0]);
+  renderRaces(polls);
+  renderGenerals(polls);
+  renderLog(polls);
+  let race = "dem_primary";
+  renderTrend(polls, race);
+  document.querySelectorAll("#trendTabs button").forEach(b => b.addEventListener("click", () => {
+    document.querySelectorAll("#trendTabs button").forEach(x => x.classList.toggle("on", x === b));
+    race = b.dataset.r;
+    renderTrend(polls, race);
+  }));
+});
+</script>
+</body>
+</html>
