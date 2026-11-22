@@ -15,7 +15,11 @@ PAGES = {"index.html": "keystotherace-home.html",
 LINKS = {"": "keystotherace-home.html", "candidates/": "keystotherace-candidates.html", "matchups/": "keystotherace-forecast.html"}
 
 import base64
-photos = {f.stem: "data:image/webp;base64," + base64.b64encode(f.read_bytes()).decode() for f in (pub / "assets/people").glob("*.webp")}
+MIME = {".png": "image/png", ".webp": "image/webp", ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}
+photos = {}
+for ext in (".jpg", ".jpeg", ".webp", ".png"):          # PNG wins when a name has more than one type
+    for f in (pub / "photos").glob("*" + ext):
+        photos[f.stem] = f"data:{MIME[ext]};base64," + base64.b64encode(f.read_bytes()).decode()
 photo_js = "window.INLINE_PHOTOS = {" + ",".join(f'"{k}":"{v}"' for k, v in photos.items()) + "};"
 
 for src, dst in PAGES.items():

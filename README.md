@@ -113,3 +113,14 @@ Everything lives in `public/data/legislation/`:
 To update: add rows to `positions.csv`. The page recomputes as soon as it loads. Then
 `python -m ktr legislation --env live` logs the day (the daily workflow does this too, as part of every run).
 To add a bill: add a row to `bills.csv` with the next `order` number.
+
+
+## Photos
+
+Candidate photos go in `public/photos/`, named by last name: `Ossoff.png`, `Rubio.png`, `Vance.png`.
+Two-word last names use an underscore (`Van_Hollen.png`), hyphens stay (`Ocasio-Cortez.png`), and
+Donald Trump Jr. is `Trump_Jr.png`. PNG, WEBP or JPG all work, and PNG wins if there are two.
+Drop a file in and push; it shows up on the next load. Anyone without a photo shows their initials.
+
+Current field: Ossoff, Ocasio-Cortez, Buttigieg, Harris, Kelly, Newsom, Beshear, Shapiro, Pritzker,
+Booker, Whitmer, Rubio, Vance, DeSantis, Carlson, Trump_Jr, Cruz, Youngkin, Hawley.

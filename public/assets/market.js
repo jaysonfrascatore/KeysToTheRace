@@ -51,10 +51,29 @@ const PROFILES = {
 const slug = n => n.toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "");
 const initials = n => n.replace(/\bJr\.?/, "").split(/\s+/).filter(Boolean).map(w => w[0]).join("").slice(0, 3).replace(/^(\w)\w?(\w)$/, "$1$2");
 const MONO = { "Alexandria Ocasio-Cortez": "AOC", "JB Pritzker": "JBP", "JD Vance": "JDV", "Donald Trump Jr.": "DTJ" };
-/* Headshots (transparent background) in assets/people/<id>.webp.
+/* Headshots: see the note on photos just below.
    A candidate with no photo shows their initials instead. */
-const PHOTOS = ["jon-ossoff", "alexandria-ocasio-cortez", "pete-buttigieg", "kamala-harris", "mark-kelly"];
-const photoSrc = id => PHOTOS.includes(id) ? ((window.INLINE_PHOTOS && window.INLINE_PHOTOS[id]) || (window.PAGE_ROOT || "../") + "assets/people/" + id + ".webp") : null;
+/* Candidate photos live in public/photos/, named by last name: Ossoff.png, Rubio.png, Vance.png.
+   Two-word last names use an underscore (Van_Hollen.png); hyphens stay (Ocasio-Cortez.png);
+   "Jr." becomes _Jr (Trump_Jr.png). PNG, WEBP or JPG all work. Drop a file in and it shows up
+   on the next load; anyone without a photo gets their initials instead. */
+const PHOTO_DIR = "photos/";
+const PHOTO_TYPES = ["png", "webp", "jpg"];
+const photoFile = name => name.split(" ").slice(1).join(" ").replace(/\./g, "").trim().replace(/\s+/g, "_");
+const PHOTO_FOUND = {};
+const photoSrc = id => PHOTO_FOUND[id] || null;
+// Look for each candidate's photo once, before anything is drawn
+async function findPhotos(list){
+  const root = window.PAGE_ROOT || "../", inline = window.INLINE_PHOTOS || {};
+  const probe = src => new Promise(ok => { const im = new Image(); const t = setTimeout(() => ok(false), 4000);
+    im.onload = () => { clearTimeout(t); ok(true); }; im.onerror = () => { clearTimeout(t); ok(false); }; im.src = src; });
+  await Promise.all(list.map(async c => {
+    const file = photoFile(c.name);
+    if (inline[file]) { PHOTO_FOUND[c.id] = inline[file]; return; }
+    if (typeof Image === "undefined") return;
+    for (const ext of PHOTO_TYPES) { const src = `${root}${PHOTO_DIR}${file}.${ext}`; if (await probe(src)) { PHOTO_FOUND[c.id] = src; return; } }
+  }));
+}
 const medalInner = (c, size) => { const src = photoSrc(c.id); return src ? `<img src="${src}" alt="${c.name}" loading="lazy">` : `<b${size ? ` style="font-size:${size}"` : ""}>${c.mono}</b>`; };
 const PARTY_HEX = { D: "#3d6fc4", R: "#b8443f" };
 const PARTY_NAME = { D: "Democratic", R: "Republican" };
@@ -411,6 +430,7 @@ async function loadMarket(){
     M[cfg.party] = list;
   }
   M.all = [...M.D, ...M.R];
+  await findPhotos(M.all);
   polls.forEach(p => Object.entries(p.races).forEach(([race, cs]) => {
     if (!race.startsWith("general:")) return;
     cs.forEach(me => {
