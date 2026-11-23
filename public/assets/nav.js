@@ -38,8 +38,7 @@ window.SITE = {
   menu: [
     { id: "methodology", label: "Methodology", href: "methodology/", note: "How every number is built" },
     { id: "contact",     label: "Contact",     href: "contact/",     note: "For press and questions" },
-    { id: "press",       label: "In the News", href: "press/",       note: "Coverage of the site" },
-    { id: "creator",     label: "Created by",  href: "creator/",     note: "Jayson Frascatore" }
+    { id: "press",       label: "In the News", href: "press/",       note: "Coverage of the site" }
   ]
 };
 
@@ -83,9 +82,10 @@ window.setTheme = function (t, quiet) {
         <a class="brand" href="${page(root, "")}" aria-label="${S.name} home">${KEY}<span class="brand-word">${S.brandHTML}</span></a>
         <div class="navrow">
           <div class="menu ${S.menu.some(m => m.id === active) ? "here" : ""}" id="siteMenu">
-            <button class="menu-btn" type="button" aria-expanded="false" aria-controls="siteMenuPanel" aria-label="More: Methodology, Contact, In the News, Created by">${MENU}</button>
+            <button class="menu-btn" type="button" aria-expanded="false" aria-controls="siteMenuPanel" aria-label="More: Methodology, Contact, In the News">${MENU}</button>
             <div class="menu-panel" id="siteMenuPanel">
               ${S.menu.map(m => `<a class="${m.id === active ? "on" : ""}" href="${page(root, m.href)}"><b>${m.label}</b><span>${m.note}</span></a>`).join("")}
+              <p class="menu-by">Created by ${S.creator}</p>
             </div>
           </div>
           <nav class="navlinks" aria-label="Sections">
@@ -144,7 +144,7 @@ window.setTheme = function (t, quiet) {
         <div class="foot-brand">${S.brandHTML}</div>
         <p class="fnote">${S.descriptor}</p>
         <a class="kofi" href="${S.kofi}" target="_blank" rel="noopener" data-noshot>${CUP} Support on Ko-fi</a>
-        <p class="src">${S.sources}<br>${S.nav.map(n => `<a href="${page(root, n.href)}">${n.label}</a>`).join(" &nbsp;·&nbsp; ")}<br>${S.menu.map(m => `<a href="${page(root, m.href)}">${m.label}</a>`).join(" &nbsp;·&nbsp; ")}<br><span style="white-space:nowrap">Created by <a href="${page(root, "creator/")}">${S.creator}</a></span></p>
+        <p class="src">${S.sources}<br>${S.nav.map(n => `<a href="${page(root, n.href)}">${n.label}</a>`).join(" &nbsp;·&nbsp; ")}<br>${S.menu.map(m => `<a href="${page(root, m.href)}">${m.label}</a>`).join(" &nbsp;·&nbsp; ")}<br><span style="white-space:nowrap">Created by ${S.creator}</span></p>
       </div>`;
   });
 
