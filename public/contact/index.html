@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact</title>
+<meta name="description" content="How members of the press can reach Jayson Frascatore about Keys to the Race.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<meta name="theme-color" content="#0b0a08">
+<script>
+/* Theme: dark by default; the sun/moon button switches it and the choice is saved.
+   Add ?theme=light or ?theme=dark to the URL to preview. */
+(function () {
+  let t = "dark";
+  try { t = localStorage.getItem("ktr-theme") || "dark"; } catch (e) {}
+  const q = new URLSearchParams(location.search).get("theme");
+  if (q === "light" || q === "dark") t = q;
+  const h = document.documentElement;
+  h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+})();
+</script>
+</head>
+<body>
+
+<header class="nav" data-nav data-root="../" data-active="contact"></header>
+
+<main>
+<section class="page-hero">
+  <div class="wrap" data-head>
+    <h1><span>Contact.</span></h1>
+    <p>For reporters, producers and editors who want to talk about the numbers, the tools or the races.</p>
+  </div>
+</section>
+
+<section class="block about-page">
+  <div class="wrap">
+    <div class="about-body solo">
+      <article id="press">
+        <h2>Press</h2>
+        <p>If you're working on a story, I'm happy to help. I can walk you through a forecast, explain why a number moved, or pull a chart for a specific race. I can also talk about polling, Florida politics and the 2028 field.</p>
+        <div class="contact-cards">
+          <a class="contact-card" href="mailto:jayson.frascatore@gmail.com"><span>Email</span><b>jayson.frascatore@gmail.com</b><em>The best way to reach me</em></a>
+          <a class="contact-card" href="https://x.com/JaysonFras" target="_blank" rel="noopener"><span>X</span><b>@JaysonFras</b><em>Direct messages are open</em></a>
+        </div>
+      </article>
+
+      <article id="include">
+        <h2>Include</h2>
+        <p>A few details help me get back to you faster.</p>
+        <ul class="about-list dots">
+          <li><b>Outlet.</b> Where the story will run.</li>
+          <li><b>Topic.</b> The race, the tool or the number you're asking about.</li>
+          <li><b>Deadline.</b> When you need an answer. I'll do my best to meet it.</li>
+          <li><b>Format.</b> A quote, a call, a chart or background only.</li>
+        </ul>
+      </article>
+
+      <article id="charts">
+        <h2>Charts</h2>
+        <p>You're welcome to use any chart or graphic on this site in your coverage. Please credit Keys to the Race and link back to the page it came from. Every page has a camera button in the top bar. It saves a clean image of what you're looking at.</p>
+        <p>If you need a chart sized for print or broadcast, ask me. I can make one.</p>
+      </article>
+
+      <article id="methods">
+        <h2>Methods</h2>
+        <p>Every rule behind every number is written out on the <a href="../methodology/">methodology page</a>. If you want to check my work before you publish, that's the place to start. The raw data files are public on <a href="https://github.com/jaysonfrascatore/KeysToTheRace" target="_blank" rel="noopener">GitHub</a>.</p>
+      </article>
+
+      <article id="corrections">
+        <h2>Corrections</h2>
+        <p>If you think something on the site is wrong, tell me. Email works, and so does X at <a href="https://x.com/JaysonFras" target="_blank" rel="noopener">@JaysonFras</a>. I fix mistakes in the open, and the data files show when each change was made.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer data-footer data-root="../"></footer>
+
+<script>window.PAGE_ROOT = "../";</script>
+<script src="../assets/nav.js"></script>
+<script src="../assets/common.js"></script>
+</body>
+</html>

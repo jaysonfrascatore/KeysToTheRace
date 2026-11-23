@@ -124,3 +124,15 @@ Drop a file in and push; it shows up on the next load. Anyone without a photo sh
 
 Current field: Ossoff, Ocasio-Cortez, Buttigieg, Harris, Kelly, Newsom, Beshear, Shapiro, Pritzker,
 Booker, Whitmer, Rubio, Vance, DeSantis, Carlson, Trump_Jr, Cruz, Youngkin, Hawley.
+
+## In the News
+
+The In the News page reads `public/data/press.csv`. Add one row per story:
+
+```
+year,date,outlet,project,summary,url
+2027,2027-01-14,Politico,Keys to the Race,"One or two sentences on what they covered.",https://...
+```
+
+`date` is optional (YYYY-MM-DD). Leave `url` empty and the row shows without a link. Newest rows sort to the top.
+Run `python tools/sync_fallback.py` after editing so the offline copy matches.

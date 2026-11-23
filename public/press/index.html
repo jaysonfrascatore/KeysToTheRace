@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In the News</title>
+<meta name="description" content="Times Jayson Frascatore's election work, including Keys to the Race, has been featured in the news.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<meta name="theme-color" content="#0b0a08">
+<script>
+/* Theme: dark by default; the sun/moon button switches it and the choice is saved.
+   Add ?theme=light or ?theme=dark to the URL to preview. */
+(function () {
+  let t = "dark";
+  try { t = localStorage.getItem("ktr-theme") || "dark"; } catch (e) {}
+  const q = new URLSearchParams(location.search).get("theme");
+  if (q === "light" || q === "dark") t = q;
+  const h = document.documentElement;
+  h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+})();
+</script>
+</head>
+<body>
+
+<header class="nav" data-nav data-root="../" data-active="press"></header>
+
+<main>
+<section class="page-hero">
+  <div class="wrap" data-head>
+    <h1><span>In the News.</span></h1>
+    <p>The times this work has been covered, cited or featured by news outlets.</p>
+  </div>
+</section>
+
+<section class="block about-page">
+  <div class="wrap">
+    <div class="about-body solo">
+      <article id="coverage">
+        <h2>Coverage</h2>
+        <p>These are the times my election work has made the news. Coverage of Keys to the Race will show up here as it happens.</p>
+        <div class="press-list" id="pressList"></div>
+      </article>
+
+      <article id="press">
+        <h2>Press</h2>
+        <p>Writing about the site, or want to use a chart? The <a href="../contact/">contact page</a> has everything you need.</p>
+      </article>
+
+<script type="text/plain" id="press-fallback">
+year,date,outlet,project,summary,url
+2026,,Newsweek and Yahoo,The 29th Vote,"Newsweek featured The 29th Vote, my tracker of where every Senate Democrat stood on Chuck Schumer as leader. Yahoo carried the story too. The tracker drew 675,000 views in its first 24 hours.",
+2024,,The New York Times,Polling comparisons,The New York Times featured my polling comparisons during the 2024 election.,
+</script>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer data-footer data-root="../"></footer>
+
+<script>window.PAGE_ROOT = "../";</script>
+<script src="../assets/nav.js"></script>
+<script src="../assets/common.js"></script>
+<script src="../assets/polls-core.js"></script>
+<script>
+// In the News: reads data/press.csv (year, date, outlet, project, summary, url). Newest first.
+loadCSV("../data/press.csv", "press-fallback").then(rows => {
+  const box = document.getElementById("pressList");
+  const esc = t => String(t || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  rows = rows.filter(r => r.outlet).sort((a, b) => (b.date || b.year || "").localeCompare(a.date || a.year || ""));
+  if (!rows.length) { box.innerHTML = '<p class="press-empty">Nothing here yet.</p>'; return; }
+  const when = r => r.date ? new Date(r.date + "T12:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : esc(r.year);
+  box.innerHTML = rows.map(r => `<div class="press-item">
+      <div class="press-when">${when(r)}</div>
+      <div class="press-what">
+        <b>${esc(r.outlet)}</b>${r.project ? `<span>${esc(r.project)}</span>` : ""}
+        <p>${esc(r.summary)}</p>
+        ${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">Read it</a>` : ""}
+      </div>
+    </div>`).join("");
+});
+</script>
+</body>
+</html>

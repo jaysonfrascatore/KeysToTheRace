@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Created by</title>
+<meta name="description" content="Jayson Frascatore built Keys to the Race. He is a writer and a data and quality assurance analyst from Kissimmee, Florida.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<meta name="theme-color" content="#0b0a08">
+<script>
+/* Theme: dark by default; the sun/moon button switches it and the choice is saved.
+   Add ?theme=light or ?theme=dark to the URL to preview. */
+(function () {
+  let t = "dark";
+  try { t = localStorage.getItem("ktr-theme") || "dark"; } catch (e) {}
+  const q = new URLSearchParams(location.search).get("theme");
+  if (q === "light" || q === "dark") t = q;
+  const h = document.documentElement;
+  h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+})();
+</script>
+</head>
+<body>
+
+<header class="nav" data-nav data-root="../" data-active="creator"></header>
+
+<main>
+<section class="page-hero">
+  <div class="wrap" data-head>
+    <h1><span>Jayson Frascatore.</span></h1>
+    <p>Writer, data analyst and the person behind Keys to the Race.</p>
+  </div>
+</section>
+
+<section class="block about-page">
+  <div class="wrap">
+    <div class="about-body solo">
+      <article id="who">
+        <h2>Who</h2>
+        <p>I'm Jayson Frascatore. I live in Kissimmee, Florida. I'm a writer first. I'm also a data scientist, a quality assurance analyst and a project manager. I built Keys to the Race myself, in Python and HTML.</p>
+        <p>I'm self taught. I didn't go to college. Everything I know about polling, forecasting and code, I learned by doing the work and checking it twice.</p>
+      </article>
+
+      <article id="work">
+        <h2>Work</h2>
+        <h3>Decision Desk HQ</h3>
+        <p>From 2023 to 2025, I was the QA Team Lead and a Project Manager at Decision Desk HQ. I worked alongside The Hill and NewsNation. I sourced the polls for The Hill and DDHQ polling average. I kept the polling averages updated and checked the forecast models those newsrooms relied on.</p>
+        <p>I worked election night for NewsNation. I ran quality assurance on more than 1,200 candidate images for their coverage. I wrote a QA report every week and built databases that tracked how our accuracy improved over time.</p>
+        <h3>Mercor</h3>
+        <p>In 2026, I worked with Mercor as a political risk analysis and forecasting expert. I wrote long reports on elections and how they changed over time.</p>
+        <h3>Campaigns</h3>
+        <p>In 2022, I was a press and media intern for State Sen. Annette Taddeo. I reported to her press secretary and worked on communications, social media and fundraising. I also wrote debate prep scripts for Charlie Crist's campaign for governor.</p>
+      </article>
+
+      <article id="writing">
+        <h2>Writing</h2>
+        <p>I started writing on Medium in 2019. I wrote about politics, language learning and current events. That's 100 articles and more than 3,000 followers. Writing is where this all started for me, not analytics.</p>
+      </article>
+
+      <article id="projects">
+        <h2>Projects</h2>
+        <p><b>Keys to the Race.</b> This site. Election data for every level, from Florida to the White House.</p>
+        <p><b><a href="https://jaysonfrascatore.github.io/The29thVote/" target="_blank" rel="noopener">The 29th Vote</a>.</b> A tracker of where every Senate Democrat stood on Chuck Schumer as leader. It drew 675,000 views in its first 24 hours and was featured in Newsweek.</p>
+        <p>You can see every time my work has been covered on the <a href="../press/">In the News</a> page.</p>
+      </article>
+
+      <article id="skills">
+        <h2>Skills</h2>
+        <div class="about-pills">
+          <span>Python</span><span>HTML</span><span>D3.js</span><span>Google Sheets</span><span>GitHub</span><span>AWS</span><span>Google Cloud</span><span>Cloudflare</span><span>Photoshop</span><span>AI tools</span>
+        </div>
+        <h3>Languages</h3>
+        <p>English is my first language. I speak Spanish at an upper intermediate level and some Brazilian Portuguese.</p>
+      </article>
+
+      <article id="links">
+        <h2>Links</h2>
+        <div class="contact-cards">
+          <a class="contact-card" href="https://x.com/JaysonFras" target="_blank" rel="noopener"><span>X</span><b>@JaysonFras</b><em>Updates and threads</em></a>
+          <a class="contact-card" href="https://github.com/jaysonfrascatore" target="_blank" rel="noopener"><span>GitHub</span><b>jaysonfrascatore</b><em>The code and the data</em></a>
+          <a class="contact-card" href="https://ko-fi.com/jaysonfras" target="_blank" rel="noopener"><span>Ko-fi</span><b>Support the site</b><em>It keeps the lights on</em></a>
+          <a class="contact-card" href="../contact/"><span>Press</span><b>Contact</b><em>For reporters and editors</em></a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer data-footer data-root="../"></footer>
+
+<script>window.PAGE_ROOT = "../";</script>
+<script src="../assets/nav.js"></script>
+<script src="../assets/common.js"></script>
+</body>
+</html>

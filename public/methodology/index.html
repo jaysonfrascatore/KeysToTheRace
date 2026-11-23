@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methodology</title>
+<meta name="description" content="The Keys to the Race methodology: where every number comes from, how each one is built, and what every chart and color on the site means.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<meta name="theme-color" content="#0b0a08">
+<script>
+/* Theme: dark by default; the sun/moon button switches it and the choice is saved.
+   Add ?theme=light or ?theme=dark to the URL to preview. */
+(function () {
+  let t = "dark";
+  try { t = localStorage.getItem("ktr-theme") || "dark"; } catch (e) {}
+  const q = new URLSearchParams(location.search).get("theme");
+  if (q === "light" || q === "dark") t = q;
+  const h = document.documentElement;
+  h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+})();
+</script>
+</head>
+<body>
+
+<header class="nav" data-nav data-root="../" data-active="methodology"></header>
+
+<main>
+<section class="page-hero">
+  <div class="wrap" data-head>
+    <h1><span>Methodology.</span></h1>
+    <p>What Keys to the Race is, where every number comes from, how each one is built, and what every chart and color on the site means.</p>
+  </div>
+</section>
+
+<section class="block about-page">
+  <div class="wrap about-grid">
+    <nav class="about-toc" aria-label="On this page">
+      <b>On this page</b>
+      <a href="#overview">Overview</a><a href="#data">Data</a><a href="#polls">Polls</a><a href="#launch">Launch</a><a href="#maze">Maze</a>
+      <a href="#statements">Statements</a><a href="#chain">Chain</a><a href="#index">Index</a><a href="#announcements">Announcements</a>
+      <a href="#cards">Cards</a><a href="#market">Market</a><a href="#primaries">Primaries</a><a href="#forecast">Forecast</a>
+      <a href="#legislation">Legislation</a><a href="#debates">Debates</a><a href="#history">History</a><a href="#estimates">Estimates</a>
+      <a href="#limits">Limits</a><a href="#updates">Updates</a><a href="#ads">Ads</a><a href="#corrections">Corrections</a>
+    </nav>
+
+    <div class="about-body">
+
+      <article id="overview">
+        <h2>Overview</h2>
+        <p>Keys to the Race is an election data website for every level. It covers everything from Florida to the White House. That means candidates, polls, races, forecasts, vote tracking and legislation.</p>
+        <p>I built it because most forecasts hand you a number and ask you to trust it. You rarely see the rules behind it. You almost never see what moved it. I wanted the opposite. Every number on this site comes from a written rule. Every rule has a weight. Every input has a date and a source.</p>
+        <p>This page explains all of it. It covers the data, the math, the charts and the colors. It also lists every place where I made a judgment call instead of using hard data. If something on the site isn't explained here, that's a mistake on my part, and I want to hear about it.</p>
+        <p>I'm Jayson Frascatore. I'm a data and quality assurance analyst. I worked on the polling averages and forecast models that The Hill and NewsNation relied on at Decision Desk HQ. I write about politics, and I build these tools in Python and HTML.</p>
+      </article>
+
+      <article id="data">
+        <h2>Data</h2>
+        <p>Everything the site uses lives in plain files that anyone can open. There is no hidden database. These are the main ones.</p>
+        <div class="tbl-wrap"><table class="maze-tbl about-tbl">
+          <thead><tr><th>File</th><th>What it holds</th><th>Where it comes from</th></tr></thead>
+          <tbody>
+            <tr><td><b>polls.csv</b></td><td>Every poll question the site counts: the pollster, the dates, the sample and each candidate's share.</td><td>The pollsters' own releases. Each row links to its source.</td></tr>
+            <tr><td><b>pollsters.csv</b></td><td>Each pollster's grade and who gave it.</td><td>Published pollster ratings. Each grade links to its source.</td></tr>
+            <tr><td><b>news.csv</b></td><td>Every dated statement, trip, ad and news event that moves a number.</td><td>News reports and public statements. Every row has a link.</td></tr>
+            <tr><td><b>The launch log</b></td><td>Each candidate's chance of running, saved once per day.</td><td>The model itself. Past days are never rewritten.</td></tr>
+            <tr><td><b>primary.json</b></td><td>The results of the primary simulations.</td><td>The model, run in Python.</td></tr>
+            <tr><td><b>legislation</b> folder</td><td>All 535 members of Congress, the bills being tracked, and each member's votes and statements.</td><td>The member list comes from the public congress legislators project on GitHub. Votes come from the House Clerk and the Senate.</td></tr>
+            <tr><td><b>model.json</b></td><td>Every weight and setting the model uses, in one place.</td><td>My choices, written down before the data they score.</td></tr>
+          </tbody>
+        </table></div>
+        <p>Right now the data is thin. As of November 2026, the primary averages rest on one poll from AtlasIntel. The general election side has one poll from McLaughlin and Associates. That will grow as more pollsters ask about 2028. Until then, a single new poll can move a lot.</p>
+        <p>Nothing updates on its own yet. A new poll or statement counts once it's added to the files above. After that, the numbers recalculate the moment the page loads.</p>
+      </article>
+
+      <article id="polls">
+        <h2>Polls</h2>
+        <p>The site doesn't treat every poll the same. Each pollster gets a grade from a published rating, and the grade sets how much its poll counts.</p>
+        <div class="about-pills"><span><b>A</b> counts 1.00</span><span><b>B</b> counts 0.85</span><span><b>C</b> counts 0.65</span><span><b>D</b> counts 0.25</span><span><b>No grade</b> counts 0.25</span></div>
+        <p>Two more rules keep one pollster from taking over. First, only each pollster's latest poll counts. Second, a poll drops out of the average 30 days after it leaves the field.</p>
+        <p>The average for each candidate is a weighted average of their share across those polls. Candidates listed as "undecided," "other" or "someone else" are left out of the named field.</p>
+        <p>Primary questions are only asked of each party's own voters. That group is smaller than the full sample, so the margin of error on a primary number is larger than the one printed for the whole poll.</p>
+      </article>
+
+      <article id="launch">
+        <h2>Launch</h2>
+        <p>Launch Watch answers one question. Will this person announce a run for president? The answer is a probability from 0% to 100%, shown to two decimals as "yes" and "no." For example, 13.99% yes means 86.01% no.</p>
+        <p>I chose a probability on purpose. A score from 0 to 10 can never be wrong. A probability can be checked. If the site puts ten people at 30%, about three of them should run. When the field is set, every call will be graded in public.</p>
+        <p>Everyone starts at 25%. That's the starting line before any evidence. From there, the Decision Maze adds or subtracts points, and the points turn into the probability. A formal declaration sets the chance to 100%. A binding promise not to run sets it to 3%. Dropping out sets it to 0%.</p>
+        <h3>Chart</h3>
+        <p>Each candidate has a Launch Watch chart. Here's how to read it.</p>
+        <ul class="about-key">
+          <li><i class="sw up"></i><span><b>The green line</b> is the chance they run.</span></li>
+          <li><i class="sw down"></i><span><b>The red line</b> is the chance they don't. The two lines always add up to 100%.</span></li>
+          <li><i class="sw gold dash"></i><span><b>The gold dotted line</b> at 65% is where the Index unlocks.</span></li>
+          <li><i class="sw ink dash"></i><span><b>The gray dotted line</b> at 50% is a toss up.</span></li>
+          <li><i class="sw mk up">+</i><span><b>A green marker</b> is a statement that moved them toward running.</span></li>
+          <li><i class="sw mk down">−</i><span><b>A red marker</b> is a statement that moved them away from running.</span></li>
+          <li><i class="sw mk">·</i><span><b>A gray marker</b> is a "no comment." It's logged, but it doesn't move the number.</span></li>
+          <li><i class="sw shade"></i><span><b>The shaded area</b> on the left covers June through October. Those days were rebuilt from dated statements, because daily tracking began on November 1 with the first poll.</span></li>
+        </ul>
+        <p>The dots at the end of each line blink. That's today. Hovering over any day shows both numbers, and it shows the quote if a statement was made that day.</p>
+      </article>
+
+      <article id="maze">
+        <h2>Maze</h2>
+        <p>The Decision Maze is the engine behind Launch Watch. It's a set of rings. The inner rings are small, local signals. The outer rings are big, national ones. The exit is the announcement.</p>
+        <p>Every signal sits on a ring and has a weight. Each signal also gets a reading from −1 to +1. The points for that signal are its weight times its reading. A candidate who won their own midterm race gets a reading of 1 on the midterms ring, which is worth 1.50 points.</p>
+        <div class="tbl-wrap"><table class="maze-tbl about-tbl">
+          <thead><tr><th>Ring</th><th>Signal</th><th class="n">Weight</th><th>Kind</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Noise (buzz and speculation)</td><td class="n">0.25</td><td>Intent</td></tr>
+            <tr><td>2</td><td>A book</td><td class="n">0.50</td><td>Intent</td></tr>
+            <tr><td>2</td><td>Favorability</td><td class="n">0.50</td><td>Strength</td></tr>
+            <tr><td>2</td><td>A role in Congress</td><td class="n">0.50</td><td>Strength</td></tr>
+            <tr><td>2</td><td>National figure</td><td class="n">0.50</td><td>Strength</td></tr>
+            <tr><td>3</td><td>Ads in other states</td><td class="n">0.75</td><td>Intent</td></tr>
+            <tr><td>3</td><td>Fundraising</td><td class="n">0.75</td><td>Intent</td></tr>
+            <tr><td>4</td><td>Primary polling</td><td class="n">1.00</td><td>Strength</td></tr>
+            <tr><td>4</td><td>Each trip to an early or key state</td><td class="n">1.00</td><td>Intent</td></tr>
+            <tr><td>4</td><td>Next in line</td><td class="n">1.00</td><td>Strength</td></tr>
+            <tr><td>5</td><td>Home state</td><td class="n">1.25</td><td>Strength</td></tr>
+            <tr><td>6</td><td>The 2026 midterms</td><td class="n">1.50</td><td>Strength</td></tr>
+            <tr><td>7</td><td>Their own words</td><td class="n">2.00</td><td>Intent</td></tr>
+          </tbody>
+        </table></div>
+        <p>The key states for trips are Iowa, New Hampshire, South Carolina, Nevada, Ohio, Texas, Michigan and Pennsylvania. Each state counts once. A trip to their own home state doesn't count.</p>
+        <h3>Kinds</h3>
+        <p>Signals come in two kinds. Intent signals show whether someone is getting ready to run. Strength signals show whether they could win. Intent counts two and a half times as much as strength. A trip to New Hampshire says more about running than a good poll does.</p>
+        <p>The math works on a scale called log odds. You don't need to know it to read the site. This table shows what intent points do to someone starting at 25%.</p>
+        <div class="tbl-wrap"><table class="maze-tbl about-tbl pts">
+          <thead><tr><th>Intent points</th><th class="n">−4</th><th class="n">−2</th><th class="n">−1</th><th class="n">0</th><th class="n">+1</th><th class="n">+2</th><th class="n">+4</th><th class="n">+6</th></tr></thead>
+          <tbody><tr><td>Chance they run</td><td class="n down">4.3%</td><td class="n down">10.9%</td><td class="n down">16.8%</td><td class="n">25.0%</td><td class="n up">35.5%</td><td class="n up">47.5%</td><td class="n up">71.1%</td><td class="n up">87.0%</td></tr></tbody>
+        </table></div>
+        <p>The curve flattens near 0% and 100%. No single signal can take someone all the way to either end. Only a declaration, a binding promise or dropping out does that.</p>
+        <h3>Graphic</h3>
+        <p>The maze graphic in Key Tools draws all eight rings. The gap in each ring is the way out to the next one. The weights printed on the rings match the table above. On The Chain, each candidate's photo sits inside the maze at a distance set by their chance of running. The center is 0%. The outer wall is the announcement. The gold ring is 65%, where the Index unlocks.</p>
+      </article>
+
+      <article id="statements">
+        <h2>Statements</h2>
+        <p>What a candidate says about running is the heaviest signal on the site. It sits on the outermost ring with a weight of 2.00. Every statement is logged with its date, the exact words and a link to the source. Then it's read on the Statement Scale.</p>
+        <div class="tbl-wrap"><table class="maze-tbl about-tbl">
+          <thead><tr><th>What they say</th><th>Example</th><th class="n">Reading</th><th class="n">Points</th></tr></thead>
+          <tbody>
+            <tr><td>Preparing to run</td><td>"I'm putting a team together."</td><td class="n up">+1.00</td><td class="n up">+2.00</td></tr>
+            <tr><td>Seriously considering</td><td>"I'm more inclined than not."</td><td class="n up">+0.75</td><td class="n up">+1.50</td></tr>
+            <tr><td>Considering it</td><td>"I go back and forth."</td><td class="n up">+0.50</td><td class="n up">+1.00</td></tr>
+            <tr><td>Sets a decision date</td><td>"I'll decide at the beginning of the year."</td><td class="n up">+0.25</td><td class="n up">+0.50</td></tr>
+            <tr><td>No comment</td><td>"People don't want to hear about the next election."</td><td class="n">0</td><td class="n">0</td></tr>
+            <tr><td>Focused on the current job</td><td>"My focus is the job I have."</td><td class="n down">−0.25</td><td class="n down">−0.50</td></tr>
+            <tr><td>No plans to run</td><td>"I have no plans to run."</td><td class="n down">−0.50</td><td class="n down">−1.00</td></tr>
+            <tr><td>Backs a rival</td><td>"If they run, I'll support them."</td><td class="n down">−0.50</td><td class="n down">−1.00</td></tr>
+            <tr><td>Not running</td><td>"I have zero interest in running."</td><td class="n down">−0.75</td><td class="n down">−1.50</td></tr>
+            <tr><td>Binding pledge</td><td>A promise to serve a full term, or "I will not run."</td><td class="n down">−1.00</td><td class="n down">−2.00</td></tr>
+            <tr><td>Reaffirms</td><td>"My thinking has not changed."</td><td class="n">Repeats</td><td class="n">Repeats</td></tr>
+          </tbody>
+        </table></div>
+        <h3>Rules</h3>
+        <p>Candidates repeat themselves, and they change their minds. Four rules handle that.</p>
+        <ol class="about-list">
+          <li><b>Repeating still counts, but less each time.</b> The strongest statement counts in full. The next strongest counts half. The one after that counts a quarter, and so on.</li>
+          <li><b>A change of heart wipes the slate.</b> If someone says no four times and then says "I'm considering it," the four no's stop counting.</li>
+          <li><b>No comment changes nothing.</b> It still goes in the log.</li>
+          <li><b>Reaffirming repeats the last position.</b> "My thinking has not changed" counts as saying the same thing again.</li>
+        </ol>
+        <h3>Example</h3>
+        <p>Jon Ossoff shows how this works with real statements. He started at 32.11% on June 1.</p>
+        <div class="tbl-wrap"><table class="maze-tbl about-tbl">
+          <thead><tr><th>Date</th><th>What happened</th><th class="n">Chance he runs</th></tr></thead>
+          <tbody>
+            <tr><td>June 3</td><td>Told the Atlanta Journal Constitution he has "zero interest" in running</td><td class="n down">18.26%</td></tr>
+            <tr><td>June 28</td><td>Said "I am not running for president in 2028"</td><td class="n down">13.31%</td></tr>
+            <tr><td>September 21</td><td>Said "zero interest" again</td><td class="n down">11.29%</td></tr>
+            <tr><td>October 13</td><td>Pledged at a debate to serve a full six year term</td><td class="n down">8.28%</td></tr>
+            <tr><td>November 1</td><td>First 2028 primary poll: 18.2% in the Democratic field</td><td class="n up">9.61%</td></tr>
+            <tr><td>November 3</td><td>Won his own Senate race in the midterms</td><td class="n up">12.56%</td></tr>
+            <tr><td>November 4</td><td>His victory speech set off talk about 2028</td><td class="n up">13.99%</td></tr>
+          </tbody>
+        </table></div>
+        <p>Each denial counted for less than the one before it. The pledge in October counted the most, so it moved to the front of the line. If Ossoff said "my thinking has not changed" today, he would drop to 12.05%.</p>
+      </article>
+
+      <article id="chain">
+        <h2>Chain</h2>
+        <p>Every number on the site moves in the same order. I call it the chain. The Chain tab in Key Tools plays it step by step.</p>
+        <ol class="about-list">
+          <li><b>News or a quote.</b> A card shows the event, the date, the quote and how it reads on the Statement Scale.</li>
+          <li><b>The Decision Maze.</b> The candidate's photo slides toward the center or toward the outer wall. Underneath, a short list shows which signals changed and by how many points.</li>
+          <li><b>The chance they run.</b> The number counts up or down to its new value. The chart draws the new day, with the green line for yes and the red line for no.</li>
+          <li><b>The Index.</b> The lock opens if the chance crossed 65%. It closes again if it fell back under.</li>
+        </ol>
+        <p>Each step lights up in gold as it happens. "Play their year" walks through every event for one candidate in order. The dashed button at the end, "What if," shows what one more statement would do today. It's a test only. It doesn't change any real number.</p>
+      </article>
+
+      <article id="index">
+        <h2>Index</h2>
+        <p>The Index answers a different question than Launch Watch. Launch Watch asks if someone will run. The Index asks how strong they are compared to the rest of their party's field.</p>
+        <p>Each party's Index adds up to 100. The math has three parts.</p>
+        <ol class="about-list">
+          <li><b>Their share of the primary average.</b> This is the base.</li>
+          <li><b>How likely they are to run.</b> Someone who hasn't declared counts at 60% of their polling, plus up to 40% more as their chance of running rises. A declared candidate counts in full. Someone who ruled it out counts at 15%. Someone who dropped out counts at 0.</li>
+          <li><b>Recent news.</b> A big news event gives a short boost. That boost loses half its strength every 10 days.</li>
+        </ol>
+        <p>Then every candidate's total is divided by the party's total and multiplied by 100.</p>
+        <h3>Phases</h3>
+        <p>The Index doesn't show for everyone. It unlocks in two stages.</p>
+        <div class="about-steps">
+          <div><b>Watching</b><span>Under 65% to run</span><p>The Index is locked. The card shows how many points they need to unlock it.</p></div>
+          <div><b>Contender</b><span>Above 64.9% to run</span><p>The Index opens as a Contender Index. It's provisional, because they haven't declared.</p></div>
+          <div><b>Candidate</b><span>Formally declared</span><p>The Index becomes the official Candidate Index, and their run counts in full.</p></div>
+        </div>
+        <p>Anyone who rules out a run or drops out moves to "Not running," and their Index closes. In November 2026, only Kamala Harris is a Contender. No Republican has passed 65% yet.</p>
+        <p>The locked numbers still exist behind the scenes, because every party's Index has to add up to 100. They just aren't shown until a candidate earns them.</p>
+      </article>
+
+      <article id="announcements">
+        <h2>Announcements</h2>
+        <p>Each card also shows the chance a candidate announces in the next 30 days. This is separate from whether they run at all. Someone can be very likely to run but very unlikely to announce this month.</p>
+        <p>The number is the chance they run, times the share of announcements that usually land in the next 30 days. I built that timing from the last open races for president in 2008, 2016 and 2020. Most serious candidates announced between January and April of the year before the election.</p>
+        <div class="tbl-wrap"><table class="maze-tbl about-tbl cal">
+          <thead><tr><th>Month</th><th class="n">Nov 26</th><th class="n">Dec</th><th class="n">Jan 27</th><th class="n">Feb</th><th class="n">Mar</th><th class="n">Apr</th><th class="n">May</th><th class="n">Jun</th><th class="n">Jul</th><th class="n">Aug</th><th class="n">Sep</th><th class="n">Oct</th><th class="n">Nov</th><th class="n">Dec</th></tr></thead>
+          <tbody><tr><td>Share of announcements</td><td class="n">1</td><td class="n">3</td><td class="n">12</td><td class="n">14</td><td class="n">14</td><td class="n">13</td><td class="n">10</td><td class="n">9</td><td class="n">8</td><td class="n">5</td><td class="n">4</td><td class="n">3</td><td class="n">2</td><td class="n">2</td></tr></tbody>
+        </table></div>
+        <p>Recent activity speeds the clock up. Trips, ads and statements from the last 30 days raise the odds. A denial slows them down. That's why the numbers are low for everyone in December and will climb in the new year.</p>
+      </article>
+
+      <article id="cards">
+        <h2>Cards</h2>
+        <p>The candidate cards on Key Candidates and the home page keep three numbers apart on purpose. Each one answers a different question.</p>
+        <ul class="about-key">
+          <li><i class="sw gold"></i><span><b>The tag in the top corner</b> is their phase: Watching, Contender, Candidate or Not running.</span></li>
+          <li><i class="sw gold"></i><span><b>The Index field</b> shows "Locked" with the points they need, or their Contender Index or Candidate Index once it opens.</span></li>
+          <li><i class="sw up"></i><span><b>The small chart</b> tracks their Index once it's open. Before that, it tracks their chance of running.</span></li>
+          <li><i class="sw up"></i><span><b>Will they run?</b> is the yes and no bar for Launch Watch, with its change over the last 30 days.</span></li>
+          <li><i class="sw ink"></i><span><b>Launch Watch</b> shows their latest words on running, and the date they said it.</span></li>
+          <li><i class="sw ink"></i><span><b>Primary average</b> is their share in the weighted polling average.</span></li>
+          <li><i class="sw ink"></i><span><b>Announce in 30 days</b> is the announcement odds explained above.</span></li>
+          <li><i class="sw ink"></i><span><b>Next unlock</b> tells you what their next phase is and what it takes to get there.</span></li>
+        </ul>
+        <p>Clicking a card opens the full profile. The profile has a timeline of every day their numbers moved, newest first. Each entry shows what happened, a link to the source, how the chance of running changed and why. The "Why" line names the exact ring that moved and by how many points. At the bottom, a sources list shows every poll, news report and statement behind their numbers.</p>
+        <p>The cards also sort candidates into four polling groups in plain words. "Front of the pack" is 20% or more. "In the mix" is 10% to 19%. "Single digits" is 1% to 9%. "Under 1%" is everyone else.</p>
+      </article>
+
+      <article id="market">
+        <h2>Market</h2>
+        <p>The full market chart on Key Candidates looks like a stock chart. That's on purpose. Each line is one candidate. You can switch between their Index and their chance of running.</p>
+        <p>The Index view only shows candidates whose Index has unlocked. When nobody in a party has passed 65%, the chart says so and shows who's closest.</p>
+        <p>Gold numbers along the bottom mark days with news. Clicking a name highlights that candidate's line and shows their statement markers. The ticker at the top of the page scrolls through every candidate. It shows the Index for those who unlocked it and the chance of running for everyone else.</p>
+        <p>The "number and why" table in Key Tools lists every candidate in one place. It shows their chance of running, their change over 30 days, their latest words, and the single biggest push up and push down from the maze.</p>
+      </article>
+
+      <article id="primaries">
+        <h2>Primaries</h2>
+        <p>Once candidates announce, a second set of odds takes over. The Primary Path in Key Tools plays out the primaries 11,111 times. Each simulation goes through five steps.</p>
+        <ol class="about-list">
+          <li><b>Who runs.</b> Declared candidates always run. Everyone else runs at their Launch Watch chance. Anyone who doesn't run hands their supporters to the candidates closest to them.</li>
+          <li><b>Polling error.</b> Every candidate's real support can differ from the polls. The farther away the first vote, the bigger the gap. A year out, a candidate's real support could be less than half or more than double what the polls show today.</li>
+          <li><b>The early states.</b> They vote in date order. Each state has its own voters. A candidate gets a boost in their home state and a smaller one in their home region. A state's voters also lean toward candidates whose coalition matches theirs. The winner of each state gets about a 16% bounce. Anyone under 10% loses about 10% of their support.</li>
+          <li><b>Super Tuesday.</b> All of its states vote on the same day. Then the field shrinks.</li>
+          <li><b>The rest of the calendar.</b> The remaining states vote as one group. The candidate with the most delegates is the nominee.</li>
+        </ol>
+        <h3>Factors</h3>
+        <p>Polling is the starting point. Six more factors move each candidate's strength. Each point lifts their support by about 13%.</p>
+        <div class="tbl-wrap"><table class="maze-tbl about-tbl">
+          <thead><tr><th>Factor</th><th class="n">Weight</th><th>How it's read</th></tr></thead>
+          <tbody>
+            <tr><td>Fundraising</td><td class="n">0.75</td><td>Not counted until the first reports are in</td></tr>
+            <tr><td>Public sentiment</td><td class="n">0.50</td><td>Their news over the last 30 days</td></tr>
+            <tr><td>Policy fit</td><td class="n">0.50</td><td>How close they are to the center of their party</td></tr>
+            <tr><td>Rank in the party</td><td class="n">0.50</td><td>Next in line counts 1. A national figure counts 0.5.</td></tr>
+            <tr><td>Favorability</td><td class="n">0.50</td><td>Not counted until favorability polls are in</td></tr>
+            <tr><td>Name recognition</td><td class="n">0.50</td><td>A national figure counts 1. A member of Congress counts 0.25.</td></tr>
+          </tbody>
+        </table></div>
+        <h3>Dropouts</h3>
+        <p>Candidates leave the race in the simulations the way they do in real life. After each early state, anyone under 8% twice in a row drops out 60% of the time. From the third contest on, anyone under 5% does the same. After Super Tuesday, anyone who won no state there and took under 20% drops out 80% of the time.</p>
+        <p>When someone drops out, their voters move. Sixty percent go to the candidates closest to them on the lane map. The other forty percent split by size, the way the field as a whole would. Voters only move in states that haven't voted yet.</p>
+        <p>The lane map is my estimate of where each candidate's coalition sits. For Democrats, it covers progressive voters, Black voters, Latino voters, working class voters and the party establishment. For Republicans, it covers the MAGA base, evangelical voters, the establishment and libertarian voters. Each candidate gets a score from −1 to +1 on each one.</p>
+        <p>The dropout panel shows three things for any candidate you pick. It shows where their voters would go, who they would most likely endorse, and how the race changes if they left today. The endorsement odds include a 35% chance they don't endorse anyone right away.</p>
+        <h3>Map</h3>
+        <p>Each state on the Primary Path map is colored by the candidate most likely to win it. A darker color means a safer lead. The gold numbered circles show the early states in voting order. The small labels mark Super Tuesday states. Gray states vote later. Clicking a state shows every candidate's chance there.</p>
+        <p>The bars have two views. "Chance to win" counts simulations where a candidate didn't run as losses, so each state adds up to 100%. "If they run" only counts the simulations where they entered the race.</p>
+        <h3>Calendar</h3>
+        <p>The Democratic order was approved in August 2026. South Carolina votes January 22, 2028, and Nevada votes February 1. New Hampshire, New Mexico, Michigan and Virginia follow in February, but their exact dates aren't set. The site uses placeholder dates for them, and every placeholder is marked with a star. The Republican calendar isn't set yet. The site uses the expected order of Iowa, New Hampshire, Nevada and South Carolina. Super Tuesday is March 7, 2028. Its states are based on 2024 state laws.</p>
+        <h3>Attention</h3>
+        <p>The Attention Index tells you how much to watch each candidate. It mixes three things. Their chance of being the nominee counts 40%. Their chance of getting past Super Tuesday counts 40%. Their chance of winning at least one early state counts 20%. That total is multiplied by their chance of running. Each party's Attention Index adds up to 100.</p>
+      </article>
+
+      <article id="forecast">
+        <h2>Forecast</h2>
+        <p>The general election forecast is on Key Matchups, under Electoral Analysis. It also runs 11,111 simulations. It builds every state's forecast in five steps.</p>
+        <ol class="about-list">
+          <li><b>The national environment.</b> I start with the national result from each recent election, weighted by how recent it is.</li>
+          <li><b>Factors.</b> Things like approval and the economy move the environment.</li>
+          <li><b>Polling.</b> General election polls are blended in by grade.</li>
+          <li><b>Two years out.</b> The result is pulled part of the way back toward a tie.</li>
+          <li><b>State lean.</b> Each state's lean is added to the national number.</li>
+        </ol>
+        <h3>Elections</h3>
+        <div class="tbl-wrap"><table class="maze-tbl about-tbl">
+          <thead><tr><th>Year</th><th>Result</th><th class="n">Margin</th><th class="n">After the midterm rule</th><th class="n">Weight</th></tr></thead>
+          <tbody>
+            <tr><td>2018</td><td>House popular vote</td><td class="n">D+8.6</td><td class="n">D+5.2</td><td class="n">0.25</td></tr>
+            <tr><td>2020</td><td>Presidential popular vote</td><td class="n">D+4.5</td><td class="n">D+4.5</td><td class="n">0.25</td></tr>
+            <tr><td>2022</td><td>House popular vote</td><td class="n">R+2.7</td><td class="n">D+0.7</td><td class="n">0.50</td></tr>
+            <tr><td>2024</td><td>Presidential popular vote</td><td class="n">R+1.5</td><td class="n">R+1.5</td><td class="n">0.75</td></tr>
+            <tr><td>2026</td><td>House popular vote (projected)</td><td class="n">D+13.0</td><td class="n">D+9.6</td><td class="n">1.00</td></tr>
+          </tbody>
+        </table></div>
+        <p>The newest election counts 1. Each one before it counts a quarter less, down to a floor of 0.25. The 2026 number is still a projection, and it will be updated once results are certified.</p>
+        <p>Midterms need one more adjustment. The president's party almost always does worse in a midterm than it does two years later. From 1998 to 2022, the president's party came back by about 3.4 points on average. So every midterm result is moved 3.4 points back toward the president's party.</p>
+        <div class="tbl-wrap"><table class="maze-tbl about-tbl">
+          <thead><tr><th>Midterm</th><th>President's party</th><th class="n">Midterm House vote</th><th class="n">Popular vote two years later</th><th class="n">Comeback</th></tr></thead>
+          <tbody>
+            <tr><td>1998</td><td>Democrats</td><td class="n">R+1.1</td><td class="n">D+0.5</td><td class="n">1.6</td></tr>
+            <tr><td>2002</td><td>Republicans</td><td class="n">R+4.8</td><td class="n">R+2.4</td><td class="n">−2.4</td></tr>
+            <tr><td>2006</td><td>Republicans</td><td class="n">D+8.0</td><td class="n">D+7.3</td><td class="n">0.7</td></tr>
+            <tr><td>2010</td><td>Democrats</td><td class="n">R+6.8</td><td class="n">D+3.9</td><td class="n">10.7</td></tr>
+            <tr><td>2014</td><td>Democrats</td><td class="n">R+5.7</td><td class="n">D+2.1</td><td class="n">7.8</td></tr>
+            <tr><td>2018</td><td>Republicans</td><td class="n">D+8.6</td><td class="n">D+4.5</td><td class="n">4.1</td></tr>
+            <tr><td>2022</td><td>Democrats</td><td class="n">R+2.7</td><td class="n">R+1.5</td><td class="n">1.2</td></tr>
+          </tbody>
+        </table></div>
+        <h3>Confidence</h3>
+        <p>Every factor carries a confidence weight. It tells you how much I trust the number.</p>
+        <div class="about-pills"><span><b>1.00</b> certified results</span><span><b>0.75</b> measured, and the pattern has held before</span><span><b>0.50</b> measured today, but likely to change</span><span><b>0.25</b> an early signal, or waiting for data</span></div>
+        <div class="tbl-wrap"><table class="maze-tbl about-tbl">
+          <thead><tr><th>Factor</th><th class="n">Points</th><th class="n">Confidence</th><th class="n">Effect</th></tr></thead>
+          <tbody>
+            <tr><td>Trump isn't on the ballot</td><td class="n">D+1.0</td><td class="n">0.50</td><td class="n">D+0.5</td></tr>
+            <tr><td>Two new nominees</td><td class="n">D+0.5</td><td class="n">0.50</td><td class="n">D+0.25</td></tr>
+            <tr><td>Presidential approval</td><td class="n">D+3.0</td><td class="n">0.50</td><td class="n">D+1.5</td></tr>
+            <tr><td>The economy</td><td class="n">D+1.0</td><td class="n">0.50</td><td class="n">D+0.5</td></tr>
+            <tr><td>Policy and new laws</td><td class="n">0</td><td class="n">0.25</td><td class="n">Not scored yet</td></tr>
+            <tr><td>Candidate announcements</td><td class="n">0</td><td class="n">0.25</td><td class="n">Not scored yet</td></tr>
+            <tr><td>Endorsements</td><td class="n">0</td><td class="n">0.25</td><td class="n">Not scored yet</td></tr>
+          </tbody>
+        </table></div>
+        <p>Each factor's reasoning is written out on the forecast page. For example, approval is based on Reuters and Ipsos having Trump at 32% in November 2026.</p>
+        <h3>Polling</h3>
+        <p>Two years out, general election polls predict very little. So they count for at most 25% of the national number, and less for lower graded pollsters.</p>
+        <h3>Tie</h3>
+        <p>Big leads two years out tend to shrink by Election Day. So the forecast keeps 60% of the national lead and pulls the rest back toward a tie.</p>
+        <h3>States</h3>
+        <p>Each state's lean is how much more Democratic or Republican it voted than the country. I use 2020 and 2024, with 2024 counting three times as much. A state's forecast margin is its lean plus the national number. Maine and Nebraska split their electoral votes by district, so their districts are forecast separately.</p>
+        <h3>Error</h3>
+        <p>Each simulation lets the national number miss by a random amount, usually within about 5 points either way. Each state can also miss on its own by about 3 points. The national miss moves every state together. That's why states tend to swing as a group.</p>
+        <h3>Ratings</h3>
+        <p>Each state gets a rating based on the Democratic nominee's chance to win it.</p>
+        <div class="about-ratings">
+          <span class="r sd">Safe D<small>95% or more</small></span><span class="r ld">Likely D<small>80% to 95%</small></span><span class="r nd">Lean D<small>60% to 80%</small></span>
+          <span class="r tu">Toss up<small>40% to 60%</small></span>
+          <span class="r nr">Lean R<small>20% to 40%</small></span><span class="r lr">Likely R<small>5% to 20%</small></span><span class="r sr">Safe R<small>under 5%</small></span>
+        </div>
+        <p>Toss up states are gold on the map. Each state shows its electoral votes.</p>
+        <h3>Charts</h3>
+        <ul class="about-key">
+          <li><i class="sw gold"></i><span><b>Electoral Vote Probability</b> lists the ways the toss up and lean states could fall. Every other state goes to the side it's rated for. Each combination shows its chance and the final electoral vote count.</span></li>
+          <li><i class="sw ink"></i><span><b>The simulation chart</b> shows how many electoral votes each party won across all 11,111 runs. Bars past 270 are wins.</span></li>
+          <li><i class="sw ink"></i><span><b>The tipping point</b> is the state that would put the winner over 270. It shows which states matter most.</span></li>
+          <li><i class="sw ink"></i><span><b>The trend chart</b> shows how the forecast has moved over time.</span></li>
+        </ul>
+        <p>Build Your Map lets you color the map yourself with the same seven ratings. The Primary map and the Senate view sit on the same page.</p>
+      </article>
+
+      <article id="legislation">
+        <h2>Legislation</h2>
+        <p>Key Legislation tracks where every member of Congress stands on major bills. It covers all 100 senators and every seated House member. It works like The 29th Vote, my tracker for the Senate Democratic leadership race.</p>
+        <p>Each member starts at their party's starting point for that bill. That starting point comes from how the party's leaders and members have lined up. Then four kinds of signals move them.</p>
+        <div class="tbl-wrap"><table class="maze-tbl about-tbl">
+          <thead><tr><th>Signal</th><th class="n">Weight</th><th>How it works</th></tr></thead>
+          <tbody>
+            <tr><td>Public statement</td><td class="n">2.00</td><td>Their latest stand on the bill, from "I'm a yes" at +1 to "I'm a no" at −1. A public switch replaces what came before.</td></tr>
+            <tr><td>Past vote</td><td class="n">1.00</td><td>How they voted on a similar bill before</td></tr>
+            <tr><td>Leadership</td><td class="n">0.50</td><td>What party leaders and committee chairs are asking for</td></tr>
+            <tr><td>Policy</td><td class="n">0.50</td><td>Their stated policy positions</td></tr>
+          </tbody>
+        </table></div>
+        <p>Each point is worth 1.5 on the log odds scale. One firm public "no" takes a member who started at 70% down to about 10%. A recorded vote on the bill itself locks them in.</p>
+        <p>Every member is sorted into a group by their chance of voting yes. "Yes" is 85% or more. "Lean yes" is 60% to 85%. "Undecided" is 40% to 60%. "Lean no" is 15% to 40%. "No" is under 15%. Recorded votes show as "Voted yes" or "Voted no."</p>
+        <p>Then the bill is voted on 11,111 times. In each run, members of the same party can drift together, and a few members miss the vote. The House needs a majority of the members voting. The Senate needs 60 votes to end a filibuster, or a simple majority with the Vice President breaking ties.</p>
+        <h3>Visuals</h3>
+        <ul class="about-key">
+          <li><i class="sw up"></i><span><b>The seat chart</b> draws every member as a dot. Democrats sit on the left and Republicans on the right. Members voting yes sit toward the middle. The ring around each dot is their party color, and the fill is their position.</span></li>
+          <li><i class="sw gold"></i><span><b>The whip bar</b> counts each group from yes to no. The black line marks how many votes it takes to pass.</span></li>
+          <li><i class="sw down"></i><span><b>The trend chart</b> shows the chance the bill passes over time, green for yes and red for no.</span></li>
+          <li><i class="sw ink"></i><span><b>The simulation chart</b> shows how many yes votes the bill got across every run. Green bars pass and red bars fail.</span></li>
+        </ul>
+        <p>No bills are being tracked right now. The 120th Congress starts in January 2027, and tracking will begin when major legislation is introduced.</p>
+      </article>
+
+      <article id="debates">
+        <h2>Debates</h2>
+        <p>The Debate Impact Score measures how much a debate helped or hurt each candidate. It compares the week before a debate with the week after. Polling change counts 40%. The Index change counts 25%. Fundraising after the debate counts 25%. Favorability change counts 10%.</p>
+        <p>There haven't been any 2028 debates yet. The Debate Impact tab uses sample candidates labeled A through F to show the layout. Those numbers are not real, and the page says so.</p>
+      </article>
+
+      <article id="history">
+        <h2>History</h2>
+        <p>Past numbers are never rewritten. Each day's chance of running is saved once and stays saved, even if a weight changes later. The same goes for Key Legislation.</p>
+        <p>Every saved day records which version of the method made it. If I ever change a weight, the version number changes too. You can always tell which rules produced which day.</p>
+        <p>Some history was rebuilt after the fact. Launch Watch from June through October 2026 was rebuilt from dated statements, because daily tracking started on November 1. Every chart marks that stretch as rebuilt.</p>
+      </article>
+
+      <article id="estimates">
+        <h2>Estimates</h2>
+        <p>These are the places where I made a judgment call instead of using measured data. I'm listing all of them so you can weigh them yourself.</p>
+        <ul class="about-list dots">
+          <li>Each candidate's standing in the maze, like "national figure" or "won their own midterm race."</li>
+          <li>The starting point of 25% for everyone in Launch Watch.</li>
+          <li>The readings on the Statement Scale.</li>
+          <li>The impact value given to big news events.</li>
+          <li>The announcement calendar.</li>
+          <li>The lane map, and how each state's primary voters line up.</li>
+          <li>Delegate counts for each state, which are based on 2024.</li>
+          <li>Placeholder dates for New Hampshire, New Mexico, Michigan, Virginia and the whole Republican calendar.</li>
+          <li>The dropout rules and the 60 and 40 split for where voters go.</li>
+          <li>The points and confidence weights for each general election factor.</li>
+          <li>Past state results and the midterm history table, which are rounded.</li>
+          <li>The party starting points in Key Legislation.</li>
+        </ul>
+        <p>Every one of these lives in a single settings file. I wrote them down before scoring the data, and they only change on purpose.</p>
+      </article>
+
+      <article id="limits">
+        <h2>Limits</h2>
+        <p>Here's what the site can't do yet, and where you should be careful.</p>
+        <ul class="about-list dots">
+          <li>One primary poll is a thin base. A single new poll can move the averages, the Index and the forecasts a lot.</li>
+          <li>Fundraising and favorability don't count yet. They will once real numbers come in.</li>
+          <li>Polls this early mostly measure name recognition. That's why polling is one signal among many and not the whole story.</li>
+          <li>The simulations treat each candidate's decision to run as separate. In real life, one candidate's choice affects another's.</li>
+          <li>Probabilities are not predictions of certainty. A 20% chance should happen about one time in five.</li>
+        </ul>
+      </article>
+
+      <article id="updates">
+        <h2>Updates</h2>
+        <p>The site runs on plain files. When a new poll, statement or vote is added, every number recalculates the next time the page loads.</p>
+        <p>Behind the site, a Python version of the model runs every morning. It does three jobs. It checks that the Python version and the website give exactly the same answers. It runs the primary simulations. It saves each day to the history files.</p>
+        <p>Every run goes to a test version first. Nothing reaches the live site until it passes all of the checks. The "Last updated" line at the top of every page shows when the data last changed.</p>
+      </article>
+
+      <article id="ads">
+        <h2>Ads</h2>
+        <p>Keys to the Race runs ads through Google AdSense to cover its costs. Ads never affect any number, rating or forecast on the site. No campaign, party or group pays for coverage. If the site ever takes a sponsor, it will say so clearly on the page.</p>
+      </article>
+
+      <article id="corrections">
+        <h2>Corrections</h2>
+        <p>If you find a mistake, I want to know. That includes a wrong number, a broken link, or a statement read the wrong way. Every correction is made in the open, and the history files show when it was made.</p>
+        <p>Members of the press can use the <a href="../contact/">contact page</a>. Everyone else can reach me on X at <a href="https://x.com/JaysonFras" target="_blank" rel="noopener">@JaysonFras</a>. If the site helps you, you can <a href="https://ko-fi.com/jaysonfras" target="_blank" rel="noopener">support it here</a>.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer data-footer data-root="../"></footer>
+
+<script>window.PAGE_ROOT = "../";</script>
+<script src="../assets/nav.js"></script>
+<script src="../assets/common.js"></script>
+<script>
+// Highlight the section you're reading in the side list
+(function () {
+  const links = [...document.querySelectorAll(".about-toc a")], arts = links.map(a => document.querySelector(a.getAttribute("href")));
+  if (!("IntersectionObserver" in window)) return;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach((a, i) => a.classList.toggle("on", arts[i] === e.target)); }), { rootMargin: "-20% 0px -70% 0px" });
+  arts.forEach(a => a && io.observe(a));
+})();
+</script>
+</body>
+</html>

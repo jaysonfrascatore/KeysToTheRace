@@ -32,8 +32,14 @@ window.SITE = {
     { id: "legislation", label: "Key Legislation", href: "legislation/" },
     { id: "dates",      label: "Key Dates",        href: "dates/" },
     { id: "florida",    label: "The Florida Keys", href: "florida/" },
-    { id: "collection", label: "The Collection",   href: "collection/" },
-    { id: "about",      label: "About",            href: "about/" }
+    { id: "collection", label: "The Collection",   href: "collection/" }
+  ],
+  // The three line menu next to Home
+  menu: [
+    { id: "methodology", label: "Methodology", href: "methodology/", note: "How every number is built" },
+    { id: "contact",     label: "Contact",     href: "contact/",     note: "For press and questions" },
+    { id: "press",       label: "In the News", href: "press/",       note: "Coverage of the site" },
+    { id: "creator",     label: "Created by",  href: "creator/",     note: "Jayson Frascatore" }
   ]
 };
 
@@ -63,6 +69,7 @@ window.setTheme = function (t, quiet) {
   const KEY = `<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="kg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--k1)"/><stop offset=".5" style="stop-color:var(--k2)"/><stop offset="1" style="stop-color:var(--k3)"/></linearGradient></defs><circle cx="10" cy="16" r="6.4" fill="none" stroke="url(#kg)" stroke-width="2.4"/><circle cx="10" cy="16" r="2.2" fill="url(#kg)"/><path d="M16.4 16H29.5M23 16v4.6M27 16v3.4" stroke="url(#kg)" stroke-width="2.4" stroke-linecap="round"/></svg>`;
   const SUN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>`;
   const MOON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg>`;
+  const MENU = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>`;
   const CAMERA = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`;
   const CUP = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>`;
 
@@ -74,15 +81,39 @@ window.setTheme = function (t, quiet) {
     el.innerHTML = `
       <div class="wrap topbar" data-noshot>
         <a class="brand" href="${page(root, "")}" aria-label="${S.name} home">${KEY}<span class="brand-word">${S.brandHTML}</span></a>
-        <nav class="navlinks" aria-label="Sections">
-          ${S.nav.map(n => `<a class="${n.id === active ? "on" : ""}" href="${page(root, n.href)}" ${n.id === active ? 'aria-current="page"' : ""}>${n.label}</a>`).join("")}
-        </nav>
+        <div class="navrow">
+          <div class="menu ${S.menu.some(m => m.id === active) ? "here" : ""}" id="siteMenu">
+            <button class="menu-btn" type="button" aria-expanded="false" aria-controls="siteMenuPanel" aria-label="More: Methodology, Contact, In the News, Created by">${MENU}</button>
+            <div class="menu-panel" id="siteMenuPanel">
+              ${S.menu.map(m => `<a class="${m.id === active ? "on" : ""}" href="${page(root, m.href)}"><b>${m.label}</b><span>${m.note}</span></a>`).join("")}
+            </div>
+          </div>
+          <nav class="navlinks" aria-label="Sections">
+            ${S.nav.map(n => `<a class="${n.id === active ? "on" : ""}" href="${page(root, n.href)}" ${n.id === active ? 'aria-current="page"' : ""}>${n.label}</a>`).join("")}
+          </nav>
+        </div>
         <button class="icon-btn" id="themeBtn" type="button"></button>
         <button class="icon-btn" id="shotBtn" type="button" aria-label="Take a screenshot of this page" title="Screenshot">${CAMERA}</button>
       </div>`;
     const links = el.querySelector(".navlinks"), on = el.querySelector(".navlinks .on");
-    if (links && on) links.scrollLeft = on.offsetLeft - 16;
+    // Only scroll the row when the current page's link would be cut off
+    if (links && on) {
+      const l = on.getBoundingClientRect(), r = links.getBoundingClientRect();
+      if (l.right > r.right || l.left < r.left) links.scrollLeft += l.left - r.left - 16;
+    }
   });
+
+  // The menu opens on hover with a mouse, and on tap or Enter everywhere else
+  const menu = document.getElementById("siteMenu");
+  if (menu) {
+    const btn = menu.querySelector(".menu-btn");
+    const set = open => { menu.classList.toggle("open", open); btn.setAttribute("aria-expanded", open); };
+    btn.addEventListener("click", e => { e.stopPropagation(); set(!menu.classList.contains("open")); });
+    document.addEventListener("click", e => { if (!menu.contains(e.target)) set(false); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") { set(false); } });
+    menu.addEventListener("mouseenter", () => matchMedia("(hover: hover)").matches && btn.setAttribute("aria-expanded", "true"));
+    menu.addEventListener("mouseleave", () => { if (!menu.classList.contains("open")) btn.setAttribute("aria-expanded", "false"); });
+  }
 
   const themeBtn = document.getElementById("themeBtn");
   const paintBtn = () => {
@@ -113,7 +144,7 @@ window.setTheme = function (t, quiet) {
         <div class="foot-brand">${S.brandHTML}</div>
         <p class="fnote">${S.descriptor}</p>
         <a class="kofi" href="${S.kofi}" target="_blank" rel="noopener" data-noshot>${CUP} Support on Ko-fi</a>
-        <p class="src">${S.sources}<br>${S.nav.map(n => `<a href="${page(root, n.href)}">${n.label}</a>`).join(" &nbsp;·&nbsp; ")}<br><span style="white-space:nowrap">Created by ${S.creator}</span></p>
+        <p class="src">${S.sources}<br>${S.nav.map(n => `<a href="${page(root, n.href)}">${n.label}</a>`).join(" &nbsp;·&nbsp; ")}<br>${S.menu.map(m => `<a href="${page(root, m.href)}">${m.label}</a>`).join(" &nbsp;·&nbsp; ")}<br><span style="white-space:nowrap">Created by <a href="${page(root, "creator/")}">${S.creator}</a></span></p>
       </div>`;
   });
 

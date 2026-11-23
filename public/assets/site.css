@@ -1138,3 +1138,38 @@ html[data-theme="light"] .pos.yes,html[data-theme="light"] .pos.votedYes,html[da
 .about-ratings .nr{background:#e8a19b;color:#3f1110} .about-ratings .lr{background:#cf5550} .about-ratings .sr{background:#a32a28}
 @media (max-width:900px){.about-grid{grid-template-columns:minmax(0,1fr);gap:20px}.about-toc{position:static;display:flex;flex-wrap:wrap;gap:6px}.about-toc b{width:100%}.about-toc a{border:1px solid var(--line-2);border-radius:999px;padding:5px 11px}.about-steps{grid-template-columns:1fr}.about-body h2{font-size:36px}}
 .about-body,.about-toc{min-width:0}
+
+/* ---------- The three line menu next to Home ---------- */
+.navrow{order:3;width:100%;display:flex;align-items:center;gap:4px;border-top:1px solid var(--line)}
+.navrow .navlinks{order:0;width:auto;flex:1;min-width:0;border-top:0}
+.menu{position:relative;flex:none}
+.menu-btn{display:grid;place-items:center;width:38px;height:38px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--ink-2);cursor:pointer;transition:color .2s,border-color .2s,background .2s}
+.menu-btn svg{width:18px;height:18px}
+.menu:hover .menu-btn,.menu.open .menu-btn,.menu-btn:focus-visible,.menu.here .menu-btn{color:var(--gold);border-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,transparent)}
+.menu-panel{position:absolute;left:0;top:calc(100% + 8px);min-width:250px;display:grid;gap:2px;padding:8px;border-radius:16px;border:1px solid var(--line-2);background:var(--panel);box-shadow:0 24px 60px -24px rgba(0,0,0,.6);opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .2s,transform .2s,visibility 0s .2s;z-index:40}
+.menu-panel::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+.menu:hover .menu-panel,.menu.open .menu-panel,.menu:focus-within .menu-panel{opacity:1;visibility:visible;transform:none;transition:opacity .2s,transform .2s}
+.menu-panel a{display:grid;gap:1px;padding:10px 12px;border-radius:10px;text-decoration:none;color:var(--ink)}
+.menu-panel a b{font-size:14px;font-weight:700}
+.menu-panel a span{font-size:12px;color:var(--faint)}
+.menu-panel a:hover,.menu-panel a:focus-visible,.menu-panel a.on{background:color-mix(in srgb,var(--gold) 10%,transparent);outline:none}
+.menu-panel a.on b{color:var(--gold)}
+@media (hover:none){.menu:hover .menu-panel{opacity:0;visibility:hidden}.menu.open .menu-panel{opacity:1;visibility:visible;transform:none}}
+
+/* ---------- Contact, In the News, Created by ---------- */
+.about-body.solo{max-width:760px;margin:0 auto}
+.contact-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0 6px}
+.about-body a.contact-card{display:grid;gap:3px;padding:18px 20px;border:1px solid var(--line-2);border-radius:16px;text-decoration:none;color:var(--ink);background:var(--panel);transition:border-color .2s,transform .2s;min-width:0}
+.about-body a.contact-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.contact-card span{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.contact-card b{font-size:16px;overflow-wrap:anywhere}
+.contact-card em{font-style:normal;font-size:13px;color:var(--faint)}
+.press-list{display:grid;gap:0;margin:18px 0 4px;border-top:1px solid var(--line)}
+.press-item{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;padding:20px 0;border-bottom:1px solid var(--line)}
+.press-when{font-family:var(--serif);font-size:24px;font-weight:600;color:var(--gold);line-height:1.1}
+.press-what b{font-size:18px;color:var(--ink);margin-right:10px}
+.press-what span{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line-2);border-radius:999px;padding:3px 9px;white-space:nowrap}
+.press-what p{margin:8px 0 6px;font-size:15.5px}
+.press-what a{font-size:14px;font-weight:700}
+.press-empty{color:var(--faint)}
+@media (max-width:600px){.press-item{grid-template-columns:minmax(0,1fr);gap:6px}}
