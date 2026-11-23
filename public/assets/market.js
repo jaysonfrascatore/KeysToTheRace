@@ -467,6 +467,77 @@ function miniChart(c, h = 74){
     <text x="2" y="${h - 4}">${fd(c.listed)}</text><text x="${w}" y="${h - 4}" text-anchor="end">Today</text></svg>`;
 }
 const sparkSVG = (series) => "";
+/* The tracking chart on each card. Before the Index opens it tracks the chance they run,
+   with the 65% Contender line drawn in. After, it tracks the Index out of 100.
+   Hover (or touch) any day for the exact numbers. */
+function trackChart(c, h = 92){
+  const open = indexUnlocked(c), ph = phaseOf(c);
+  const pts0 = open ? c.history : c.launchHistory.slice(-60);
+  if (!pts0.length) return "";
+  const s = pts0.map(p => p.v), gate = INDEX_UNLOCK * 100;
+  const w = 320, pt = 10, pb = 18;
+  let lo = Math.min(...s), hi = Math.max(...s);
+  if (open) { const pad = Math.max(1, (hi - lo) * 0.3); lo = Math.max(0, lo - pad); hi = Math.min(100, hi + pad); }
+  else { lo = Math.max(0, Math.min(lo, gate) - 6); hi = Math.min(100, Math.max(hi, gate) + 5); }
+  const y = v => pt + (1 - (v - lo) / ((hi - lo) || 1)) * (h - pt - pb);
+  const x = i => s.length === 1 ? w - 10 : 4 + i * (w - 14) / (s.length - 1);
+  const pts = s.map((v, i) => [x(i), y(v)]);
+  if (s.length === 1) pts.unshift([4, pts[0][1]]);
+  const id = "mg" + (++_cid), line = pts.map(p => p.map(n => n.toFixed(1)).join(",")).join(" "), [ex, ey] = pts.at(-1);
+  const now = s.at(-1);
+  const title = open ? `${PHASES[ph].idx} by day` : "Chance they run, by day";
+  // The head shows how far it has moved over the chart, since today's number sits right above it
+  const mv = now - s[0], unit = open ? "" : " pts";
+  const today = open ? `<small>Low</small> ${price(Math.min(...s))} <small>· High</small> ${price(Math.max(...s))}`
+    : Math.abs(mv) < 0.005 ? `<small>Even since ${fd(pts0[0].d)}</small>`
+    : `<span class="${mv > 0 ? "up" : "down"}">${mv > 0 ? "▲" : "▼"} ${Math.abs(mv).toFixed(open ? 1 : 2)}${unit}</span> <small>since ${fd(pts0[0].d)}</small>`;
+  const data = pts0.map(p => [p.d, +p.v.toFixed(2)]);
+  return `<div class="trk" data-mode="${open ? "index" : "launch"}" data-party="${c.party}" data-label="${open ? PHASES[ph].idx : "Chance they run"}" data-pts='${JSON.stringify(data)}'>
+    <div class="trk-head"><span>${title}</span><b>${today}</b></div>
+    <svg class="mini" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--gold)" stop-opacity=".35"/><stop offset="1" stop-color="var(--gold)" stop-opacity="0"/></linearGradient></defs>
+    <line x1="0" x2="${w}" y1="${h - pb}" y2="${h - pb}" stroke="var(--line)"/>
+    ${open ? "" : `<line x1="0" x2="${w}" y1="${y(gate).toFixed(1)}" y2="${y(gate).toFixed(1)}" stroke="var(--gold)" stroke-dasharray="4 4" opacity=".7"/><text x="${w}" y="${(y(gate) - 4).toFixed(1)}" text-anchor="end" class="gate-t">Contender ${gate.toFixed(0)}%</text>`}
+    <polygon fill="url(#${id})" points="${pts[0][0]},${h - pb} ${line} ${ex},${h - pb}"/>
+    <polyline fill="none" stroke="var(--gold)" stroke-width="2" stroke-linejoin="round" points="${line}"/>
+    <line class="trk-x" x1="0" x2="0" y1="${pt}" y2="${h - pb}" stroke="var(--ink-3)" stroke-dasharray="3 3" opacity="0"/>
+    <circle class="trk-dot" cx="0" cy="0" r="4" fill="var(--gold)" opacity="0"/>
+    <circle class="halo" cx="${ex}" cy="${ey}" r="4" fill="none" stroke="var(--gold)" stroke-width="1.5"/><circle class="blink" cx="${ex}" cy="${ey}" r="4" fill="var(--gold)"/>
+    <text x="2" y="${h - 4}">${fd(pts0[0].d)}</text><text x="${w}" y="${h - 4}" text-anchor="end">Today</text></svg>
+    <div class="trk-tip" hidden></div>
+  </div>`;
+}
+// One listener runs every tracking chart on the page, including ones drawn later
+(function () {
+  if (window._trkWired) return; window._trkWired = true;
+  const move = e => {
+    const el = e.target.closest && e.target.closest(".trk"); if (!el) return;
+    const svg = el.querySelector("svg"), tip = el.querySelector(".trk-tip"), d = JSON.parse(el.dataset.pts);
+    const r = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal, px = (e.clientX - r.left) / r.width * vb.width;
+    const n = d.length, i = n === 1 ? 0 : Math.max(0, Math.min(n - 1, Math.round((px - 4) / ((vb.width - 14) / (n - 1)))));
+    const poly = svg.querySelector("polyline").points, p = poly.getItem(n === 1 ? poly.numberOfItems - 1 : i);
+    const xl = svg.querySelector(".trk-x"), dot = svg.querySelector(".trk-dot");
+    xl.setAttribute("x1", p.x); xl.setAttribute("x2", p.x); xl.setAttribute("opacity", .7);
+    dot.setAttribute("cx", p.x); dot.setAttribute("cy", p.y); dot.setAttribute("opacity", 1);
+    const [day, v] = d[i], prev = i > 0 ? d[i - 1][1] : null, gate = INDEX_UNLOCK * 100;
+    const ch = prev == null ? "" : Math.abs(v - prev) < 0.005 ? `<div>Change<span>No change</span></div>`
+      : `<div>Change<span class="${v > prev ? "up" : "down"}">${v > prev ? "+" : "−"}${Math.abs(v - prev).toFixed(2)}</span></div>`;
+    tip.innerHTML = el.dataset.mode === "index"
+      ? `<b>${fd(day)}</b><div>${el.dataset.label}<span>${v.toFixed(1)} / 100</span></div>${ch}<p>100 is the most possible. All the ${el.dataset.party === "D" ? "Democrats" : "Republicans"} named add up to 100.</p>`
+      : `<b>${fd(day)}</b><div>Chance they run<span>${v.toFixed(2)}%</span></div><div>Needed for Contender<span>${gate.toFixed(0)}%</span></div>${ch}`
+        + (v > gate ? `<p>Above the line. The Index is open.</p>` : `<div>Still to go<span>${(gate - v + 0.01).toFixed(2)} pts</span></div><p>The Index stays locked until this passes 64.9%.</p>`);
+    tip.hidden = false;
+    const tw = tip.offsetWidth, left = p.x / vb.width * r.width;
+    tip.style.left = Math.max(0, Math.min(r.width - tw, left - tw / 2)) + "px";
+  };
+  const leave = e => {
+    const el = e.target.closest && e.target.closest(".trk"); if (!el || el.contains(e.relatedTarget)) return;
+    el.querySelector(".trk-tip").hidden = true;
+    el.querySelector(".trk-x").setAttribute("opacity", 0); el.querySelector(".trk-dot").setAttribute("opacity", 0);
+  };
+  document.addEventListener("pointermove", move, { passive: true });
+  document.addEventListener("pointerdown", move, { passive: true });
+  document.addEventListener("pointerout", leave, { passive: true });
+})();
 /* Launch Watch chart, 0 to 100%: "Yes" and "No" lines, a 50% line, today's dot blinking.
    Past points come from the append-only log (data/launch-log.csv) once it has them. */
 function launchChart(host, c){
@@ -541,12 +612,12 @@ const launchStatus = c => {
 function indexField(c, big){
   const ph = phaseOf(c), P = PHASES[ph];
   if (ph === "contender" || ph === "candidate")
-    return `<div><div class="lbl">${UNLOCK} ${P.idx}</div><b class="idx-num">${bigNum(c.index)}</b></div>
+    return `<div><div class="lbl">${UNLOCK} ${P.idx}</div><b class="idx-num">${bigNum(c.index)}<span class="idx-max">/ 100</span></b></div>
       <div class="chg"><div class="lbl">${ph === "contender" ? "Provisional" : "Official"}</div>${changeText(c)}</div>`;
   if (ph === "out")
     return `<div><div class="lbl">Index score</div><b class="idx-num locked">${LOCK}<span>Closed</span></b></div><div class="chg"><div class="lbl">Not running</div><span class="gate-left">—</span></div>`;
   return `<div><div class="lbl">Index score</div><b class="idx-num locked">${LOCK}<span>Locked</span></b></div>
-    <div class="chg"><div class="lbl">Contender at 65%</div><span class="gate-left">${toUnlock(c).toFixed(2)} pts to go</span></div>`;
+    <div class="chg"><div class="lbl">Chance they run</div><span class="gate-num">${pct2(c.launch)} <small>/ 65%</small></span><span class="gate-left">${toUnlock(c).toFixed(2)} pts to go</span></div>`;
 }
 
 function productCard(c){
@@ -557,7 +628,7 @@ function productCard(c){
     <h3>${c.name}</h3>
     <div class="role">${c.meta.role}${c.meta.from && !c.meta.role.includes(c.meta.from) ? " · " + c.meta.from : ""}</div>
     <div class="price">${indexField(c)}</div>
-    ${indexUnlocked(c) ? miniChart(c) : miniChart({ series: c.launchHistory.slice(-60).map(h => h.v), listed: c.launchHistory.slice(-60)[0].d })}
+    ${trackChart(c)}
     <dl class="specs">
       <div><dt>Launch Watch</dt><dd>${launchStatus(c)}</dd></div>
       <div><dt>Primary average</dt><dd>${pct(c.pct, c.rounded)}</dd></div>
@@ -577,7 +648,7 @@ function launchBar(c, big){
   return `<div class="launch ${big ? "big" : ""}">
     <div class="lw-top"><span class="lbl">Launch Watch · will they run?</span>${Math.abs(ch) >= 0.005 ? `<span class="${ch > 0 ? "up" : "down"}">${ch > 0 ? "▲" : "▼"} ${Math.abs(ch).toFixed(2)} pts <small style="color:var(--faint);font-weight:600">in 30 days</small></span>` : ""}</div>
     <div class="lw-nums"><b class="yes">${pct2(y)} <small>yes</small></b><b class="no">${pct2(1 - y)} <small>no</small></b></div>
-    <div class="lw-bar"><i style="width:${(y * 100).toFixed(2)}%"></i></div>
+    <div class="lw-track"><div class="lw-bar"><i style="width:${(y * 100).toFixed(2)}%"></i></div><span class="lw-gate" style="left:${(INDEX_UNLOCK * 100).toFixed(1)}%"><em>65%</em></span></div>
   </div>`;
 }
 const marketLink = id => window.ON_MARKET_PAGE ? "#m-" + id : pageLink(window.PAGE_ROOT || "../", "candidates/") + "#m-" + id;
@@ -927,7 +998,7 @@ PDP.register("c", id => {
       <div class="eyebrow">${PHASES[phaseOf(c)].label}</div>
       ${phaseSteps(c)}
       <div class="price box-price">${indexField(c)}</div>
-      ${indexUnlocked(c) ? `<div style="margin-top:10px">${miniChart(c, 84)}</div>` : `<div class="gate-bar"><i style="width:${Math.min(100, c.launch / INDEX_UNLOCK * 100).toFixed(1)}%"></i></div>`}
+      ${trackChart(c, 96)}
       <dl>
         <dt>Launch Watch</dt><dd>${launchStatus(c)}</dd>
         <dt>Chance they run</dt><dd>${pct2(c.launch)} yes · ${pct2(1 - c.launch)} no</dd>
