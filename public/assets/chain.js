@@ -247,7 +247,7 @@
     function draw() {
       const pp = P.parties[party], names = pp.candidates.map(c => c.name);
       const ranked = pp.candidates.slice().sort((a, b) => b.attention - a.attention);
-      const color = {}; ranked.forEach((c, i) => color[c.name] = palette()[i % palette().length]);
+      const color = {}; ranked.forEach(c => color[c.name] = candColor(c.name));
       const byName = n => M.all.find(c => c.name === n);
       const early = pp.states.filter(s => !s.superTuesday), st = pp.states.filter(s => s.superTuesday);
       if (!sel || !pp.states.find(s => s.state === sel)) sel = early[0].state;

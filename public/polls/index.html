@@ -399,16 +399,17 @@ function renderTrend(polls, race){
   [dates[0], dates.at(-1)].forEach((d,i) => g += `<text x="${x(d)}" y="${H - 8}" text-anchor="${i ? "end" : "start"}" fill="var(--ink-3)" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="10">${fd(d)}</text>`);
   const labels = [];
   latest.forEach((c,i) => {
-    const pts = series[c.name], col = i === 0 ? R.hex : TREND_COLORS[i % TREND_COLORS.length];
-    g += `<path d="${pts.map((p,k) => `${k ? "L" : "M"}${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join("")}" fill="none" stroke="${col}" stroke-width="${i === 0 ? 3.5 : 2}" stroke-linejoin="round"/>`;
+    const pts = series[c.name], col = candColor(c.name), dpath = pts.map((p,k) => `${k ? "L" : "M"}${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join("");
+    g += `<path class="case" d="${dpath}" fill="none" stroke-width="${i === 0 ? 5.5 : 4}" stroke-linejoin="round"/>`;
+    g += `<path d="${dpath}" fill="none" stroke="${col}" stroke-width="${i === 0 ? 3.5 : 2}" stroke-linejoin="round"/>`;
     const e = pts.at(-1);
-    g += `<circle cx="${x(e.d)}" cy="${y(e.v)}" r="3.5" fill="${col}"/>`;
+    g += `<circle class="cdot" cx="${x(e.d)}" cy="${y(e.v)}" r="3.5" fill="${col}"/>`;
     labels.push({ x: x(e.d) + 10, y: y(e.v) + 4, col, text: `${last(c.name)} ${e.v.toFixed(1)}` });
   });
   // Nudge end labels apart so close candidates don't overlap
   labels.sort((a,b) => a.y - b.y);
   for (let k = 1; k < labels.length; k++) labels[k].y = Math.max(labels[k].y, labels[k-1].y + 15);
-  labels.forEach(l => g += `<text x="${l.x}" y="${l.y}" fill="${l.col}" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600">${l.text}</text>`);
+  labels.forEach(l => g += `<circle class="cdot" cx="${l.x + 3}" cy="${l.y - 4}" r="4" fill="${l.col}"/><text x="${l.x + 12}" y="${l.y}" fill="var(--ink)" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600">${l.text}</text>`);
   wrap.innerHTML = `<svg id="trend" viewBox="0 0 ${W} ${H}" role="img" aria-label="${R.label} polling average over time">${g}</svg>`;
 }
 

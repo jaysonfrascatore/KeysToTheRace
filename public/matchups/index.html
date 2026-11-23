@@ -619,7 +619,7 @@ function buildPrimPalette(){
     const race = p === "D" ? "dem_primary" : "rep_primary";
     const end = latestFor(POLLS, race);
     const top = end ? averageAsOf(POLLS, race, end).list.filter(c => c.name !== "Undecided").sort((a, b) => b.pct - a.pct).slice(0, 4).map(c => c.name) : [];
-    palette[p] = [...top, "Other"].map((name, i) => ({ name, color: PRIM_COLORS[p][i] }));
+    palette[p] = [...top, "Other"].map((name, i) => ({ name, color: name === "Other" ? "#8c949e" : candColor(name) }));
   });
 }
 const primFill = st => { const i = primPick[primParty][st]; return i == null ? "var(--none)" : palette[primParty][i].color; };

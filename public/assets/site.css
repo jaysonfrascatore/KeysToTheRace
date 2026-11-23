@@ -1198,3 +1198,11 @@ html[data-theme="light"] .pos.yes,html[data-theme="light"] .pos.votedYes,html[da
 .lw-gate em{position:absolute;top:100%;left:50%;transform:translateX(-50%);font-style:normal;font-size:10px;font-weight:800;color:var(--gold);margin-top:2px}
 .launch{padding-bottom:12px}
 .trk-head b .up{color:var(--up)} .trk-head b .down{color:var(--down)}
+
+/* Candidate colors: a thin outline keeps dark colors visible on the dark theme and light colors on the light theme */
+:root{--case:rgba(255,255,255,.45)}
+:root[data-theme="light"]{--case:rgba(0,0,0,.32)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--case:rgba(0,0,0,.32)}}
+svg .case{stroke:var(--case)}
+svg .cdot{stroke:var(--case);stroke-width:1}
+.legend i,.tip i,.pc-l i,.pb-t i,.att-t i,#primKey i,#primTally i,#pathLegend i{box-shadow:0 0 0 1px var(--case)}

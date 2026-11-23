@@ -752,7 +752,7 @@ function renderMarketChart(sel, M, party, opts = {}){
   const max = isL ? 100 : Math.ceil(Math.max(...list.flatMap(c => c.series)) / 5) * 5 + 2;
   const x = i => L + (days.length === 1 ? (W - L - R) : i * (W - L - R) / (days.length - 1));
   const y = v => T + (1 - v / max) * (H - T - B);
-  const col = (c, i) => hi ? (c.id === hi ? "var(--gold)" : "var(--faint)") : LINE_COLORS[i % LINE_COLORS.length];
+  const col = (c, i) => hi && c.id !== hi ? "var(--faint)" : candColor(c.name);
   let g = "";
   for (let v = 0; v <= max; v += isL ? 25 : max > 40 ? 10 : 5) g += `<line class="gl" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${v}${isL ? "%" : ""}</text>`;
   const step = Math.max(1, Math.ceil(days.length / (narrow ? 4 : 8)));
@@ -770,9 +770,10 @@ function renderMarketChart(sel, M, party, opts = {}){
     const pts = hist(c).map((h, k) => [x(k + offset), y(h.v)]);
     if (pts.length === 1) pts.unshift([L, pts[0][1]]);
     const strong = !hi || c.id === hi;
+    if (strong) g += `<polyline class="case" fill="none" stroke-width="${c.id === hi ? 5.2 : 4}" stroke-linejoin="round" points="${pts.map(p => p.map(n => n.toFixed(1)).join(",")).join(" ")}"/>`;
     g += `<polyline data-id="${c.id}" fill="none" stroke="${col(c, i)}" stroke-width="${c.id === hi ? 3.2 : 2}" stroke-opacity="${strong ? 1 : .35}" stroke-linejoin="round" points="${pts.map(p => p.map(n => n.toFixed(1)).join(",")).join(" ")}"/>`;
     const [ex, ey] = pts.at(-1);
-    g += `${strong ? `<circle class="halo" cx="${ex}" cy="${ey}" r="4" fill="none" stroke="${col(c, i)}" stroke-width="1.5"/>` : ""}<circle class="${strong ? "blink" : ""}" cx="${ex}" cy="${ey}" r="${c.id === hi ? 5.5 : 4}" fill="${col(c, i)}" opacity="${strong ? 1 : .4}"/>`;
+    g += `${strong ? `<circle class="halo" cx="${ex}" cy="${ey}" r="4" fill="none" stroke="${col(c, i)}" stroke-width="1.5"/>` : ""}<circle class="${strong ? "blink" : ""} cdot" cx="${ex}" cy="${ey}" r="${c.id === hi ? 5.5 : 4}" fill="${col(c, i)}" opacity="${strong ? 1 : .4}"/>`;
     if (isL && c.id === hi) (c.statements || []).forEach(st => { const k = days.indexOf(st.date); if (k < 0) return;
       const sy = y(hist(c)[k].v), up = st.r > 0, zero = !st.r;
       g += `<g class="stm"><circle cx="${x(k)}" cy="${sy}" r="6.5" fill="var(--panel)" stroke="${zero ? "var(--ink-3)" : up ? "var(--up)" : "var(--down)"}" stroke-width="2.2"/><text x="${x(k)}" y="${sy + 3.6}" text-anchor="middle" style="font-size:9px;font-weight:800;fill:${zero ? "var(--ink-3)" : up ? "var(--up)" : "var(--down)"}">${zero ? "·" : up ? "+" : "−"}</text><title>${fd(st.date)} · ${st.label}: ${st.text.replace(/"/g, "&quot;")}</title></g>`; });
@@ -783,10 +784,10 @@ function renderMarketChart(sel, M, party, opts = {}){
   let lastY = -99;
   ends.forEach(e => { e.ly = Math.max(e.y, lastY + 13); lastY = e.ly; });
   ends.forEach(e => { if (!e.strong && hi) return;
-    g += `<text x="${W - R + 10}" y="${e.ly + 4}" style="fill:${col(e.c, e.i)};font-weight:800;font-size:${narrow ? 10.5 : 11.5}px">${last(e.c.name)} ${fmtV(now(e.c))}</text>`; });
+    g += `<circle class="cdot" cx="${W - R + 13}" cy="${e.ly}" r="4" fill="${candColor(e.c.name)}"/><text x="${W - R + 22}" y="${e.ly + 4}" style="fill:var(--ink);font-weight:800;font-size:${narrow ? 10.5 : 11.5}px">${last(e.c.name)} ${fmtV(now(e.c))}</text>`; });
   g += `<line class="xh" x1="0" x2="0" y1="${T}" y2="${H - B}" stroke="var(--ink-3)" stroke-dasharray="3 3" opacity="0"/>`;
   host.innerHTML = `<div class="chart-wrap"><svg class="chart mk" viewBox="0 0 ${W} ${H}" role="img" aria-label="${PARTY_NAME[party]} Candidate Index by day">${g}</svg><div class="tip" hidden></div></div>
-    <div class="legend">${list.map((c, i) => `<button type="button" data-id="${c.id}" class="${hi === c.id ? "on" : ""}"><i style="background:${LINE_COLORS[i % LINE_COLORS.length]}"></i>${c.name}</button>`).join("")}${hi ? `<button type="button" data-id="" class="clear">Show all</button>` : ""}</div>`;
+    <div class="legend">${list.map((c, i) => `<button type="button" data-id="${c.id}" class="${hi === c.id ? "on" : ""}"><i style="background:${candColor(c.name)}"></i>${c.name}</button>`).join("")}${hi ? `<button type="button" data-id="" class="clear">Show all</button>` : ""}</div>`;
   const svg = host.querySelector("svg"), tip = host.querySelector(".tip"), xh = svg.querySelector(".xh");
   svg.addEventListener("pointermove", e => {
     const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * W;
@@ -796,7 +797,7 @@ function renderMarketChart(sel, M, party, opts = {}){
     xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("opacity", .6);
     const rows = list.map((c, k) => { const h = hist(c).find(z => z.d === d); return h ? [c, k, h.v] : null; }).filter(Boolean).sort((a, b) => b[2] - a[2]);
     const said = isL ? list.flatMap(c => (c.statements || []).filter(st => st.date === d && (!hi || c.id === hi)).map(st => ({ c, st }))) : [];
-    tip.innerHTML = `<b>${fd(d)}</b>` + rows.map(([c, k, v]) => `<div><i style="background:${LINE_COLORS[k % LINE_COLORS.length]}"></i>${last(c.name)}<span>${fmtV(v)}</span></div>`).join("")
+    tip.innerHTML = `<b>${fd(d)}</b>` + rows.map(([c, k, v]) => `<div><i style="background:${candColor(c.name)}"></i>${last(c.name)}<span>${fmtV(v)}</span></div>`).join("")
       + said.map(({ c, st }) => `<p class="tip-q"><b>${last(c.name)} · ${st.label}</b>${st.text}${st.move != null ? `<em class="${st.move > 0 ? "up" : st.move < 0 ? "down" : ""}">${st.move >= 0 ? "+" : "−"}${Math.abs(st.move).toFixed(2)} pts that day</em>` : ""}</p>`).join("");
     tip.hidden = false;
     const left = (x(i) / W) * r.width;

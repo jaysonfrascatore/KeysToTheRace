@@ -42,6 +42,33 @@ window.SITE = {
   ]
 };
 
+/* Candidate colors: every line graph and bar graph uses these.
+   Add or change a color here and it changes everywhere. */
+window.CAND_COLORS = {
+  "Kamala Harris": "#03045e",
+  "Pete Buttigieg": "#b5e48c",
+  "Alexandria Ocasio-Cortez": "#d100d1",
+  "Gavin Newsom": "#00afb9",
+  "Andy Beshear": "#a7c957",
+  "Jon Ossoff": "#e3f2fd",
+  "Mark Kelly": "#004052",
+  "Marco Rubio": "#9d0208",
+  "JD Vance": "#d00000",
+  "Ron DeSantis": "#e56b6f",
+  "Johnny McEntee": "#ee9b00",
+  "Tucker Carlson": "#a61941",
+  "Glenn Youngkin": "#ffc300",
+  "Josh Hawley": "#621708",
+  // Not picked yet: placeholders until they get their own
+  "Josh Shapiro": "#8e9aaf",
+  "JB Pritzker": "#c9b38a",
+  "Cory Booker": "#b8a1ff",
+  "Gretchen Whitmer": "#f4a261",
+  "Donald Trump Jr.": "#7d8597",
+  "Ted Cruz": "#b08968"
+};
+window.candColor = name => window.CAND_COLORS[name] || "#8c949e";
+
 /* Theme helpers (the head of each page sets the starting theme before paint) */
 window.setTheme = function (t, quiet) {
   const h = document.documentElement;
