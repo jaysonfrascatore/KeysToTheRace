@@ -23,6 +23,12 @@ concurrency:
 
 jobs:
   deploy:
+    # After Model or Polls, only deploy when that run actually changed the site:
+    # a Polls run, or a live Model run started by hand. The daily staging run changes nothing live.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       (github.event.workflow_run.name == 'Polls' || github.event.workflow_run.event == 'workflow_dispatch'))
     runs-on: ubuntu-latest
     environment:
       name: github-pages
