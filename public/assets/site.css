@@ -1206,3 +1206,63 @@ html[data-theme="light"] .pos.yes,html[data-theme="light"] .pos.votedYes,html[da
 svg .case{stroke:var(--case)}
 svg .cdot{stroke:var(--case);stroke-width:1}
 .legend i,.tip i,.pc-l i,.pb-t i,.att-t i,#primKey i,#primTally i,#pathLegend i{box-shadow:0 0 0 1px var(--case)}
+
+/* ---------- Candidate photos: always clipped to the circle ----------
+   Safari lets an image with a drop shadow spill out of a rounded box, so every photo sits in its own
+   round frame that clips with clip-path. */
+.has-photo .ph{position:absolute;inset:0;border-radius:50%;overflow:hidden;clip-path:circle(50% at 50% 50%);-webkit-mask-image:-webkit-radial-gradient(white,black);z-index:1;pointer-events:none}
+.medal.has-photo .ph img{filter:none}
+.medal.has-photo .ph{filter:drop-shadow(0 6px 14px rgba(0,0,0,.35))}
+
+/* ---------- Phones: a smaller center card with one on each side ---------- */
+@media (max-width:560px){
+  .show-track{gap:8px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);padding-top:18px;padding-bottom:30px}
+  .prod{flex:0 0 72vw;max-width:300px;padding:16px 14px 14px;border-radius:18px;transform:scale(.9);opacity:.55}
+  .prod.active{transform:scale(1);opacity:1}
+  .lot{font-size:8px;letter-spacing:.14em;max-width:64px} .prod .tier{font-size:8px;padding:4px 7px;letter-spacing:.08em}
+  .medal{width:84px;height:84px;margin:8px auto 10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 0 0 4px var(--bg-2),0 0 0 5px var(--line-2),0 16px 30px -12px rgba(0,0,0,.7)}
+  .medal::after{inset:6px} .medal b{font-size:30px}
+  .prod h3{font-size:21px}
+  .prod .role{font-size:11px}
+  .price{margin-top:12px;padding-top:10px}
+  .price .lbl{font-size:8px;letter-spacing:.14em}
+  .price b.idx-num{font-size:36px}
+  .idx-num.locked{font-size:22px;gap:6px}
+  .prod .idx-num.locked{font-size:22px!important}
+  .gate-num{font-size:15px} .gate-num small{font-size:10px}
+  .price .chg{font-size:10.5px} .price .chg .gate-left{font-size:10px}
+  .trk{margin-top:10px} .trk-head span{font-size:8px;letter-spacing:.14em} .trk-head b{font-size:11px} .trk-head b small{font-size:9px}
+  .trk-tip{min-width:170px;font-size:11.5px}
+  .specs{gap:8px 10px;margin-top:10px;font-size:11.5px} .specs dt{font-size:8px;letter-spacing:.12em}
+  .prod .launch{margin-top:10px;padding-top:8px}
+  .lw-top .lbl{font-size:8px;letter-spacing:.12em} .lw-top{font-size:10px}
+  .lw-nums b{font-size:15px} .lw-nums small{font-size:9px}
+  .prod .cta-row{margin-top:14px;gap:6px}
+  .prod .cta-row .btn-gold,.prod .cta-row .btn-line{padding:10px 8px;font-size:9.5px;letter-spacing:.1em}
+  .show-nav{margin-top:-8px}
+}
+@media (max-width:560px){
+  .prod{flex-basis:clamp(236px,72vw,300px)}
+  .medal{width:70px;height:70px;margin:4px auto 8px} .medal::after{inset:5px} .medal b{font-size:26px}
+  .prod h3{font-size:19px} .prod .role{font-size:10.5px;margin-top:2px}
+  .price{margin-top:10px;padding-top:8px} .price b.idx-num{font-size:32px}
+  .trk svg.mini{height:58px;margin-top:4px}
+  .specs{gap:6px 10px;font-size:11px;line-height:1.3} .specs dt{font-size:7.5px}
+  .lw-nums{margin-top:3px} .lw-nums b{font-size:14px} .lw-bar{margin-top:5px;height:5px}
+  .prod .cta-row{margin-top:16px} .prod .cta-row .btn-gold,.prod .cta-row .btn-line{padding:9px 6px}
+}
+
+/* ---------- Phones: tables keep only the columns that matter ---------- */
+@media (max-width:640px){
+  .board{min-width:0;font-size:13px}
+  .board th,.board td{padding:11px 8px}
+  .board th{letter-spacing:.12em}
+  .board th:nth-child(3),.board td:nth-child(3),.board th:nth-child(5),.board td:nth-child(5),.board th:nth-child(7),.board td:nth-child(7),.board th:nth-child(9),.board td:nth-child(9){display:none}
+  .board .nm{gap:8px} .board .nm > div > div{display:none}
+  .board .px{font-size:19px}
+  .board .mini{width:30px;height:30px}
+}
+@media (max-width:560px){.prod .cta-row .btn-gold,.prod .cta-row .btn-line{white-space:nowrap;letter-spacing:.06em}}
+/* Small phones: keep the brand and both buttons on one line */
+@media (max-width:380px){.brand{gap:8px}.brand svg{width:24px;height:24px}.brand-word{font-size:17px}.icon-btn{width:34px;height:34px}.topbar{gap:6px 8px}}
+@media (max-width:380px){.seg button{padding:9px 12px;font-size:11px;letter-spacing:.08em}.seg.sm button{padding:7px 9px}}

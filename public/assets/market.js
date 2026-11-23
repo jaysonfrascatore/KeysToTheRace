@@ -74,7 +74,7 @@ async function findPhotos(list){
     for (const ext of PHOTO_TYPES) { const src = `${root}${PHOTO_DIR}${file}.${ext}`; if (await probe(src)) { PHOTO_FOUND[c.id] = src; return; } }
   }));
 }
-const medalInner = (c, size) => { const src = photoSrc(c.id); return src ? `<img src="${src}" alt="${c.name}" loading="lazy">` : `<b${size ? ` style="font-size:${size}"` : ""}>${c.mono}</b>`; };
+const medalInner = (c, size) => { const src = photoSrc(c.id); return src ? `<span class="ph"><img src="${src}" alt="${c.name}" loading="lazy"></span>` : `<b${size ? ` style="font-size:${size}"` : ""}>${c.mono}</b>`; };
 const PARTY_HEX = { D: "#3d6fc4", R: "#b8443f" };
 const PARTY_NAME = { D: "Democratic", R: "Republican" };
 
@@ -866,7 +866,7 @@ function renderBoard(sel, M, party){
     <table class="board"><thead><tr><th>#</th><th>Candidate</th><th>Party</th><th>Index</th><th>Change</th><th>Primary avg.</th><th>Tier</th><th>Launch Watch</th><th>If they announce</th></tr></thead>
     <tbody>${list.map((c, i) => `<tr data-open="${c.id}" tabindex="0">
       <td class="mono" style="color:var(--faint)">${i + 1}</td>
-      <td><div class="nm"><span class="mini ${photoSrc(c.id) ? "has-photo" : ""}" style="--pc:${PARTY_HEX[c.party]}">${photoSrc(c.id) ? `<img src="${photoSrc(c.id)}" alt="">` : c.mono.slice(0, 2)}</span><div>${c.name}<div style="font-size:12px;font-weight:500;color:var(--ink-3)">${c.meta.role}</div></div></div></td>
+      <td><div class="nm"><span class="mini ${photoSrc(c.id) ? "has-photo" : ""}" style="--pc:${PARTY_HEX[c.party]}">${photoSrc(c.id) ? `<span class="ph"><img src="${photoSrc(c.id)}" alt=""></span>` : c.mono.slice(0, 2)}</span><div>${c.name}<div style="font-size:12px;font-weight:500;color:var(--ink-3)">${c.meta.role}</div></div></div></td>
       <td class="party" style="color:${c.party === "D" ? "var(--dem)" : "var(--rep)"}">${c.party === "D" ? "DEM" : "GOP"}</td>
       <td class="px">${idxText(c)}</td>
       <td style="font-size:12.5px;font-weight:700">${indexUnlocked(c) ? changeText(c) : `<span class="gate-left">${toUnlock(c).toFixed(2)} pts to 65%</span>`}</td>

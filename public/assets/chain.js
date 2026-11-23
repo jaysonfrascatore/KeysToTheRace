@@ -21,7 +21,7 @@
   const STATE_NAMES = { AL: "Alabama", AR: "Arkansas", CA: "California", CO: "Colorado", IA: "Iowa", MA: "Massachusetts", ME: "Maine", MI: "Michigan", MN: "Minnesota",
     NC: "North Carolina", NH: "New Hampshire", NM: "New Mexico", NV: "Nevada", OK: "Oklahoma", SC: "South Carolina", TN: "Tennessee", TX: "Texas", UT: "Utah", VA: "Virginia", VT: "Vermont" };
   const ORD = n => n + (["th", "st", "nd", "rd"][(n % 100 - 20) % 10] || ["th", "st", "nd", "rd"][n % 100] || "th");
-  const token = (c, cls = "") => `<span class="tok ${cls} ${photoSrc(c.id) ? "has-photo" : ""}" style="--pc:${PARTY_HEX[c.party]}">${photoSrc(c.id) ? `<img src="${photoSrc(c.id)}" alt="">` : `<b>${c.mono.slice(0, 3)}</b>`}</span>`;
+  const token = (c, cls = "") => `<span class="tok ${cls} ${photoSrc(c.id) ? "has-photo" : ""}" style="--pc:${PARTY_HEX[c.party]}">${photoSrc(c.id) ? `<span class="ph"><img src="${photoSrc(c.id)}" alt=""></span>` : `<b>${c.mono.slice(0, 3)}</b>`}</span>`;
   const STANDING_TEXT = { midterms: { 1: "Won their own race", 0.5: "Campaigned for the party across states", "-1": "Lost their race" } };
 
   /* =========================================================
@@ -295,7 +295,7 @@
       // Every candidate
       const mxA = Math.max(...ranked.map(c => c.attention));
       $("#pathTable").innerHTML = `<table class="why-tbl path-tbl"><thead><tr><th>Candidate</th><th class="n">Runs</th><th class="n">Wins an early state</th><th class="n">Past Super Tuesday</th><th class="n">Nominee if they run</th><th class="n">Nominee</th><th>Attention Index</th></tr></thead><tbody>
-        ${ranked.map(c => { const m = byName(c.name); return `<tr data-open="${m ? m.id : ""}" tabindex="0"><td><div class="nm">${m ? `<span class="mini ${photoSrc(m.id) ? "has-photo" : ""}" style="--pc:${PARTY_HEX[m.party]}">${photoSrc(m.id) ? `<img src="${photoSrc(m.id)}" alt="">` : m.mono.slice(0, 2)}</span>` : ""}<div>${c.name}${m && m.status === "declared" ? ' <span class="chip live">Declared</span>' : ""}</div></div></td>
+        ${ranked.map(c => { const m = byName(c.name); return `<tr data-open="${m ? m.id : ""}" tabindex="0"><td><div class="nm">${m ? `<span class="mini ${photoSrc(m.id) ? "has-photo" : ""}" style="--pc:${PARTY_HEX[m.party]}">${photoSrc(m.id) ? `<span class="ph"><img src="${photoSrc(m.id)}" alt=""></span>` : m.mono.slice(0, 2)}</span>` : ""}<div>${c.name}${m && m.status === "declared" ? ' <span class="chip live">Declared</span>' : ""}</div></div></td>
           <td class="n">${pc(c.pRun, 0)}</td><td class="n">${pc(c.pEarlyWinIfRuns, 0)}</td><td class="n">${pc(c.pPastSuperTuesdayIfRuns, 0)}</td><td class="n">${pc(c.pNomineeIfRuns)}</td><td class="n"><b>${pc(c.pNominee)}</b></td>
           <td><div class="att"><div class="att-t"><i style="width:${(c.attention / mxA * 100).toFixed(1)}%;background:${color[c.name]}"></i></div><b>${c.attention.toFixed(1)}</b></div></td></tr>`; }).join("")}</tbody></table>`;
 

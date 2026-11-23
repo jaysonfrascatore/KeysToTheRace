@@ -3670,7 +3670,7 @@ function renderWhy(M){
     ${list.map((c, i) => { const st = c.statements.at(-1), ch = c.launchChange;
       return `<tr data-open="${c.id}" tabindex="0">
       <td class="mono" style="color:var(--faint)">${i + 1}</td>
-      <td><div class="nm"><span class="mini ${photoSrc(c.id) ? "has-photo" : ""}" style="--pc:${PARTY_HEX[c.party]}">${photoSrc(c.id) ? `<img src="${photoSrc(c.id)}" alt="">` : c.mono.slice(0, 2)}</span><div>${c.name}<div class="party-s" style="color:${c.party === "D" ? "var(--dem)" : "var(--rep)"}">${c.party === "D" ? "DEM" : "GOP"}</div></div></div></td>
+      <td><div class="nm"><span class="mini ${photoSrc(c.id) ? "has-photo" : ""}" style="--pc:${PARTY_HEX[c.party]}">${photoSrc(c.id) ? `<span class="ph"><img src="${photoSrc(c.id)}" alt=""></span>` : c.mono.slice(0, 2)}</span><div>${c.name}<div class="party-s" style="color:${c.party === "D" ? "var(--dem)" : "var(--rep)"}">${c.party === "D" ? "DEM" : "GOP"}</div></div></div></td>
       <td class="n"><b class="lw-pct">${pct2(c.launch)}</b><div class="lw-mini"><i style="width:${(c.launch * 100).toFixed(1)}%"></i></div></td>
       <td class="n ${ch > 0.005 ? "up" : ch < -0.005 ? "down" : ""}" style="white-space:nowrap">${Math.abs(ch) < 0.005 ? "Even" : (ch > 0 ? "▲ " : "▼ ") + Math.abs(ch).toFixed(2)}</td>
       <td class="words-cell">${st ? `<b class="${st.r > 0 ? "up" : st.r < 0 ? "down" : ""}">${st.label}</b> <span class="d">${fd(st.date)}</span><div class="sub">${st.text}</div>` : `<span style="color:var(--faint)">Nothing on the record yet</span>`}</td>
