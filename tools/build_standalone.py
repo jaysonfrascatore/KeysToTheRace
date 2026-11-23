@@ -40,7 +40,7 @@ for src, dst in PAGES.items():
 # Each page sits in its own frame inside one file, and the tabs switch between them.
 import json
 ALL = [("index.html", "landing", ""), ("home/index.html", "home", "home/"), ("candidates/index.html", "candidates", "candidates/"), ("polls/index.html", "polls", "polls/"),
-       ("races/index.html", "races", "races/"), ("matchups/index.html", "matchups", "matchups/"), ("tools/index.html", "tools", "tools/"), ("legislation/index.html", "legislation", "legislation/"),
+       ("races/index.html", "races", "races/"), ("matchups/index.html", "matchups", "matchups/"), ("tools/index.html", "tools", "tools/"), ("legislation/index.html", "legislation", "legislation/"), ("about/index.html", "about", "about/"),
        ("dates/index.html", "dates", "dates/"), ("florida/index.html", "florida", "florida/"), ("collection/index.html", "collection", "collection/")]
 ALL_LINKS = {href: "ktr:" + view for _, view, href in ALL}
 BRIDGE = """<script>
@@ -93,7 +93,7 @@ outer = """<!doctype html>
 /* Keys to the Race: every page in one file. */
 const PAGES = __PAGES__;
 const frames = {};
-const TITLES = { landing: "Key Candidates", home: "Home", candidates: "Key Candidates", polls: "Key Polls", races: "Key Races", matchups: "Key Matchups", tools: "Key Tools", legislation: "Key Legislation", dates: "Key Dates", florida: "The Florida Keys", collection: "The Collection" };
+const TITLES = { landing: "Key Candidates", home: "Home", candidates: "Key Candidates", polls: "Key Polls", races: "Key Races", matchups: "Key Matchups", tools: "Key Tools", legislation: "Key Legislation", about: "About", dates: "Key Dates", florida: "The Florida Keys", collection: "The Collection" };
 let toastT;
 function send(f, msg){ try { f.contentWindow.postMessage(msg, "*"); } catch (e) {} }
 function show(view, hash){

@@ -32,7 +32,8 @@ window.SITE = {
     { id: "legislation", label: "Key Legislation", href: "legislation/" },
     { id: "dates",      label: "Key Dates",        href: "dates/" },
     { id: "florida",    label: "The Florida Keys", href: "florida/" },
-    { id: "collection", label: "The Collection",   href: "collection/" }
+    { id: "collection", label: "The Collection",   href: "collection/" },
+    { id: "about",      label: "About",            href: "about/" }
   ]
 };
 

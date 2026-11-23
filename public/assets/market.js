@@ -863,7 +863,7 @@ function sourcesHTML(c){
     <div><h4>News and statements</h4><ul>${news.map(n => `<li><b>${fd(n.date)}</b> · <a href="${n.source_url}" target="_blank" rel="noopener">${n.source}</a>: ${n.headline}</li>`).join("") || "<li>Nothing on file yet</li>"}</ul></div>
     <div><h4>Method</h4><ul>
       <li>Weights: <a href="${tools}#maze">the Decision Maze in Key Tools</a></li>
-      <li>Pollster grades: Silver Bulletin 2025 ratings (A 1.00, B 0.85, C 0.65, D 0.25)</li>
+      <li>Pollster grades: each grade and who gave it are listed in data/pollsters.csv (A 1.00, B 0.85, C 0.65, D 0.25)</li>
       <li>Data files: data/polls.csv, data/news.csv, data/launch-log.csv (append-only)</li>
     </ul></div></div>`;
 }
