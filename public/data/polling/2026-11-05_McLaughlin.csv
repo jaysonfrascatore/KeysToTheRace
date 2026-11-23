@@ -1,0 +1,5 @@
+poll_id,pollster,start_date,end_date,release_date,race,matchup,population,total_sample,sample_type,moe,candidate,party,pct,rounded,source_url
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,vance-ocasio-cortez,Likely voters,1000,LV,,JD Vance,R,49,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,vance-ocasio-cortez,Likely voters,1000,LV,,Alexandria Ocasio-Cortez,D,39,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,rubio-ocasio-cortez,Likely voters,1000,LV,,Marco Rubio,R,48,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/
+mclaughlin-2026-11-05,McLaughlin & Associates,2026-10-30,2026-11-05,2026-11-05,general,rubio-ocasio-cortez,Likely voters,1000,LV,,Alexandria Ocasio-Cortez,D,38,0,https://www.pollcheck.co.uk/us/pollsters/mclaughlin-associates/

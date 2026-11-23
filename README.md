@@ -21,7 +21,7 @@ Election data, from the Florida Keys to the White House.
 ## Publish the site (first time and every update)
 
 1. Edit files in `public/`.
-2. If you changed `public/data/polls.csv` or `pollsters.csv`, run:
+2. If you added a poll to `public/data/polling/` or changed `pollsters.csv`, run (on GitHub this runs by itself):
 
        python tools/sync_fallback.py
 
@@ -136,3 +136,9 @@ year,date,outlet,project,summary,url
 
 `date` is optional (YYYY-MM-DD). Leave `url` empty and the row shows without a link. Newest rows sort to the top.
 Run `python tools/sync_fallback.py` after editing so the offline copy matches.
+
+## Polls
+
+Every poll is its own file in `public/data/polling/`, named like `2026-11-16_Emerson.csv`.
+The folder's README lists the columns. `public/data/polls.csv` is built from that folder, so don't edit it by hand.
+Upload a new poll file to the folder on GitHub and the Polls workflow checks it, rebuilds polls.csv and deploys.

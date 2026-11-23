@@ -4,7 +4,13 @@ Only matters for opening pages straight from your computer. Run it after
 editing the CSVs (or add it as a step in your update job):
     python tools/sync_fallback.py
 """
-import pathlib, re
+import pathlib, re, sys
+
+# Build polls.csv from the poll files in public/data/polling/ first
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from merge_polls import merge
+if not merge(verbose=False):
+    sys.exit(1)
 
 root = pathlib.Path(__file__).resolve().parent.parent / "public"
 csvs = {block: (root / "data" / name).read_text(encoding="utf-8").strip()

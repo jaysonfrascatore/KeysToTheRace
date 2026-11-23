@@ -8,7 +8,7 @@ on:
     branches: [main]
     paths: ["public/**", ".github/workflows/pages.yml"]
   workflow_run:
-    workflows: ["Model"]
+    workflows: ["Model", "Polls"]
     types: [completed]
   workflow_dispatch:
 

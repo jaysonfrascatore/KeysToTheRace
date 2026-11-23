@@ -1,0 +1,33 @@
+# Keys to the Race: polls
+#
+# Add a poll by dropping one CSV file into public/data/polling/ (on GitHub: open the folder,
+# Add file > Upload files, or Create new file). This workflow checks every poll file, rebuilds
+# public/data/polls.csv and the offline copies, and commits them. Cloudflare then deploys the update.
+# If a file has a problem, the run fails and the Actions page says which file and which line.
+name: Polls
+
+on:
+  push:
+    branches: [main]
+    paths: ["public/data/polling/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Check and merge the poll files
+        run: python tools/sync_fallback.py
+      - name: Save polls.csv
+        run: |
+          git config user.name "ktr-polls"
+          git config user.email "ktr-polls@users.noreply.github.com"
+          git add public
+          git diff --cached --quiet || git commit -m "Polls: merged public/data/polling/"
+          git push

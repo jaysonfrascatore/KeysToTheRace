@@ -30,7 +30,15 @@ def data_path(name):
     return os.path.join(PUBLIC, "data", name)
 
 
+def merge_polls():
+    """Rebuild data/polls.csv from the one-file-per-poll folder, data/polling/."""
+    tool = os.path.join(ROOT, "tools", "merge_polls.py")
+    if os.path.exists(tool):
+        subprocess.run([sys.executable, tool], check=True, stdout=subprocess.DEVNULL)
+
+
 def compute(args):
+    merge_polls()
     cfg = load_config()
     s1 = Stage1(cfg, read_csv(data_path("polls.csv")), read_csv(data_path("pollsters.csv")),
                 read_csv(data_path("news.csv")), today=args.date).run()

@@ -80,14 +80,24 @@ class Gate(Base):
 
 
 class History(Base):
-    def test_logged_days_match_the_model(self):
-        """Every day logged under the current method matches what the model gives today."""
-        method = self.cfg["stage1"]["method"]
-        log = {(r["candidate"], r["date"]): float(r["yes"]) for r in data("launch-log.csv") if r.get("method") == method}
-        for c in self.s1["candidates"]:
-            for d, v in c["launchHistory"]:
-                if (c["name"], d) in log:
-                    self.assertAlmostEqual(log[(c["name"], d)], v, places=3, msg=(c["name"], d))
+    def test_log_is_clean(self):
+        """One row per candidate per day, every value a probability, no gaps.
+
+        Logged days are frozen. A poll added late can change what the model would say about a past day,
+        but the log keeps what was published, so the two are not compared here."""
+        rows = data("launch-log.csv")
+        seen = set()
+        by_name = {}
+        for r in rows:
+            key = (r["candidate"], r["date"])
+            self.assertNotIn(key, seen, key)
+            seen.add(key)
+            self.assertTrue(0 <= float(r["yes"]) <= 100, key)
+            by_name.setdefault(r["candidate"], []).append(r["date"])
+        from ktr.data import date_range
+        for name, days in by_name.items():
+            days.sort()
+            self.assertEqual(days, date_range(days[0], days[-1]), name)
 
     def test_publishing_never_rewrites_history(self):
         from ktr import cli
