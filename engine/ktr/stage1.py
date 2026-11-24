@@ -193,19 +193,23 @@ class Stage1:
                     last = a
                 share_by_day[d] = {c["name"]: c["pct"] for c in last["list"] if is_named(c["name"])} if last else None
 
-            def weight_of(n, d):
-                s = self.status_on(n, d)
-                if s in ("undeclared", "exploring"):
-                    return 0.6 + 0.4 * self.launch_on(n, pct_of[n], d)
-                return self.s1["status"][s]
+            w = self.s1["indexWeights"]
 
             def index_on(d):
+                """Strength score, 0 to 100 for each candidate on their own:
+                polling against the leader (with any news lift, capped at full marks) plus chance to run."""
                 sh = share_by_day.get(d)
                 if not sh:
                     return None
-                st = {n: sh.get(n, 0) * weight_of(n, d) * (1 + self.boost_on(n, d)) for n in names}
-                tt = sum(st.values()) or 1
-                return {n: st[n] / tt * 100 for n in names}
+                lead = max(sh.get(n, 0) for n in names) or 1
+                out = {}
+                for n in names:
+                    if self.status_on(n, d) == "dropped":
+                        out[n] = 0.0
+                        continue
+                    poll = min(1.0, sh.get(n, 0) / lead * (1 + self.boost_on(n, d)))
+                    out[n] = 100 * (w["poll"] * poll + w["run"] * self.launch_on(n, pct_of[n], d))
+                return out
 
             by_day = [(d, index_on(d)) for d in self.days]
             now = by_day[-1][1]

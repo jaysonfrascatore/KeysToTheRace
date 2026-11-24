@@ -3694,7 +3694,7 @@ function renderScale(M){
     <div class="three">
       <div><span class="wpill">%</span><b>Launch Watch</b><p>The number. 0% to 100%. Declaring = 100%. A binding “I won't run” = 3%.</p></div>
       <div><span class="wpill">pts</span><b>Maze points</b><p>The why. Weight × reading for every element. 0 points = 25%, the starting line.</p></div>
-      <div><span class="wpill">idx</span><b>Index score</b><p>A different number: viability, 0 to 100, shared within each party. It answers “how strong,” not “will they run.”</p></div>
+      <div><span class="wpill">idx</span><b>Index score</b><p>A different number: strength, 0 to 100 for each candidate on their own. It answers “how strong,” not “will they run.”</p></div>
     </div>
     <h4 class="lw-h4">Points to percent</h4>
     <div class="tbl-wrap"><table class="maze-tbl pts-tbl"><thead><tr><th>Intent points</th>${steps.map(s => `<th class="n">${s > 0 ? "+" : s < 0 ? "−" : ""}${Math.abs(s)}</th>`).join("")}</tr></thead>

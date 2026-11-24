@@ -21,6 +21,7 @@ if (process.argv.includes("--config")) {
     statementScale: Object.fromEntries(STATEMENT_SCALE.map(s => [s.id, s.r])), launchWatchStart: LW_START,
     status: Object.fromEntries(Object.entries(STATUS).map(([k, v]) => [k, v.w])), newsHalfLife: NEWS_HALF_LIFE,
     indexUnlock: typeof INDEX_UNLOCK === "undefined" ? null : INDEX_UNLOCK,
+    indexWeights: typeof INDEX_WEIGHTS === "undefined" ? null : INDEX_WEIGHTS,
     announce: typeof ANNOUNCE === "undefined" ? null : ANNOUNCE })`, ctx));
   process.exit(0);
 }

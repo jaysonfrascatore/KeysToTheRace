@@ -12,6 +12,7 @@
     "strengthScale": 0.20,
     "ruledOut": 0.03,
     "indexUnlock": 0.649,
+    "indexWeights": { "poll": 0.6, "run": 0.4 },
     "_phases": "The Index unlocks in two stages: Contender above 64.9% to run (provisional Contender Index), Candidate at a formal declaration (official Candidate Index).",
     "announce": {
       "_about": "Chance they announce in the next 30 days = chance they run x the share of announcements that land in the next 30 days (from this calendar of usual timing in open-seat cycles), sped up by intent signals from the last 30 days: share = 1 - (1 - base)^exp(boost x recent intent points).",

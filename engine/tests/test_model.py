@@ -140,7 +140,7 @@ class Parity(Base):
         js = json.loads(subprocess.check_output([NODE, JS, PUBLIC, "--config"]))
         s1 = self.cfg["stage1"]
         for k in ("base", "intentScale", "strengthScale", "ruledOut", "keyStates", "standing", "home", "standingFrom",
-                  "elements", "statementScale", "launchWatchStart", "status", "newsHalfLife", "indexUnlock"):
+                  "elements", "statementScale", "launchWatchStart", "status", "newsHalfLife", "indexUnlock", "indexWeights"):
             self.assertEqual(js[k], s1[k], k)
         js_a, cfg_a = js["announce"], {k: v for k, v in s1["announce"].items() if not k.startswith("_")}
         self.assertEqual(js_a, cfg_a)

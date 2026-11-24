@@ -216,6 +216,10 @@ const LW_START = "2026-06-01";   // Launch Watch is scored from here (the Statem
 // The chain: news or a quote -> maze -> chance they run -> Index. The Index only unlocks once the
 // chance they run is above 64.9% (or they declare). Must match config/model.json (the tests check).
 const INDEX_UNLOCK = 0.649;
+/* The Index is a strength score from 0 to 100 for each candidate on their own:
+   60 points from polling (their primary average against the poll leader's, plus any news lift, capped at full marks)
+   and 40 points from their chance to run (100% once they declare). Scores don't add up to anything. */
+const INDEX_WEIGHTS = { poll: 0.6, run: 0.4 };
 const indexUnlocked = c => c.status === "declared" || c.launch > INDEX_UNLOCK;
 /* The Index unlocks in two stages:
      Watching   under 65% to run          Index locked
@@ -375,11 +379,14 @@ async function loadMarket(){
     const boostOn = (name, d) => news.reduce((t, n) => n.candidate === name && n.impact && n.date <= d ? t + n.impact * Math.pow(0.5, daysBetween(n.date, d) / NEWS_HALF_LIFE) : t, 0);
     const indexOn = (d, override = {}) => {
       const sh = shareByDay[d]; if (!sh) return null;
-      // Until someone declares, their weight rises with their chance of running (0.60 at 0%, 1.00 at 100%)
-      const weightOf = n => { const s = override[n] || statusOn(n, d); return s === "undeclared" || s === "exploring" ? 0.6 + 0.4 * launchOn(n, pctOf[n], d) : STATUS[s].w; };
-      const st = Object.fromEntries(names.map(n => [n, (sh[n] || 0) * weightOf(n) * (1 + boostOn(n, d))]));
-      const tt = Object.values(st).reduce((t, v) => t + v, 0) || 1;
-      return Object.fromEntries(names.map(n => [n, st[n] / tt * 100]));
+      const lead = Math.max(...names.map(n => sh[n] || 0)) || 1;
+      const runOf = n => override[n] === "declared" ? 1 : launchOn(n, pctOf[n], d);
+      const score = n => {
+        if ((override[n] || statusOn(n, d)) === "dropped") return 0;
+        const poll = Math.min(1, (sh[n] || 0) / lead * (1 + boostOn(n, d)));
+        return 100 * (INDEX_WEIGHTS.poll * poll + INDEX_WEIGHTS.run * runOf(n));
+      };
+      return Object.fromEntries(names.map(n => [n, score(n)]));
     };
     const byDay = M.days.map(d => ({ d, map: indexOn(d) }));
     const now = byDay.at(-1).map;
@@ -412,7 +419,7 @@ async function loadMarket(){
       }));
       return {
         id: slug(c.name), name: c.name, party: cfg.party, pct: c.pct, rounded: c.rounded,
-        index: now[c.name], pollIndex: c.pct / total * 100, total, fieldSize: named.length,
+        index: now[c.name], lead: Math.max(...named.map(x => x.pct)), total, fieldSize: named.length,
         history, series: history.map(h => h.v), listed: history[0] && history[0].d,
         change: history.length > 1 ? history.at(-1).v - history[0].v : null,
         dayChange: history.length > 1 ? history.at(-1).v - history.at(-2).v : null,
@@ -522,7 +529,7 @@ function trackChart(c, h = 92){
     const ch = prev == null ? "" : Math.abs(v - prev) < 0.005 ? `<div>Change<span>No change</span></div>`
       : `<div>Change<span class="${v > prev ? "up" : "down"}">${v > prev ? "+" : "−"}${Math.abs(v - prev).toFixed(2)}</span></div>`;
     tip.innerHTML = el.dataset.mode === "index"
-      ? `<b>${fd(day)}</b><div>${el.dataset.label}<span>${v.toFixed(1)} / 100</span></div>${ch}<p>100 is the most possible. All the ${el.dataset.party === "D" ? "Democrats" : "Republicans"} named add up to 100.</p>`
+      ? `<b>${fd(day)}</b><div>${el.dataset.label}<span>${v.toFixed(1)} / 100</span></div>${ch}<p>Scored on their own, out of 100. Up to 60 points from polling against the leader, up to 40 from their chance to run.</p>`
       : `<b>${fd(day)}</b><div>Chance they run<span>${v.toFixed(2)}%</span></div><div>Needed for Contender<span>${gate.toFixed(0)}%</span></div>${ch}`
         + (v > gate ? `<p>Above the line. The Index is open.</p>` : `<div>Still to go<span>${(gate - v + 0.01).toFixed(2)} pts</span></div><p>The Index stays locked until this passes 64.9%.</p>`);
     tip.hidden = false;
@@ -963,8 +970,14 @@ PDP.register("c", id => {
       <div class="chain-mini"><span>News or a quote</span><i>→</i><span>Decision Maze</span><i>→</i><span>${pct2(c.launch)} to run</span><i>→</i><span class="lk">${LOCK} Contender at 65%</span><i>→</i><span class="lk">${LOCK} Candidate at declaration</span></div>`}
       ${indexUnlocked(c) ? `<h3 style="margin-top:28px">How the ${PHASES[phaseOf(c)].idx} of ${price(c.index)} is built</h3>
       <p>${phaseOf(c) === "contender" ? `${last(c.name)} passed 65% to run, so the Index is open as a provisional Contender Index. A formal declaration makes it the official Candidate Index.` : `${last(c.name)} has formally declared, so this is the official Candidate Index.`}</p>
-      <p>${c.name.split(" ").slice(-1)[0]} is at ${pct(c.pct, c.rounded)} in the grade-weighted ${PARTY_NAME[c.party]} primary average, ranked ${c.rank} of ${c.fieldSize} named candidates. Everyone named adds up to ${c.total.toFixed(1)}%, so the Index is ${c.pct.toFixed(1)} ÷ ${c.total.toFixed(1)} × 100 = <b>${price(c.index)}</b>.${c.rounded ? " The pollster published this number rounded to a whole percent." : ""}</p>
-      <p>Then two things move it day to day. <b>Status</b>: until they declare, a candidate's weight rises with their Launch Watch chance, from 0.60 at 0% to 1.00 at 100%. Declaring lifts it to 1.00. ${c.ifDeclared != null ? `If ${last(c.name)} announced today, the Index would go from ${price(c.index)} to <b>${price(c.ifDeclared)}</b> (${signed(c.ifDeclared - c.index)}).` : `${last(c.name)} has declared.`} <b>News</b>: a big moment adds strength that fades by half every ${NEWS_HALF_LIFE} days.${c.boost > 0.001 ? ` Right now news adds ${(c.boost * 100).toFixed(1)}% to ${last(c.name)}'s strength.` : ""}</p>
+      ${(() => { const pollPts = 60 * Math.min(1, c.pct / c.lead * (1 + c.boost)), runPts = 40 * c.launch; return `
+      <p>The Index scores every candidate on their own, out of 100. It adds two parts.</p>
+      <div class="tbl-wrap"><table class="maze-tbl"><thead><tr><th>Part</th><th>What it measures</th><th class="n">Points</th></tr></thead><tbody>
+        <tr><td><b>Polling</b></td><td>${pct(c.pct, c.rounded)} in the ${PARTY_NAME[c.party]} primary average, against the leader's ${c.lead.toFixed(1)}%${c.boost > 0.001 ? `, plus a ${(c.boost * 100).toFixed(1)}% lift from recent news` : ""}. Up to 60.</td><td class="n">${pollPts.toFixed(1)}</td></tr>
+        <tr><td><b>Chance to run</b></td><td>${pct2(c.launch)} on Launch Watch${c.status === "declared" ? " (declared, so full marks)" : ""}. Up to 40.</td><td class="n">${runPts.toFixed(1)}</td></tr>
+        <tr><td><b>Index</b></td><td>Out of 100</td><td class="n"><b>${price(c.index)}</b></td></tr>
+      </tbody></table></div>
+      <p>${c.ifDeclared != null ? `If ${last(c.name)} announced today, the chance to run part would fill to 40 and the Index would go from ${price(c.index)} to <b>${price(c.ifDeclared)}</b> (${signed(c.ifDeclared - c.index)}).` : `${last(c.name)} has declared, so the chance to run part is full.`} A big news moment lifts the polling part for a while. That lift fades by half every ${NEWS_HALF_LIFE} days.${c.rounded ? " The pollster published the polling number rounded to a whole percent." : ""}</p>`; })()}
       <p>Endorsements and fundraising join as each tracker opens.</p>` : ""}
       <h3 style="margin-top:28px">Launch Watch: will ${last(c.name)} run?</h3>
       ${launchBar(c, true)}
