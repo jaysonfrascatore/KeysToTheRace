@@ -29,7 +29,7 @@ window.SITE = {
     { id: "races",      label: "Key Races",        href: "races/" },
     { id: "matchups",   label: "Key Matchups",     href: "matchups/" },
     { id: "tools",      label: "Key Tools",        href: "tools/" },
-    { id: "legislation", label: "Key Legislation", href: "legislation/" },
+    { id: "trackers",    label: "Key Trackers",     href: "trackers/" },
     { id: "dates",      label: "Key Dates",        href: "dates/" },
     { id: "florida",    label: "The Florida Keys", href: "florida/" },
     { id: "collection", label: "The Collection",   href: "collection/" }

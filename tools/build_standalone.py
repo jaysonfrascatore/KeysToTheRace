@@ -40,7 +40,7 @@ for src, dst in PAGES.items():
 # Each page sits in its own frame inside one file, and the tabs switch between them.
 import json
 ALL = [("index.html", "landing", ""), ("home/index.html", "home", "home/"), ("candidates/index.html", "candidates", "candidates/"), ("polls/index.html", "polls", "polls/"),
-       ("races/index.html", "races", "races/"), ("matchups/index.html", "matchups", "matchups/"), ("tools/index.html", "tools", "tools/"), ("legislation/index.html", "legislation", "legislation/"), ("methodology/index.html", "methodology", "methodology/"), ("contact/index.html", "contact", "contact/"), ("press/index.html", "press", "press/"),
+       ("races/index.html", "races", "races/"), ("matchups/index.html", "matchups", "matchups/"), ("tools/index.html", "tools", "tools/"), ("trackers/index.html", "trackers", "trackers/"), ("methodology/index.html", "methodology", "methodology/"), ("contact/index.html", "contact", "contact/"), ("press/index.html", "press", "press/"),
        ("dates/index.html", "dates", "dates/"), ("florida/index.html", "florida", "florida/"), ("collection/index.html", "collection", "collection/")]
 ALL_LINKS = {href: "ktr:" + view for _, view, href in ALL}
 BRIDGE = """<script>
@@ -69,6 +69,14 @@ for src, view, _ in ALL:
         js = (pub / "assets" / m.group(1)).read_text(encoding="utf-8").replace("</script", "<\\/script")
         return "<script>\n" + js + "\n</script>"
     html = re.sub(r'<script src="(?:\.\./)?assets/([\w.-]+\.js)"></script>', inline, html)
+    # Images that sit next to a page (like a tracker thumbnail) go in as data
+    def inline_img(m):
+        f = (pub / src).parent / m.group(1)
+        if not f.exists():
+            return m.group(0)
+        mime = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg", "webp": "image/webp"}[f.suffix[1:].lower()]
+        return 'src="data:%s;base64,%s"' % (mime, base64.b64encode(f.read_bytes()).decode())
+    html = re.sub(r'src="([\w.-]+\.(?:png|jpe?g|webp))"', inline_img, html)
     pages[view] = html
 pages_json = json.dumps(pages).replace("</", "<\\/")
 outer = """<!doctype html>
@@ -93,7 +101,7 @@ outer = """<!doctype html>
 /* Keys to the Race: every page in one file. */
 const PAGES = __PAGES__;
 const frames = {};
-const TITLES = { landing: "Key Candidates", home: "Home", candidates: "Key Candidates", polls: "Key Polls", races: "Key Races", matchups: "Key Matchups", tools: "Key Tools", legislation: "Key Legislation", methodology: "Methodology", contact: "Contact", press: "In the News", dates: "Key Dates", florida: "The Florida Keys", collection: "The Collection" };
+const TITLES = { landing: "Key Candidates", home: "Home", candidates: "Key Candidates", polls: "Key Polls", races: "Key Races", matchups: "Key Matchups", tools: "Key Tools", trackers: "Key Trackers", methodology: "Methodology", contact: "Contact", press: "In the News", dates: "Key Dates", florida: "The Florida Keys", collection: "The Collection" };
 let toastT;
 function send(f, msg){ try { f.contentWindow.postMessage(msg, "*"); } catch (e) {} }
 function show(view, hash){

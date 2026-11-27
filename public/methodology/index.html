@@ -45,7 +45,7 @@
       <a href="#overview">Overview</a><a href="#data">Data</a><a href="#polls">Polls</a><a href="#launch">Launch</a><a href="#maze">Maze</a>
       <a href="#statements">Statements</a><a href="#chain">Chain</a><a href="#index">Index</a><a href="#announcements">Announcements</a>
       <a href="#cards">Cards</a><a href="#market">Market</a><a href="#primaries">Primaries</a><a href="#forecast">Forecast</a>
-      <a href="#legislation">Legislation</a><a href="#debates">Debates</a><a href="#history">History</a><a href="#estimates">Estimates</a>
+      <a href="#trackers">Trackers</a><a href="#debates">Debates</a><a href="#history">History</a><a href="#estimates">Estimates</a>
       <a href="#limits">Limits</a><a href="#updates">Updates</a><a href="#ads">Ads</a><a href="#corrections">Corrections</a>
     </nav>
 
@@ -53,7 +53,7 @@
 
       <article id="overview">
         <h2>Overview</h2>
-        <p>Keys to the Race is an election data website for every level. It covers everything from Florida to the White House. That means candidates, polls, races, forecasts, vote tracking and legislation.</p>
+        <p>Keys to the Race is an election data website for every level. It covers everything from Florida to the White House. That means candidates, polls, races, forecasts and vote tracking.</p>
         <p>I built it because most forecasts hand you a number and ask you to trust it. You rarely see the rules behind it. You almost never see what moved it. I wanted the opposite. Every number on this site comes from a written rule. Every rule has a weight. Every input has a date and a source.</p>
         <p>This page explains all of it. It covers the data, the math, the charts and the colors. It also lists every place where I made a judgment call instead of using hard data. If something on the site isn't explained here, that's a mistake on my part, and I want to hear about it.</p>
         <p>I'm Jayson Frascatore. I'm a data and quality assurance analyst. I worked on the polling averages and forecast models that The Hill and NewsNation relied on at Decision Desk HQ. I write about politics, and I build these tools in Python and HTML.</p>
@@ -70,7 +70,6 @@
             <tr><td><b>news.csv</b></td><td>Every dated statement, trip, ad and news event that moves a number.</td><td>News reports and public statements. Every row has a link.</td></tr>
             <tr><td><b>The launch log</b></td><td>Each candidate's chance of running, saved once per day.</td><td>The model itself. Past days are never rewritten.</td></tr>
             <tr><td><b>primary.json</b></td><td>The results of the primary simulations.</td><td>The model, run in Python.</td></tr>
-            <tr><td><b>legislation</b> folder</td><td>All 535 members of Congress, the bills being tracked, and each member's votes and statements.</td><td>The member list comes from the public congress legislators project on GitHub. Votes come from the House Clerk and the Senate.</td></tr>
             <tr><td><b>model.json</b></td><td>Every weight and setting the model uses, in one place.</td><td>My choices, written down before the data they score.</td></tr>
           </tbody>
         </table></div>
@@ -369,30 +368,11 @@
         <p>Build Your Map lets you color the map yourself with the same seven ratings. The Primary map and the Senate view sit on the same page.</p>
       </article>
 
-      <article id="legislation">
-        <h2>Legislation</h2>
-        <p>Key Legislation tracks where every member of Congress stands on major bills. It covers all 100 senators and every seated House member. It works like The 29th Vote, my tracker for the Senate Democratic leadership race.</p>
-        <p>Each member starts at their party's starting point for that bill. That starting point comes from how the party's leaders and members have lined up. Then four kinds of signals move them.</p>
-        <div class="tbl-wrap"><table class="maze-tbl about-tbl">
-          <thead><tr><th>Signal</th><th class="n">Weight</th><th>How it works</th></tr></thead>
-          <tbody>
-            <tr><td>Public statement</td><td class="n">2.00</td><td>Their latest stand on the bill, from "I'm a yes" at +1 to "I'm a no" at −1. A public switch replaces what came before.</td></tr>
-            <tr><td>Past vote</td><td class="n">1.00</td><td>How they voted on a similar bill before</td></tr>
-            <tr><td>Leadership</td><td class="n">0.50</td><td>What party leaders and committee chairs are asking for</td></tr>
-            <tr><td>Policy</td><td class="n">0.50</td><td>Their stated policy positions</td></tr>
-          </tbody>
-        </table></div>
-        <p>Each point is worth 1.5 on the log odds scale. One firm public "no" takes a member who started at 70% down to about 10%. A recorded vote on the bill itself locks them in.</p>
-        <p>Every member is sorted into a group by their chance of voting yes. "Yes" is 85% or more. "Lean yes" is 60% to 85%. "Undecided" is 40% to 60%. "Lean no" is 15% to 40%. "No" is under 15%. Recorded votes show as "Voted yes" or "Voted no."</p>
-        <p>Then the bill is voted on 11,111 times. In each run, members of the same party can drift together, and a few members miss the vote. The House needs a majority of the members voting. The Senate needs 60 votes to end a filibuster, or a simple majority with the Vice President breaking ties.</p>
-        <h3>Visuals</h3>
-        <ul class="about-key">
-          <li><i class="sw up"></i><span><b>The seat chart</b> draws every member as a dot. Democrats sit on the left and Republicans on the right. Members voting yes sit toward the middle. The ring around each dot is their party color, and the fill is their position.</span></li>
-          <li><i class="sw gold"></i><span><b>The whip bar</b> counts each group from yes to no. The black line marks how many votes it takes to pass.</span></li>
-          <li><i class="sw down"></i><span><b>The trend chart</b> shows the chance the bill passes over time, green for yes and red for no.</span></li>
-          <li><i class="sw ink"></i><span><b>The simulation chart</b> shows how many yes votes the bill got across every run. Green bars pass and red bars fail.</span></li>
-        </ul>
-        <p>No bills are being tracked right now. The 120th Congress starts in January 2027, and tracking will begin when major legislation is introduced.</p>
+      <article id="trackers">
+        <h2>Trackers</h2>
+        <p>Key Trackers follow one fight at a time, where the outcome comes down to a count. A tracker starts when a major political event needs a tally. That could be a leadership race, major legislation, a potential impeachment, calls to resign, or an expulsion.</p>
+        <p>Every tracker is built for its own fight. There's no single weight that applies to all of them. Each one explains its own rules, its own sources and its own math on its page.</p>
+        <p>The first is The 29th Vote. It tracks which Senate Democrats publicly back Chuck Schumer for Majority Leader. It takes 29 of the 56 votes to win.</p>
       </article>
 
       <article id="debates">

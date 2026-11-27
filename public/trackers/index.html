@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Key Trackers</title>
+<meta name="description" content="Key Trackers: running tallies for the biggest fights in politics, from leadership races to major legislation, impeachments, resignation calls and expulsions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<meta name="theme-color" content="#0b0a08">
+<script>
+/* Theme: dark by default; the sun/moon button switches it and the choice is saved.
+   Add ?theme=light or ?theme=dark to the URL to preview. */
+(function () {
+  let t = "dark";
+  try { t = localStorage.getItem("ktr-theme") || "dark"; } catch (e) {}
+  const q = new URLSearchParams(location.search).get("theme");
+  if (q === "light" || q === "dark") t = q;
+  const h = document.documentElement;
+  h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+})();
+</script>
+</head>
+<body>
+
+<header class="nav" data-nav data-root="../" data-active="trackers"></header>
+
+<main>
+<section class="page-hero">
+  <div class="wrap" data-head>
+    <h1>Key <span>Trackers.</span></h1>
+    <p>Some fights come down to a count. Each tracker follows one of them, member by member, with its own rules and its own math.</p>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="trackers">
+      <a class="tracker" href="https://jaysonfrascatore.github.io/The29thVote/" target="_blank" rel="noopener" data-reveal>
+        <div class="tracker-art"><img src="the-29th-vote.png" alt="The 29th Vote: a seat chart of all 56 Senate Democrats and where they stand" loading="lazy" width="1200" height="630"></div>
+        <div class="tracker-body">
+          <div class="eyebrow">Senate leadership · 2026</div>
+          <h3>The 29th Vote</h3>
+          <p>Tracking which Senate Democrats publicly back Chuck Schumer for Majority Leader, and who's still holding out. It takes 29 votes to win.</p>
+          <span class="go">Open the tracker →</span>
+        </div>
+      </a>
+      <div class="tracker tracker-soon" data-reveal>
+        <div class="tracker-art soon-art" aria-hidden="true">
+          <svg viewBox="0 0 240 126"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 5" opacity=".55">
+            <path d="M30 110a90 90 0 0 1 180 0"/><path d="M55 110a65 65 0 0 1 130 0"/><path d="M80 110a40 40 0 0 1 80 0"/></g>
+            <line x1="120" y1="18" x2="120" y2="110" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 4" opacity=".7"/></svg>
+        </div>
+        <div class="tracker-body">
+          <div class="eyebrow">In the wings</div>
+          <h3>More Trackers Coming Soon</h3>
+          <p>A tracker will be formed when a major political event where keeping a tally will be necessary. Anywhere from leadership, major legislation, potential impeachments, resignation calls, or even expulsions if necessary.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer data-footer data-root="../"></footer>
+
+<script>window.PAGE_ROOT = "../";</script>
+<script src="../assets/nav.js"></script>
+<script src="../assets/common.js"></script>
+</body>
+</html>

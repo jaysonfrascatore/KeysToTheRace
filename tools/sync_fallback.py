@@ -16,8 +16,7 @@ root = pathlib.Path(__file__).resolve().parent.parent / "public"
 csvs = {block: (root / "data" / name).read_text(encoding="utf-8").strip()
         for name, block in [("polls.csv", "polls-fallback"), ("pollsters.csv", "pollsters-fallback"), ("news.csv", "news-fallback"),
                             ("launch-log.csv", "launch-log-fallback"), ("primary.json", "primary-fallback"),
-                            ("legislation/members.csv", "leg-members-fallback"), ("legislation/bills.csv", "leg-bills-fallback"),
-                            ("legislation/positions.csv", "leg-positions-fallback"), ("legislation/log.csv", "leg-log-fallback"), ("press.csv", "press-fallback")]
+                            ("press.csv", "press-fallback")]
         if (root / "data" / name).exists()}
 
 for page in sorted(root.glob("*/index.html")) + [root / "index.html"]:
