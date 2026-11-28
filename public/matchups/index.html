@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#e7ecef}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Matchups</title>
 <meta name="description" content="The 2028 presidential forecast: Electoral Vote Probability, 11,111 simulations, a build-your-own map, primary maps and Senate matchups.">
@@ -69,6 +69,9 @@ html.dark{ --none:#2a261f; --leanR:#d98a84; --leanD:#8eaee6; }
 .pbar i{display:block;height:100%}
 .rchip{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:999px;color:#fff;white-space:nowrap}
 .rchip.toss{color:var(--on-accent)}
+/* Dark text on the lighter rating colors so the numbers stay readable */
+.st-chip.toss,.rchip.toss,.evbar span.toss{color:#1a1407;text-shadow:none}
+.r-leanD,.r-leanR,.r-likelyD,.r-likelyR{color:#0b1220 !important;text-shadow:none !important}
 
 /* Tables */
 .tbl-wrap{overflow-x:auto}
@@ -151,7 +154,7 @@ select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(-
   const h = document.documentElement;
   h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
   const m = document.querySelector('meta[name="theme-color"]');
-  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#e7ecef");
 })();
 </script>
 </head>
@@ -426,11 +429,11 @@ function drawMap(svgSel, fillFor, onClick){
   svg.querySelectorAll("path").forEach(p => p.addEventListener("click", () => onClick(p.dataset.st)));
 }
 function chipRow(sel, list, fillFor, ratingOf, onClick){
-  $(sel).innerHTML = list.map(ab => `<button class="st-chip ${ratingOf(ab) === "toss" ? "toss" : ""}" data-st="${ab}" style="background:${fillFor(ab)}">${ab} <small>${EV[ab]}</small></button>`).join("");
+  $(sel).innerHTML = list.map(ab => `<button class="st-chip ${ratingOf(ab) === "toss" ? "toss" : ""} r-${ratingOf(ab) || "none"}" data-st="${ab}" style="background:${fillFor(ab)}">${ab} <small>${EV[ab]}</small></button>`).join("");
   $$(sel + " .st-chip").forEach(b => b.addEventListener("click", () => onClick(b.dataset.st)));
 }
 function evBar(sel, counts){
-  $(sel).innerHTML = R7.map(r => counts[r] ? `<span class="${r === "toss" ? "toss" : ""}" style="width:${counts[r] / 538 * 100}%;background:${RCOL(r)}" title="${RLABEL[r]}: ${counts[r]}">${counts[r] >= 18 ? counts[r] : ""}</span>` : "").join("") + `<i class="mark"></i>`;
+  $(sel).innerHTML = R7.map(r => counts[r] ? `<span class="${r === "toss" ? "toss" : ""} r-${r}" style="width:${counts[r] / 538 * 100}%;background:${RCOL(r)}" title="${RLABEL[r]}: ${counts[r]}">${counts[r] >= 18 ? counts[r] : ""}</span>` : "").join("") + `<i class="mark"></i>`;
 }
 
 /* =========================================================
@@ -474,7 +477,7 @@ function renderForecast(){
     const tp = (sim.tipping.find(t => t.st === s.st) || { share: 0 }).share;
     return `<tr class="click" data-st="${s.st}"><td><b>${s.name}</b></td><td class="num">${s.ev}</td><td class="num">${fmtM(s.m24)}</td><td class="num" style="color:${s.margin >= 0 ? "var(--dem)" : "var(--rep)"}">${fmtM(s.margin)}</td>
       <td><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800"><span style="color:var(--dem)">${pc(s.pD)}</span><span style="color:var(--rep)">${pc(1 - s.pD)}</span></div><div class="pbar" style="margin-top:4px"><i style="width:${s.pD * 100}%;background:var(--dem)"></i><i style="flex:1;background:var(--rep)"></i></div></td>
-      <td><span class="rchip ${s.rating === "toss" ? "toss" : ""}" style="background:${RCOL(s.rating)}">${RLABEL[s.rating]}</span></td><td class="num">${tp ? pc1(tp) : "—"}</td></tr>`; }).join("")}</tbody>`;
+      <td><span class="rchip ${s.rating === "toss" ? "toss" : ""} r-${s.rating}" style="background:${RCOL(s.rating)}">${RLABEL[s.rating]}</span></td><td class="num">${tp ? pc1(tp) : "—"}</td></tr>`; }).join("")}</tbody>`;
   $$("#playTbl tr.click").forEach(tr => tr.addEventListener("click", () => { showState(tr.dataset.st); $("#fMap").scrollIntoView({ behavior: "smooth", block: "center" }); }));
 
   drawTrend(trend);
@@ -489,7 +492,7 @@ function showState(st){
   $("#fDetail").innerHTML = `
     <div class="eyebrow">${s.ev} electoral vote${s.ev === 1 ? "" : "s"}</div>
     <h3 style="margin-top:6px">${s.name}</h3>
-    <span class="rchip ${s.rating === "toss" ? "toss" : ""}" style="background:${RCOL(s.rating)};margin-top:10px">${RLABEL[s.rating]}</span>
+    <span class="rchip ${s.rating === "toss" ? "toss" : ""} r-${s.rating}" style="background:${RCOL(s.rating)};margin-top:10px">${RLABEL[s.rating]}</span>
     <div class="big" style="color:${s.margin >= 0 ? "var(--dem)" : "var(--rep)"}">${fmtM(s.margin)}</div>
     <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:800;margin-top:14px"><span style="color:var(--dem)">D ${pc(s.pD)}</span><span style="color:var(--rep)">R ${pc(1 - s.pD)}</span></div>
     <div class="pbar"><i style="width:${s.pD * 100}%;background:var(--dem)"></i><i style="flex:1;background:var(--rep)"></i></div>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#e7ecef}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Methodology</title>
 <meta name="description" content="The Unlock The Count methodology: where every number comes from, how each one is built, and what every chart and color on the site means.">
@@ -22,7 +22,7 @@
   const h = document.documentElement;
   h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
   const m = document.querySelector('meta[name="theme-color"]');
-  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#e7ecef");
 })();
 </script>
 </head>
@@ -88,7 +88,7 @@
 
       <article id="probability">
         <h2>Probability</h2>
-        <p>Part 1 of Candidates is Presidential Probability. It answers one question: will this person declare a candidacy for president in 2028? The answer is a probability from 0% to 100%.</p>
+        <p>Presidential Probability is the first half of Candidates. It answers one question: will this person declare a candidacy for president in 2028? The answer is a probability from 0% to 100%.</p>
         <p>I chose a probability on purpose. A score from 0 to 100 can't be checked. A probability can. If the site puts ten people at 30%, about three of them should declare. When the field is set, every call will be graded in public.</p>
         <p>Everyone starts at 25%. That's the starting line before any evidence. From there, the Decision Maze adds or subtracts points, and the points turn into the probability. A formal declaration sets the chance to 100%. A binding promise not to run sets it to 3%. Dropping out sets it to 0%.</p>
         <p>Nothing is added up into a single score. Each card and profile lists every input with its weight and the candidate's reading, one by one.</p>
@@ -97,7 +97,7 @@
         <div class="about-steps">
           <div><b>Watching</b><span>65% or under</span><p>Most people start here.</p></div>
           <div><b>Contender</b><span>Above 64.9%</span><p>Likely to declare, but they haven't yet.</p></div>
-          <div><b>Candidate</b><span>Formally declared</span><p>They move to Part 2, and their Viability Market opens.</p></div>
+          <div><b>Candidate</b><span>Formally declared</span><p>Their Viability Market opens.</p></div>
         </div>
         <h3>Charts</h3>
         <p>Every trend line uses the same fixed scale from 0% to 100%. Nothing is stretched to fit, so a flat line near 30% looks low because it is low. Each line is that candidate's own chance, so two candidates in the same party can both be high. Lines use each candidate's own color with a light outline so dark colors stay visible.</p>
@@ -206,14 +206,14 @@
           <li><i class="sw up"></i><span><b>The bar</b> is in the candidate's color, on a scale from 0% to 100%.</span></li>
           <li><i class="sw ink"></i><span><b>The trend</b> covers the last 60 days on a fixed 0% to 100% scale.</span></li>
           <li><i class="sw ink"></i><span><b>Primary average</b> is their share in the weighted polling average.</span></li>
-          <li><i class="sw gold"></i><span><b>View Profile</b> opens their full profile. <b>Viability Market</b> opens Part 2 for that candidate.</span></li>
+          <li><i class="sw gold"></i><span><b>View Profile</b> opens their full profile. <b>Viability Market</b> opens that candidate's market.</span></li>
         </ul>
         <p>The profile shows the trend with each move numbered, a list of those moves with what caused them, the simulation squares, every input with its weight and their reading, and the sources. Inputs are never totaled into a score.</p>
       </article>
 
       <article id="market">
         <h2>Viability Market</h2>
-        <p>Part 2 is the Viability Market: unlocking the path to the nomination. Each candidate's market opens the day they declare. It follows their odds in the early states, past Super Tuesday, in the delegate count and to the nomination. Every candidate has a link of their own, like /candidates/kamala-harris/market.</p>
+        <p>The Viability Market is the second half of Candidates: unlocking the path to the nomination. Each candidate's market opens the day they declare. It follows their odds in the early states, past Super Tuesday, in the delegate count and to the nomination. Every candidate has a link of their own, like /candidates/kamala-harris/market.</p>
         <p>Before a candidate declares, their market shows a forecast instead: where they would likely poll in the primary if they ran. The sentence reads, for example, "If Kamala Harris announces a presidential run, Harris is forecasted to poll as a potential frontrunner in the primary, based on weighted inputs and models."</p>
         <h3>Inputs</h3>
         <div class="tbl-wrap"><table class="maze-tbl about-tbl">

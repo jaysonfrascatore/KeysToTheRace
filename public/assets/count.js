@@ -51,7 +51,8 @@ function trendSVG(c, o = {}){
     const i = pts.findIndex(p => p.d === m.d); if (i < 0) return;
     dots += `<circle cx="${x(i).toFixed(1)}" cy="${y(pts[i].v).toFixed(1)}" r="${o.dot || 5}" class="t-dot"/><text x="${x(i).toFixed(1)}" y="${(y(pts[i].v) + (m.up ? -11 : 19)).toFixed(1)}" text-anchor="middle" class="t-num">${m.n}</text>`;
   });
-  return `<svg class="trend" viewBox="${o.left ? -o.left : -36} -10 ${W + (o.left || 36)} ${H + 20}" role="img" aria-label="${c.name}: Presidential Probability from ${P1(pts[0].v)} on ${fd(pts[0].d)} to ${P1(pts.at(-1).v)} today, on a 0 to 100 percent scale">
+  const data = pts.map(p => p.d + "," + p.v.toFixed(2)).join(";");
+  return `<svg class="trend" data-pts="${data}" data-w="${W}" data-h="${H}" viewBox="${o.left ? -o.left : -36} -10 ${W + (o.left || 36)} ${H + 20}" role="img" aria-label="${c.name}: Presidential Probability from ${P1(pts[0].v)} on ${fd(pts[0].d)} to ${P1(pts.at(-1).v)} today, on a 0 to 100 percent scale">
     <g class="t-ax" font-size="${fs}" text-anchor="end"><text x="${lx}" y="${fs * 0.35}">100%</text><text x="${lx}" y="${H / 2 + fs * 0.35}">50%</text><text x="${lx}" y="${H + fs * 0.35}">0%</text></g>
     <line x1="0" x2="${W}" y1="0" y2="0" class="t-top"/><line x1="0" x2="${W}" y1="${H / 2}" y2="${H / 2}" class="t-mid"/><line x1="0" x2="${W}" y1="${H}" y2="${H}" class="t-base"/>
     <polyline class="t-case" points="${line}" style="stroke-width:${o.sw ? o.sw + 2 : 4.5}"/>
@@ -84,43 +85,131 @@ function probCard(c, M){
   </article>`;
 }
 
-/* Desktop shows five cards (two fading on each side), phones show three. */
+/* The cards. The center one is full size; the rest step down and fade toward the edges,
+   and the row always reaches both sides of the screen. They fade in when the page opens,
+   then move on their own: one candidate every 15 seconds. Hovering over or clicking the
+   center card holds it; 5 seconds after you leave or click elsewhere, it moves again. */
+const CYCLE_MS = 15000, RESUME_MS = 5000;
 function renderCarousel(sel, list, M, opts = {}){
-  const host = document.querySelector(sel); if (!host) return;
-  const n = list.length; let cur = Math.max(0, list.findIndex(c => c.id === opts.focus));
+  const host = document.querySelector(sel); if (!host || !list.length) return;
+  if (host._stop) host._stop();
+  const n = list.length, reps = Math.max(1, Math.ceil(15 / n)), ring = Array.from({ length: n * reps }, (_, i) => list[i % n]), m = ring.length;
+  let cur = Math.max(0, list.findIndex(c => c.id === opts.focus));
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   host.innerHTML = `<div class="cd-stage" tabindex="0" role="region" aria-roledescription="carousel" aria-label="${opts.label || "Candidates"}">
-      <div class="cd-track">${list.map((c, i) => `<div class="cd-slot" data-i="${i}">${probCard(c, M)}</div>`).join("")}</div></div>
-    <div class="cd-ctl"><button type="button" class="cd-arrow" data-d="-1" aria-label="Previous candidate">←</button><span class="cd-count" aria-live="polite"></span><button type="button" class="cd-arrow" data-d="1" aria-label="Next candidate">→</button></div>`;
+      <div class="cd-track">${ring.map((c, i) => `<div class="cd-slot" data-i="${i}">${probCard(c, M)}</div>`).join("")}</div></div>
+    <div class="cd-ctl">
+      <button type="button" class="cd-arrow" data-d="-1" aria-label="Previous candidate">←</button>
+      <div class="cd-mid"><span class="cd-count" aria-live="polite"></span><span class="cd-prog" aria-hidden="true"><i></i></span><span class="cd-state"></span></div>
+      <button type="button" class="cd-play" aria-label="Pause the cards"></button>
+      <button type="button" class="cd-arrow" data-d="1" aria-label="Next candidate">→</button>
+    </div>`;
   const stage = host.querySelector(".cd-stage"), slots = [...host.querySelectorAll(".cd-slot")];
-  const place = () => {
-    const phone = matchMedia("(max-width: 640px)").matches;
+  const bar = host.querySelector(".cd-prog i"), stateEl = host.querySelector(".cd-state"), playBtn = host.querySelector(".cd-play");
+  const PAUSE_IC = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>`;
+  const PLAY_IC = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
+
+  const place = (first) => {
+    const phone = matchMedia("(max-width: 640px)").matches, half = stage.clientWidth / 2;
     const cw = slots[0].firstElementChild.offsetWidth, gap = phone ? 8 : 18;
-    const S = phone ? [1, .88, .76] : [1, .9, .8], O = phone ? [1, .5, 0] : [1, .45, .22];
-    const dx = [0, cw * (S[0] + S[1]) / 2 + gap, cw * (S[0] + S[1]) / 2 + gap + cw * (S[1] + S[2]) / 2 + gap];
+    const S = k => k === 0 ? 1 : phone ? .88 : k === 1 ? .9 : .8;
+    const O = k => [1, phone ? .5 : .45, phone ? .22 : .24, .12, .07, .04][Math.min(k, 5)];
+    const dx = [0]; let maxK = 0;
+    // Add cards outward until one sits fully past the edge, so the row never ends on screen
+    while (dx[maxK] - cw * S(maxK) / 2 < half && maxK < Math.floor((m - 1) / 2)) { dx.push(dx[maxK] + cw * (S(maxK) + S(maxK + 1)) / 2 + gap); maxK++; }
     slots.forEach((el, i) => {
-      let o = ((i - cur) % n + n) % n; if (o > n / 2) o -= n;
-      const a = Math.abs(o), k = Math.min(a, 2), far = a > 2;
-      el.style.transform = `translateX(${(Math.sign(o) * (far ? dx[2] + cw : dx[k])).toFixed(1)}px) scale(${far ? S[2] : S[k]})`;
-      el.style.opacity = far ? 0 : O[k];
-      el.style.zIndex = 10 - a;
+      let o = ((i - cur) % m + m) % m; if (o > m / 2) o -= m;
+      const a = Math.abs(o), show = a <= maxK;
+      // A card that wraps from one end to the other jumps without sliding across
+      const jump = el._o != null && Math.abs(o - el._o) > 1;
+      el._o = o;
+      el.style.transition = first || jump ? "none" : "";
+      el.style.transform = `translateX(${(Math.sign(o) * (show ? dx[a] : dx[maxK] + cw)).toFixed(1)}px) scale(${S(Math.min(a, 2))})`;
+      el.style.setProperty("--op", show ? O(a) : 0);
+      el.style.setProperty("--d", (a * 0.14).toFixed(2) + "s");
+      el.style.zIndex = 20 - a;
+      el.style.visibility = show ? "" : "hidden";
       el.classList.toggle("on", o === 0);
-      el.style.visibility = far ? "hidden" : "";
       el.setAttribute("aria-hidden", o !== 0);
       el.inert = o !== 0;
     });
-    host.querySelector(".cd-count").textContent = `${cur + 1} of ${n}`;
+    host.querySelector(".cd-count").textContent = `${(cur % n) + 1} of ${n}`;
   };
-  const go = d => { cur = (cur + d + n) % n; place(); };
-  host.querySelectorAll(".cd-arrow").forEach(b => b.addEventListener("click", () => go(+b.dataset.d)));
-  slots.forEach((el, i) => el.addEventListener("click", e => { if (i !== cur) { e.preventDefault(); cur = i; place(); } }, true));
-  stage.addEventListener("keydown", e => { if (e.key === "ArrowLeft") go(-1); if (e.key === "ArrowRight") go(1); });
+
+  // Autoplay
+  let elapsed = 0, last = performance.now(), raf = 0, hold = new Set(), user = reduce, resumeAt = 0, wasHeld = false;
+  const paint = () => {
+    const held = hold.size > 0 || user;
+    stage.classList.toggle("held", held);
+    playBtn.innerHTML = user ? PLAY_IC : PAUSE_IC;
+    playBtn.setAttribute("aria-label", user ? "Play the cards" : "Pause the cards");
+    stateEl.textContent = user ? "Paused" : hold.size ? "Paused while you look" : resumeAt ? "Moving again in a moment" : "";
+  };
+  const go = (d, byHand) => { cur = (cur + d + m) % m; elapsed = 0; place(); if (byHand) resumeAt = 0; };
+  const release = why => { if (!hold.delete(why)) return; if (!hold.size) { elapsed = Math.max(elapsed, CYCLE_MS - RESUME_MS); resumeAt = 1; } paint(); };
+  const tick = now => {
+    const dt = Math.min(100, now - last); last = now;
+    const held = hold.size > 0 || user || document.hidden || document.body.classList.contains("pdp-lock");
+    if (!held) { elapsed += dt; if (elapsed >= CYCLE_MS) { go(1); resumeAt = 0; paint(); } }
+    if (held !== wasHeld) { wasHeld = held; }
+    bar.style.transform = `scaleX(${Math.min(1, elapsed / CYCLE_MS).toFixed(4)})`;
+    raf = requestAnimationFrame(tick);
+  };
+  const center = () => slots.find(el => el.classList.contains("on"));
+  slots.forEach(el => {
+    el.addEventListener("pointerenter", e => { if (e.pointerType === "mouse" && el.classList.contains("on")) { hold.add("hover"); paint(); } });
+    el.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") release("hover"); });
+  });
+  stage.addEventListener("click", e => {
+    const sl = e.target.closest(".cd-slot"); if (!sl) return;
+    if (!sl.classList.contains("on")) { e.preventDefault(); e.stopPropagation(); cur = +sl.dataset.i; elapsed = 0; place(); return; }
+    hold.add("click"); paint();
+  }, true);
+  const outside = e => { const c = center(); if (hold.has("click") && c && !c.contains(e.target)) release("click"); };
+  document.addEventListener("click", outside);
+  playBtn.addEventListener("click", () => { user = !user; if (!user) { elapsed = 0; resumeAt = 0; } paint(); });
+  host.querySelectorAll(".cd-arrow").forEach(b => b.addEventListener("click", () => go(+b.dataset.d, true)));
+  stage.addEventListener("keydown", e => { if (e.key === "ArrowLeft") go(-1, true); if (e.key === "ArrowRight") go(1, true); });
+  stage.addEventListener("focusin", () => { hold.add("focus"); paint(); });
+  stage.addEventListener("focusout", e => { if (!stage.contains(e.relatedTarget)) release("focus"); });
   let x0 = null;
   stage.addEventListener("pointerdown", e => { x0 = e.clientX; });
-  stage.addEventListener("pointerup", e => { if (x0 == null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); });
-  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(place, 120); });
-  place();
+  stage.addEventListener("pointerup", e => { if (x0 == null) return; const d = e.clientX - x0; x0 = null; if (Math.abs(d) > 40) go(d < 0 ? 1 : -1, true); });
+  let rt; const onResize = () => { clearTimeout(rt); rt = setTimeout(() => place(), 120); };
+  addEventListener("resize", onResize);
+
+  // The first view: everything in place, then the cards fade up softly from the center out
+  place(true);
+  void stage.offsetWidth;
+  requestAnimationFrame(() => requestAnimationFrame(() => { stage.classList.add("in"); slots.forEach(el => el.style.transition = ""); setTimeout(() => stage.classList.add("settled"), 1800); }));
+  paint(); raf = requestAnimationFrame(tick);
+  host._stop = () => { cancelAnimationFrame(raf); removeEventListener("resize", onResize); document.removeEventListener("click", outside); };
   return { go, focus: id => { const i = list.findIndex(c => c.id === id); if (i >= 0) { cur = i; place(); } } };
 }
+
+/* A small tooltip on every single-candidate trend: the day and the number under the pointer */
+(function () {
+  let tip, dot;
+  const hide = () => { if (tip) tip.hidden = true; if (dot) dot.remove(); };
+  document.addEventListener("pointermove", e => {
+    const svg = e.target.closest && e.target.closest("svg.trend[data-pts]");
+    if (!svg) { hide(); return; }
+    if (!tip) { tip = document.createElement("div"); tip.className = "ttip"; tip.setAttribute("role", "tooltip"); document.body.appendChild(tip); }
+    const pts = svg.dataset.pts.split(";").map(x => x.split(",")), W = +svg.dataset.w, H = +svg.dataset.h;
+    const r = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
+    const sx = (e.clientX - r.left) / r.width * vb.width + vb.x;
+    const i = Math.max(0, Math.min(pts.length - 1, Math.round(sx / W * (pts.length - 1))));
+    const [d, v] = pts[i], x = pts.length > 1 ? i / (pts.length - 1) * W : W, y = H - (+v) / 100 * H;
+    if (!dot || !svg.contains(dot)) { if (dot) dot.remove(); dot = document.createElementNS("http://www.w3.org/2000/svg", "circle"); dot.setAttribute("class", "t-hdot"); dot.setAttribute("r", 4.5); svg.appendChild(dot); }
+    dot.setAttribute("cx", x); dot.setAttribute("cy", y);
+    tip.innerHTML = `<b>${(+v).toFixed(1)}%</b><span>${medDate(d)}</span>`;
+    tip.hidden = false;
+    const px = r.left + (x - vb.x) / vb.width * r.width, py = r.top + (y - vb.y) / vb.height * r.height;
+    tip.style.left = Math.max(6, Math.min(innerWidth - tip.offsetWidth - 6, px - tip.offsetWidth / 2)) + "px";
+    tip.style.top = Math.max(6, py - tip.offsetHeight - 12) + "px";
+  }, { passive: true });
+  addEventListener("scroll", hide, { passive: true });
+})();
 
 /* ---------- Part 1: every candidate in a party over time ---------- */
 function renderTrendPanel(sel, list, M){
@@ -176,7 +265,7 @@ function renderDeclared(sel, M){
   host.innerHTML = `<table class="tbl-d"><thead><tr><th>Candidate</th><th>Party</th><th>Declared</th><th>Dropped out</th><th>Viability Market</th></tr></thead><tbody>
     ${rows.length ? rows.map(r => `<tr><td><b>${r.c.name}</b></td><td>${PARTY_ONE[r.c.party]}</td><td>${r.on ? medDate(r.on) : "—"}</td><td>${r.off ? medDate(r.off) : "—"}</td><td><a href="${marketHref(r.c)}">${r.off ? "Closed" : "Open"} →</a></td></tr>`).join("")
     : ""}
-  </tbody></table>${rows.length ? "" : `<div class="tbl-empty"><b>No one has declared yet.</b><p>None of the candidates in Part 1 has declared a 2028 candidacy. The first one appears here the day they do.</p><a href="#probability" data-part="1">See Part 1 →</a></div>`}`;
+  </tbody></table>${rows.length ? "" : `<div class="tbl-empty"><b>No one has declared yet.</b><p>None of the candidates in Presidential Probability has declared a 2028 candidacy. The first one appears here the day they do.</p><a href="#probability" data-part="1">See Presidential Probability →</a></div>`}`;
 }
 
 /* ---------- The profile: #c-<id> ---------- */

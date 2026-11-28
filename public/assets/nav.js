@@ -23,8 +23,11 @@ window.SITE = {
   sources: "Polls: AtlasIntel, McLaughlin & Associates via PollCheck, RealClearPolling and USA Today",
   nav: [
     { id: "home",       label: "Home",            href: "" },
-    { id: "candidates", label: "Candidates",      href: "candidates/" },
-    { id: "data",       label: "Unlock The Data", href: "unlock/", children: [
+    { id: "candidates", label: "Candidates",      href: "candidates/", children: [
+      { id: "probability", label: "Presidential Probability", href: "candidates/",        note: "The chance each person declares a candidacy" },
+      { id: "market",      label: "Viability Market",         href: "candidates/#market", note: "Unlocking the path to the nomination" }
+    ] },
+    { id: "data",       label: "Unlock The Data", href: "unlock/", all: true, children: [
       { id: "polls",    label: "Polls",    href: "polls/",    note: "National primary averages" },
       { id: "races",    label: "Races",    href: "races/",    note: "The White House, Senate and governors" },
       { id: "matchups", label: "Matchups", href: "matchups/", note: "The forecast map and the states in play" },
@@ -76,7 +79,7 @@ window.setTheme = function (t, quiet) {
   h.dataset.theme = t;
   h.classList.toggle("dark", t === "dark");          // page styles still key off html.dark
   const m = document.querySelector('meta[name="theme-color"]');
-  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#e7ecef");
   try { localStorage.setItem("ktr-theme", t); } catch (e) {}
   document.dispatchEvent(new CustomEvent("themechange", { detail: t }));
   // In the all-in-one file, tell the other pages so they switch too
@@ -90,8 +93,9 @@ window.setTheme = function (t, quiet) {
   // A standalone single-file copy maps tabs to its sibling files (see tools/build_standalone.py)
   const page = (root, href) => window.STANDALONE_LINKS
     ? (window.STANDALONE_LINKS[href] || window.STANDALONE_OTHER || root + href)
-    : root + href + (local && (href === "" || href.endsWith("/")) ? "index.html" : "");
+    : (root + href + (local && (href === "" || href.endsWith("/")) ? "index.html" : "")) || "./";
   window.pageLink = page;
+  const pageH = (root, href) => page(root, href.split("#")[0]) + (href.includes("#") ? "#" + href.split("#")[1] : "");
 
   const KEY = `<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="kg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--k1)"/><stop offset=".5" style="stop-color:var(--k2)"/><stop offset="1" style="stop-color:var(--k3)"/></linearGradient></defs><circle cx="10" cy="16" r="6.4" fill="none" stroke="url(#kg)" stroke-width="2.4"/><circle cx="10" cy="16" r="2.2" fill="url(#kg)"/><path d="M16.4 16H29.5M23 16v4.6M27 16v3.4" stroke="url(#kg)" stroke-width="2.4" stroke-linecap="round"/></svg>`;
   const SUN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>`;
@@ -120,10 +124,10 @@ window.setTheme = function (t, quiet) {
           <nav class="navlinks" aria-label="Sections">
             ${S.nav.map(n => { const on = n.id === active || (n.children || []).some(k => k.id === active);
               return `<a class="${on ? "on" : ""}" href="${page(root, n.href)}" ${n.id === active ? 'aria-current="page"' : ""}>${n.label}</a>` +
-                (n.children ? `<button class="dd-btn ${on ? "on" : ""}" type="button" aria-expanded="false" aria-controls="ddPanel" aria-label="${n.label}: ${n.children.map(k => k.label).join(", ")}">${CARET}</button>` : ""); }).join("")}
+                (n.children ? `<button class="dd-btn ${on ? "on" : ""}" type="button" data-dd="${n.id}" aria-expanded="false" aria-controls="dd-${n.id}" aria-label="${n.label}: ${n.children.map(k => k.label).join(", ")}">${CARET}</button>` : ""); }).join("")}
           </nav>
         </div>
-        ${S.nav.filter(n => n.children).map(n => `<div class="dd-panel" id="ddPanel" role="menu">${n.children.map(k => `<a role="menuitem" class="${k.id === active ? "on" : ""}" href="${page(root, k.href)}"><b>${k.label}</b><span>${k.note}</span></a>`).join("")}<a role="menuitem" class="dd-all" href="${page(root, n.href)}"><b>All of ${n.label}</b></a></div>`).join("")}
+        ${S.nav.filter(n => n.children).map(n => `<div class="dd-panel" id="dd-${n.id}" role="menu" aria-label="${n.label}">${n.children.map(k => `<a role="menuitem" data-id="${k.id}" class="${k.id === active ? "on" : ""}" href="${pageH(root, k.href)}"><b>${k.label}</b><span>${k.note}</span></a>`).join("")}${n.all ? `<a role="menuitem" class="dd-all" href="${page(root, n.href)}"><b>All of ${n.label}</b></a>` : ""}</div>`).join("")}
         <button class="icon-btn" id="themeBtn" type="button"></button>
         <button class="icon-btn" id="shotBtn" type="button" aria-label="Take a screenshot of this page" title="Screenshot">${CAMERA}</button>
       </div>`;
@@ -137,23 +141,31 @@ window.setTheme = function (t, quiet) {
     const edges = () => { if (!links) return; const max = links.scrollWidth - links.clientWidth;
       links.classList.toggle("more-r", links.scrollLeft < max - 4); links.classList.toggle("more-l", links.scrollLeft > 4); };
     if (links) { links.addEventListener("scroll", edges, { passive: true }); addEventListener("resize", edges); edges(); }
-    // Unlock The Data: the arrow opens its pages
-    const dd = el.querySelector(".dd-btn"), panel = el.querySelector(".dd-panel"), bar = el.querySelector(".topbar");
-    if (dd && panel) {
-      const set = open => {
-        if (open) { const b = dd.getBoundingClientRect(), t = bar.getBoundingClientRect();
-          panel.style.left = Math.max(0, Math.min(t.width - 260, b.right - t.left - 240)) + "px"; panel.style.top = (b.bottom - t.top + 8) + "px"; }
-        panel.classList.toggle("open", open); dd.setAttribute("aria-expanded", open);
-      };
-      let at = 0;
-      dd.addEventListener("click", e => { e.stopPropagation(); set(!panel.classList.contains("open") || Date.now() - at < 500); });
-      document.addEventListener("click", e => { if (!panel.contains(e.target)) set(false); });
-      document.addEventListener("keydown", e => { if (e.key === "Escape") set(false); });
-      if (links) links.addEventListener("scroll", () => set(false), { passive: true });
-      const link = dd.previousElementSibling;
-      if (matchMedia("(hover: hover)").matches) [link, dd].forEach(n => n.addEventListener("mouseenter", () => { if (!panel.classList.contains("open")) at = Date.now(); set(true); }));
-      bar.addEventListener("mouseleave", () => matchMedia("(hover: hover)").matches && set(false));
-    }
+    // Candidates and Unlock The Data unfold on hover, or on a tap of the name or its arrow
+    const bar = el.querySelector(".topbar"), hover = matchMedia("(hover: hover)").matches;
+    const drops = [...el.querySelectorAll(".dd-btn")].map(btn => ({ btn, link: btn.previousElementSibling, panel: el.querySelector("#dd-" + btn.dataset.dd), at: 0 }));
+    const set = (d, open) => {
+      if (open) {
+        drops.forEach(o => o !== d && set(o, false));
+        const b = d.btn.getBoundingClientRect(), l = d.link.getBoundingClientRect(), t = bar.getBoundingClientRect();
+        d.panel.style.left = Math.max(0, Math.min(t.width - 270, l.left - t.left)) + "px"; d.panel.style.top = (b.bottom - t.top + 8) + "px";
+      }
+      d.panel.classList.toggle("open", open); d.btn.setAttribute("aria-expanded", open);
+    };
+    drops.forEach(d => {
+      const isOpen = () => d.panel.classList.contains("open");
+      d.btn.addEventListener("click", e => { e.stopPropagation(); set(d, !isOpen() || Date.now() - d.at < 500); });
+      // On a phone or tablet the first tap on the name unfolds the menu instead of leaving the page
+      d.link.addEventListener("click", e => { if (!hover && !isOpen()) { e.preventDefault(); e.stopPropagation(); set(d, true); } });
+      if (hover) [d.link, d.btn, d.panel].forEach(n => n.addEventListener("mouseenter", () => { if (!isOpen()) d.at = Date.now(); set(d, true); }));
+    });
+    if (hover) el.querySelectorAll(".navlinks a").forEach(a => { if (!drops.some(d => d.link === a)) a.addEventListener("mouseenter", () => drops.forEach(d => set(d, false))); });
+    document.addEventListener("click", e => drops.forEach(d => { if (!d.panel.contains(e.target) && !d.link.contains(e.target)) set(d, false); }));
+    document.addEventListener("keydown", e => { if (e.key === "Escape") drops.forEach(d => set(d, false)); });
+    if (links) links.addEventListener("scroll", () => drops.forEach(d => set(d, false)), { passive: true });
+    if (hover) bar.addEventListener("mouseleave", () => drops.forEach(d => set(d, false)));
+    // Pages can mark which item is current (the candidates page does, for Viability Market)
+    window.setNavSub = id => el.querySelectorAll(".dd-panel a[data-id]").forEach(a => a.classList.toggle("on", a.dataset.id === id));
   });
 
   // The menu opens on hover with a mouse, and on tap or Enter everywhere else
@@ -197,7 +209,7 @@ window.setTheme = function (t, quiet) {
         <div class="foot-brand">${S.brandHTML}</div>
         <p class="fnote">${S.descriptor}</p>
         <a class="kofi" href="${S.kofi}" target="_blank" rel="noopener" data-noshot>${CUP} Support on Ko-fi</a>
-        <p class="src">${S.sources}<br>${S.nav.flatMap(n => [n, ...(n.children || [])]).map(n => `<a href="${page(root, n.href)}">${n.label}</a>`).join(" &nbsp;·&nbsp; ")}<br>${S.menu.map(m => `<a href="${page(root, m.href)}">${m.label}</a>`).join(" &nbsp;·&nbsp; ")}<br><span style="white-space:nowrap">Created by ${S.creator}</span></p>
+        <p class="src">${S.sources}<br>${S.nav.flatMap(n => [n, ...(n.children || []).filter(k => k.href !== n.href)]).map(n => `<a href="${pageH(root, n.href)}">${n.label}</a>`).join(" &nbsp;·&nbsp; ")}<br>${S.menu.map(m => `<a href="${page(root, m.href)}">${m.label}</a>`).join(" &nbsp;·&nbsp; ")}<br><span style="white-space:nowrap">Created by ${S.creator}</span></p>
       </div>`;
   });
 

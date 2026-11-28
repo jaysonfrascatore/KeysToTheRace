@@ -19,7 +19,7 @@ PAGE = """<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<style>html,body{{background:#0b0a08;margin:0}}html[data-theme="light"],html[data-theme="light"] body{{background:#f8faf9}}</style>
+<style>html,body{{background:#0b0a08;margin:0}}html[data-theme="light"],html[data-theme="light"] body{{background:#e7ecef}}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{desc}">

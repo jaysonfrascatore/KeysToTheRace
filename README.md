@@ -96,6 +96,15 @@ JavaScript give the same numbers for every candidate on every day, with the same
 - To publish new numbers: Actions > Model > Run workflow > target: live. It commits the numbers to `main`,
   and Cloudflare deploys them.
 
+## Page checks
+
+    node tools/check_pages.mjs          # day and night mode
+    node tools/check_pages.mjs light    # day mode only
+
+Opens every page on a computer and a phone and checks for script errors, sideways scrolling, the
+theme's colors (day: #e7ecef and #5a189a), leftover old colors, and text contrast (WCAG AA).
+Needs Node.js and Playwright.
+
 ## Candidate pages
 
 Every candidate has a profile at `candidates/<id>/` and a Viability Market at `candidates/<id>/market/`.

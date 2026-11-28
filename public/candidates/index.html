@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#e7ecef}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Candidates</title>
-<meta name="description" content="Part 1, Presidential Probability: the chance each person declares a 2028 candidacy, simulated 11,111 times. Part 2, the Viability Market: unlocking the path to the nomination.">
+<meta name="description" content="Presidential Probability: the chance each person declares a 2028 candidacy, simulated 11,111 times. The Viability Market: unlocking the path to the nomination.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
   const h = document.documentElement;
   h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
   const m = document.querySelector('meta[name="theme-color"]');
-  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#e7ecef");
 })();
 </script>
 </head>
@@ -32,10 +32,6 @@
 <section class="u-hero">
   <div class="wrap">
     <div class="eyebrow">Candidates</div>
-    <div class="part-tabs" role="tablist" aria-label="Candidates">
-      <a role="tab" href="#probability" data-part="1" class="on" aria-selected="true"><span>Part 1</span><b>Presidential Probability</b></a>
-      <a role="tab" href="#market" data-part="2" aria-selected="false"><span>Part 2</span><b>Viability Market</b></a>
-    </div>
     <div data-view="1">
       <h1>Presidential Probability</h1>
       <p class="lead">The probability each person declares a candidacy for president in 2028. It comes straight from the Decision Maze, and each one is simulated 11,111 times.</p>
@@ -48,7 +44,7 @@
     <div data-view="2" hidden>
       <h1>Viability Market</h1>
       <p class="tagline">Unlocking the path to the nomination.</p>
-      <p class="lead">The day a candidate declares, they move here from Part 1. Their card keeps the same look and shows their chance to win the nomination.</p>
+      <p class="lead">The day a candidate declares, they move here from Presidential Probability. Their card keeps the same look and shows their chance to win the nomination.</p>
     </div>
   </div>
 </section>
@@ -71,11 +67,11 @@
 
 <section class="u-big">
   <div class="wrap">
-    <div class="eyebrow">Part 2</div>
+    <div class="eyebrow">Next</div>
     <h2>Viability Market</h2>
     <p class="tagline">Unlocking the path to the nomination.</p>
-    <p class="bigp">The day a candidate declares, they move from Part 1 to Part 2. Their Viability Market opens and follows their chances through the early states, Super Tuesday and the delegate count.</p>
-    <a class="btn-line" href="#market" data-part="2">Go to Part 2</a>
+    <p class="bigp">The day a candidate declares, their Viability Market opens and follows their chances through the early states, Super Tuesday and the delegate count.</p>
+    <a class="btn-line" href="#market" data-part="2">Open the Viability Market</a>
   </div>
 </section>
 </div>
@@ -3638,15 +3634,19 @@ loadMarket().then(M => {
   $("#updated").textContent = $("#updated2").textContent = "Last updated " + longDate(M.today);
   let party = "D";
   const draw = focus => renderCarousel("#cards", M[party], M, { label: (party === "D" ? "Democratic" : "Republican") + " candidates", focus });
+  // Switching parties fades the cards out and back in
+  const redraw = () => { const h = $("#cards"); h.classList.add("cd-out"); setTimeout(() => { h.classList.remove("cd-out"); draw(); }, 450); };
   const setParty = p => { party = p; $$("#partySeg button").forEach(x => { x.classList.toggle("on", x.dataset.p === p); x.setAttribute("aria-selected", x.dataset.p === p); }); };
-  $$("#partySeg button").forEach(b => b.addEventListener("click", () => { if (b.dataset.p === party) return; setParty(b.dataset.p); draw(); }));
+  $$("#partySeg button").forEach(b => b.addEventListener("click", () => { if (b.dataset.p === party) return; setParty(b.dataset.p); redraw(); }));
   renderTrendPanel("#trendD", M.D, M); renderTrendPanel("#trendR", M.R, M);
   renderDeclared("#declared", M);
-  // Part 1 and Part 2 share the page; #market shows Part 2
+  // Presidential Probability and the Viability Market share the page; #market shows the Viability Market
   const part = n => {
     $$("[data-view]").forEach(v => v.hidden = v.dataset.view !== String(n));
-    $$(".part-tabs a").forEach(a => { const on = a.dataset.part === String(n); a.classList.toggle("on", on); a.setAttribute("aria-selected", on); });
+    if (window.setNavSub) setNavSub(n === 2 ? "market" : "probability");
+    document.title = (n === 2 ? "Viability Market" : "Presidential Probability") + " · Unlock The Count";
   };
+  window.addEventListener("hashchange", () => { if (location.hash === "#market") { part(2); scrollTo({ top: 0 }); } else if (!/^#[cm]-/.test(location.hash)) part(1); });
   document.addEventListener("click", e => { const a = e.target.closest("a[data-part]"); if (!a) return; e.preventDefault();
     part(+a.dataset.part); try { history.replaceState(null, "", a.dataset.part === "2" ? "#market" : location.pathname + location.search); } catch (x) {}
     scrollTo({ top: 0, behavior: "smooth" }); });

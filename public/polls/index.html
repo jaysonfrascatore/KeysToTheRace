@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#f8faf9}</style>
+<style>html,body{background:#0b0a08;margin:0}html[data-theme="light"],html[data-theme="light"] body{background:#e7ecef}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Polls</title>
 <meta name="description" content="Every 2028 presidential primary and general election poll, with grade-weighted averages.">
@@ -82,11 +82,12 @@
 .m-bar{display:flex;height:26px;border-radius:5px;overflow:hidden;margin-top:12px;background:var(--bg)}
 .m-bar span{display:flex;align-items:center;font-size:12px;font-weight:800;color:#fff;padding:0 8px;white-space:nowrap;transform-origin:left;animation:grow .7s ease-out both}
 .m-bar .r{background:var(--rep)} .m-bar .d{background:var(--dem);justify-content:flex-end;transform-origin:right}
+html.dark .m-bar span{color:#0b0a08}
 .m-bar .o{flex:1;background:repeating-linear-gradient(45deg,var(--line) 0 4px,transparent 4px 8px)}
 .m-names{display:flex;justify-content:space-between;font-size:13px;margin-top:7px;color:var(--ink-2)}
 .m-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3)}
 .conf{white-space:nowrap;display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid var(--line-2)}
-.conf.low{border-color:var(--gold);color:var(--gold)} .conf.med{border-color:#4d7cc7;color:#4d7cc7} .conf.high{border-color:var(--foam);color:var(--foam)}
+.conf.low{border-color:var(--gold);color:var(--gold)} .conf.med{border-color:var(--dem);color:var(--dem)} .conf.high{border-color:var(--foam);color:var(--foam)}
 .method div{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius);padding:18px;font-size:14px;color:var(--ink-2)}
 .method h4{color:var(--ink);font-size:15px;margin-bottom:6px}
 
@@ -112,7 +113,7 @@
   const h = document.documentElement;
   h.dataset.theme = t; h.classList.toggle("dark", t === "dark");
   const m = document.querySelector('meta[name="theme-color"]');
-  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#f8faf9");
+  if (m) m.setAttribute("content", t === "dark" ? "#0b0a08" : "#e7ecef");
 })();
 </script>
 </head>

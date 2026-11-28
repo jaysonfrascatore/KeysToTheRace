@@ -38,7 +38,7 @@ const COLLECTION = [
     features: ["Click a state to cycle its rating", "Maine and Nebraska districts included", "Primary map colored by the poll leaders", "2028 Senate race matchups"] },
   { id: "market", name: "Presidential Probability", edition: "Founding Edition", icon: "star", accent: "#8a6a26", status: "beta", page: "candidates/", line: "National",
     tag: "The chance each 2028 hopeful declares.",
-    desc: "Part 1 of Candidates: the probability each person declares a candidacy for president, from the Decision Maze, simulated 11,111 times. Part 2, the Viability Market, opens for each candidate the day they declare.",
+    desc: "The probability each person declares a candidacy for president, from the Decision Maze, simulated 11,111 times. The Viability Market opens for each candidate the day they declare.",
     features: ["Presidential Probability for every candidate", "Every input and weight, listed one by one", "A profile and a Viability Market for every candidate", "Trend lines on a fixed 0% to 100% scale"] },
   { id: "forecast-2028", name: "2028 Forecast", edition: "Presidential", icon: "dome", accent: "#7a2f2b", status: "soon", page: "races/", line: "National",
     tag: "Who wins the nomination, and the White House.",
