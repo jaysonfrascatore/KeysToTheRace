@@ -1,4 +1,4 @@
-// Keys to the Race: live tracker (a Cloudflare Worker that runs on a schedule)
+// Unlock The Count: live tracker (a Cloudflare Worker that runs on a schedule)
 // Deploy: npx wrangler kv namespace create TRACKER   (paste the id below)
 //         npx wrangler secret put FEC_API_KEY        (free key from api.data.gov)
 //         npx wrangler deploy

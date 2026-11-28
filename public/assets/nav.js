@@ -1,5 +1,5 @@
 /* =========================================================
-   KEYS TO THE RACE: shared top bar, page header and footer
+   UNLOCK THE COUNT: shared top bar, page header and footer
    (luxury edition). Change the name, tabs, Ko-fi link or the
    "Last updated" line here once and every page updates.
 
@@ -13,10 +13,10 @@
    ?theme=light or ?theme=dark to a URL to preview either one.
    ========================================================= */
 window.SITE = {
-  name: "Keys to the Race",
-  brandHTML: "Keys <em>to the</em> Race",
-  domain: "KeysToTheRace.com",
-  descriptor: "Election data, from the Florida Keys to the White House.",
+  name: "Unlock The Count",
+  brandHTML: "Unlock The Count",
+  domain: "UnlockTheCount.com",
+  descriptor: "Election data for every level.",
   tagline: "The keys to every race, vote and candidate.",
   updated: "Last updated on November 20th, 2026",
   kofi: "https://ko-fi.com/jaysonfras",
@@ -194,7 +194,7 @@ window.setTheme = function (t, quiet) {
       <div class="modal-card">
         <div class="modal-top">
           <div><b>Screenshot ready</b><div class="hint">On a phone, press and hold the image to save it.</div></div>
-          <div class="modal-actions"><a id="shotDownload" class="primary" href="#" download="keystotherace.png">Download</a><button id="shotClose" type="button">Close</button></div>
+          <div class="modal-actions"><a id="shotDownload" class="primary" href="#" download="unlockthecount.png">Download</a><button id="shotClose" type="button">Close</button></div>
         </div>
         <div class="modal-body"><img id="shotImg" alt="Screenshot of this page"></div>
       </div>

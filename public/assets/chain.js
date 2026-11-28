@@ -1,5 +1,5 @@
 /* =========================================================
-   KEYS TO THE RACE: THE CHAIN REACTION AND THE PRIMARY PATH
+   UNLOCK THE COUNT: THE CHAIN REACTION AND THE PRIMARY PATH
 
    Stage 1, the chain:  news or a quote -> Decision Maze -> chance they run -> Index
    Each event replays in that order. The candidate moves in the maze

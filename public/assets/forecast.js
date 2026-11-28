@@ -1,5 +1,5 @@
 /* =========================================================
-   KEYS TO THE RACE: THE 2028 FORECAST
+   UNLOCK THE COUNT: THE 2028 FORECAST
    Electoral Vote Probability (EVPC) + 11,111 simulations.
 
    How a state's forecast is built:

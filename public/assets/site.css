@@ -1,5 +1,5 @@
 /* =========================================================
-   KEYS TO THE RACE: shared stylesheet (luxury edition)
+   UNLOCK THE COUNT: shared stylesheet (luxury edition)
    Layout concept: a dark showroom. Gold for value, deep shadow
    for depth, slow fades for drama. Dark is the default; light
    mode is ivory and gold. Theme is set on <html data-theme>.
@@ -81,7 +81,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .topbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding-top:14px}
 .brand{display:flex;align-items:center;gap:12px;flex:none;margin-right:auto}
 .brand svg{width:30px;height:30px}
-.brand-word{font-family:var(--serif);font-size:23px;font-weight:600;letter-spacing:.02em;line-height:1;white-space:nowrap}
+.brand-word{font-family:var(--serif);font-size:23px;font-weight:600;letter-spacing:.02em;line-height:1;white-space:nowrap;color:var(--gold)}
 .brand-word em{font-style:italic;color:var(--gold);font-weight:500}
 .navlinks{order:3;width:100%;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;border-top:1px solid var(--line);padding:6px 0}
 .navlinks a:first-child{margin-left:auto}.navlinks a:last-child{margin-right:auto}
@@ -189,7 +189,7 @@ a.chip:hover{border-color:var(--gold);color:var(--gold)}
 /* ---------- Footer ---------- */
 footer{padding:64px 0 70px;text-align:center;position:relative}
 footer::before{content:"";position:absolute;inset:0;background:radial-gradient(50% 60% at 50% 100%,color-mix(in srgb,var(--gold) 10%,transparent),transparent 70%);pointer-events:none}
-.foot-brand{font-family:var(--serif);font-size:30px;font-weight:500}
+.foot-brand{font-family:var(--serif);font-size:30px;font-weight:500;color:var(--gold)}
 .foot-brand em{font-style:italic;color:var(--gold)}
 footer .fnote{font-size:13.5px;color:var(--ink-3);margin:8px 0 22px}
 .kofi{display:inline-flex;align-items:center;gap:9px;padding:12px 20px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--gold);color:var(--gold);border-radius:999px;margin-bottom:24px;transition:background .3s}

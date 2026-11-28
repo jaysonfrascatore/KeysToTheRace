@@ -1,5 +1,5 @@
 /* =========================================================
-   KEYS TO THE RACE: shared helpers, calendar and tool list
+   UNLOCK THE COUNT: shared helpers, calendar and tool list
    ========================================================= */
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];

@@ -1,5 +1,5 @@
 /* =========================================================
-   KEYS TO THE RACE: THE COLLECTION
+   UNLOCK THE COUNT: THE COLLECTION
    Every project, shown like a storefront. Each capsule opens a
    full product page that fades up over the site (#p-<id>).
    To add a project, add an entry here; status is
@@ -62,7 +62,7 @@ const COLLECTION = [
     features: ["Countdown to Election Day 2028", "Primary and caucus calendar", "Debate dates and qualifying rules"] },
   { id: "the-29th-vote", name: "The 29th Vote", edition: "Companion Site", icon: "vote", accent: "#2e5f8f", status: "live", url: "https://jaysonfrascatore.github.io/The29thVote/", line: "Companion",
     tag: "The sister project.",
-    desc: "The 29th Vote, a separate site by the same creator. Its clean design is where Keys to the Race's look started.",
+    desc: "The 29th Vote, a separate site by the same creator. Its clean design is where Unlock The Count's look started.",
     features: ["Opens in a new tab", "Same creator, same standards"] }
 ];
 

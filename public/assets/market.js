@@ -1,5 +1,5 @@
 /* =========================================================
-   KEYS TO THE RACE: THE CANDIDATE MARKET
+   UNLOCK THE COUNT: THE CANDIDATE MARKET
    Every candidate is shown like a fine product: an Index score,
    a profile, a tier and a Launch Watch reading. The score is not
    something anyone buys. It measures where a candidate stands and

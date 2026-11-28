@@ -1,6 +1,6 @@
-# Keys to the Race
+# Unlock The Count
 
-Election data, from the Florida Keys to the White House.
+Election data for every level.
 
 ## Folder layout
 
@@ -31,7 +31,7 @@ Election data, from the Florida Keys to the White House.
 
 The site updates worldwide in a few seconds. The first deploy prints a free
 `*.workers.dev` address. Add your own domain in the Cloudflare dashboard under
-Workers & Pages > keystotherace > Settings > Domains & Routes.
+Workers & Pages > unlockthecount > Settings > Domains & Routes.
 
 ## Preview before you publish
 
@@ -42,7 +42,7 @@ Opens the site at http://localhost:8787 so you can click through it first.
 ## Undo a bad deploy
 
 Cloudflare keeps past versions. In the dashboard, open
-Workers & Pages > keystotherace > Deployments and roll back to an earlier one.
+Workers & Pages > unlockthecount > Deployments and roll back to an earlier one.
 
 
 ## The model (Python)
@@ -87,7 +87,7 @@ JavaScript give the same numbers for every candidate on every day, with the same
 ### On GitHub and Cloudflare
 
 - Cloudflare deploys the site straight from this repository. Connect it once: Cloudflare dashboard >
-  Workers & Pages > Create > Import a repository > KeysToTheRace. It reads `wrangler.jsonc` and serves
+  Workers & Pages > Create > Import a repository > UnlockTheCount. It reads `wrangler.jsonc` and serves
   `public/`. Every change to `main` goes live in about a minute; any other branch gets its own preview address,
   which is the staging site.
 - Every morning, the Model workflow runs the tests and a staging run. The report shows on the Actions page.
@@ -131,7 +131,7 @@ The In the News page reads `public/data/press.csv`. Add one row per story:
 
 ```
 year,date,outlet,project,summary,url
-2027,2027-01-14,Politico,Keys to the Race,"One or two sentences on what they covered.",https://...
+2027,2027-01-14,Politico,Unlock The Count,"One or two sentences on what they covered.",https://...
 ```
 
 `date` is optional (YYYY-MM-DD). Leave `url` empty and the row shows without a link. Newest rows sort to the top.

@@ -1,8 +1,8 @@
-// Cloudflare settings for Keys to the Race.
+// Cloudflare settings for Unlock The Count.
 // Cloudflare deploys from GitHub on every change to main. Other branches get their own
 // preview address (the staging site). By hand: npx wrangler deploy
 {
-  "name": "keystotherace",
+  "name": "unlockthecount",
   "compatibility_date": "2026-11-10",
   "assets": {
     // Everything inside public/ goes live. tools/, engine/ and this file stay private.

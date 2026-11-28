@@ -1,4 +1,4 @@
-# Keys to the Race: polls
+# Unlock The Count: polls
 #
 # Add a poll by dropping one CSV file into public/data/polling/ (on GitHub: open the folder,
 # Add file > Upload files, or Create new file). This workflow checks every poll file, rebuilds

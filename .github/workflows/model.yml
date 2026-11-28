@@ -1,4 +1,4 @@
-# Keys to the Race: model runs
+# Unlock The Count: model runs
 #
 # Cloudflare deploys the site by itself whenever main changes (connect the repository once in
 # Cloudflare: Workers & Pages > Create > Import a repository). This workflow only runs the model.

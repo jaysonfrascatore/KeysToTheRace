@@ -9,10 +9,10 @@ import pathlib, re
 root = pathlib.Path(__file__).resolve().parent.parent
 pub, out = root / "public", root / "standalone"
 out.mkdir(exist_ok=True)
-PAGES = {"index.html": "keystotherace-home.html",
-         "candidates/index.html": "keystotherace-candidates.html",
-         "matchups/index.html": "keystotherace-forecast.html"}
-LINKS = {"": "keystotherace-home.html", "candidates/": "keystotherace-candidates.html", "matchups/": "keystotherace-forecast.html"}
+PAGES = {"index.html": "unlockthecount-home.html",
+         "candidates/index.html": "unlockthecount-candidates.html",
+         "matchups/index.html": "unlockthecount-forecast.html"}
+LINKS = {"": "unlockthecount-home.html", "candidates/": "unlockthecount-candidates.html", "matchups/": "unlockthecount-forecast.html"}
 
 import base64
 MIME = {".png": "image/png", ".webp": "image/webp", ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}
@@ -36,7 +36,7 @@ for src, dst in PAGES.items():
     print("built", dst, f"{len(html)//1024} KB")
 
 
-# ---------- One file with everything: keystotherace.html ----------
+# ---------- One file with everything: unlockthecount.html ----------
 # Each page sits in its own frame inside one file, and the tabs switch between them.
 import json
 ALL = [("index.html", "landing", ""), ("home/index.html", "home", "home/"), ("candidates/index.html", "candidates", "candidates/"), ("polls/index.html", "polls", "polls/"),
@@ -84,7 +84,7 @@ outer = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Keys to the Race</title>
+<title>Unlock The Count</title>
 <style>
   html,body{margin:0;height:100%;overflow:hidden;background:#0b0a08}
   iframe{position:fixed;inset:0;width:100%;height:100%;border:0;display:none;background:#0b0a08}
@@ -98,7 +98,7 @@ outer = """<!doctype html>
 <body>
 <div class="toast" id="toast">That page isn't built yet.</div>
 <script>
-/* Keys to the Race: every page in one file. */
+/* Unlock The Count: every page in one file. */
 const PAGES = __PAGES__;
 const frames = {};
 const TITLES = { landing: "Key Candidates", home: "Home", candidates: "Key Candidates", polls: "Key Polls", races: "Key Races", matchups: "Key Matchups", tools: "Key Tools", trackers: "Key Trackers", methodology: "Methodology", contact: "Contact", press: "In the News", dates: "Key Dates", florida: "The Florida Keys", collection: "The Collection" };
@@ -109,14 +109,14 @@ function show(view, hash){
   let f = frames[view];
   if (!f) {
     f = frames[view] = document.createElement("iframe");
-    f.title = TITLES[view] || "Keys to the Race";
+    f.title = TITLES[view] || "Unlock The Count";
     f.srcdoc = PAGES[view];
     document.body.appendChild(f);
     if (hash) f.addEventListener("load", () => setTimeout(() => send(f, { ktr: "hash", hash }), 250), { once: true });
   } else if (hash) send(f, { ktr: "hash", hash });
   Object.values(frames).forEach(x => x.classList.toggle("on", x === f));
   try { history.replaceState(null, "", "#" + view); } catch (e) {}
-  document.title = "Keys to the Race · " + f.title;
+  document.title = "Unlock The Count · " + f.title;
 }
 window.addEventListener("message", e => {
   const d = e.data || {};
@@ -128,5 +128,5 @@ show(PAGES[location.hash.slice(1)] ? location.hash.slice(1) : "landing");
 </body>
 </html>
 """.replace("__PAGES__", pages_json)
-(out / "keystotherace.html").write_text(outer, encoding="utf-8")
-print("built keystotherace.html", f"{len(outer)//1024} KB")
+(out / "unlockthecount.html").write_text(outer, encoding="utf-8")
+print("built unlockthecount.html", f"{len(outer)//1024} KB")

@@ -1,4 +1,4 @@
-"""Command line for the Keys to the Race model.
+"""Command line for the Unlock The Count model.
 
   python -m ktr run --env staging     test run: writes to build/staging/, touches nothing live
   python -m ktr promote               publish the last staging run to public/data/
@@ -145,7 +145,7 @@ def publish(primary_path, new_rows_path):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="ktr", description="Keys to the Race model")
+    ap = argparse.ArgumentParser(prog="ktr", description="Unlock The Count model")
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run")
     r.add_argument("--env", choices=["staging", "live"], default="staging")

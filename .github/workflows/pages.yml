@@ -1,5 +1,5 @@
 # Publishes the site (the public/ folder) to GitHub Pages on every change to main:
-# https://jaysonfrascatore.github.io/KeysToTheRace/
+# https://jaysonfrascatore.github.io/UnlockTheCount/
 # One-time setup: repository Settings > Pages > Build and deployment > Source: GitHub Actions.
 name: Pages
 

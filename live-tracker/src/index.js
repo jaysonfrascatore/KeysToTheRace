@@ -1,5 +1,5 @@
 /* =========================================================
-   KEYS TO THE RACE: LIVE TRACKER
+   UNLOCK THE COUNT: LIVE TRACKER
    Runs every 30 minutes on Cloudflare's servers (no computer of yours
    needs to stay on). Each run:
      1. FEC: checks who has filed a Statement of Candidacy for president
@@ -31,7 +31,7 @@ async function checkFEC(env) {
 async function checkNews(name) {
   const q = encodeURIComponent(`"${name}" ${WORDS}`);
   const url = `https://api.gdeltproject.org/api/v2/doc/doc?query=${q}&mode=artlist&format=json&maxrecords=15&timespan=1d&sourcelang=english`;
-  const res = await fetch(url, { headers: { "User-Agent": "keystotherace-tracker" } });
+  const res = await fetch(url, { headers: { "User-Agent": "unlockthecount-tracker" } });
   if (!res.ok) return [];
   try { const j = await res.json(); return (j.articles || []).map(a => ({ candidate: name, headline: a.title, source: a.domain, source_url: a.url, seen: a.seendate })); }
   catch { return []; }
@@ -70,6 +70,6 @@ export default {
     if (url.pathname === "/api/tracker.json") return new Response(JSON.stringify({ updated: state.updated, news: state.approved || [], filed: state.filed || [] }), { headers: cors });
     // Review queue: protect this with Cloudflare Access (Zero Trust, free for one person)
     if (url.pathname === "/api/queue.json") return new Response(JSON.stringify(state.queue || []), { headers: cors });
-    return new Response("Keys to the Race tracker", { status: 200 });
+    return new Response("Unlock The Count tracker", { status: 200 });
   }
 };

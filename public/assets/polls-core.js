@@ -1,5 +1,5 @@
 /* =========================================================
-   KEYS TO THE RACE: shared polling engine
+   UNLOCK THE COUNT: shared polling engine
    Used by Key Polls, Key Races and Key Matchups.
    Reads data/polls.csv + data/pollsters.csv, weights by pollster grade,
    and averages each pollster's latest poll in the window.

@@ -1,5 +1,5 @@
 {
-  "_about": "Keys to the Race model settings. Every weight the model uses lives here. The Python engine reads this file directly. The website's JavaScript keeps its own copy of the Stage 1 numbers, and the test suite fails if the two ever disagree. Change a number here, run the tests, then run staging before live.",
+  "_about": "Unlock The Count model settings. Every weight the model uses lives here. The Python engine reads this file directly. The website's JavaScript keeps its own copy of the Stage 1 numbers, and the test suite fails if the two ever disagree. Change a number here, run the tests, then run staging before live.",
   "version": "2.0",
 
   "stage1": {
