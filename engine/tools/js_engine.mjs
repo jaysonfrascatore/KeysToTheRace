@@ -20,15 +20,14 @@ if (process.argv.includes("--config")) {
     elements: Object.fromEntries(MAZE.elements.map(e => [e.id, { ring: e.ring, w: e.w, kind: e.kind }])),
     statementScale: Object.fromEntries(STATEMENT_SCALE.map(s => [s.id, s.r])), launchWatchStart: LW_START,
     status: Object.fromEntries(Object.entries(STATUS).map(([k, v]) => [k, v.w])), newsHalfLife: NEWS_HALF_LIFE,
-    indexUnlock: typeof INDEX_UNLOCK === "undefined" ? null : INDEX_UNLOCK,
-    indexWeights: typeof INDEX_WEIGHTS === "undefined" ? null : INDEX_WEIGHTS,
+    contenderAt: CONTENDER_AT, simulations: SIMULATIONS,
     announce: typeof ANNOUNCE === "undefined" ? null : ANNOUNCE })`, ctx));
   process.exit(0);
 }
 const M = await vm.runInContext("loadMarket()", ctx);
 const out = { today: M.today, days: M.days, lwDays: M.lwDays, candidates: M.all.map(c => ({
-  name: c.name, party: c.party, pct: c.pct, index: c.index, launch: c.launch, status: c.status, announce30: c.announce30,
+  name: c.name, party: c.party, pct: c.pct, yes: c.sim.yes, launch: c.launch, status: c.status, announce30: c.announce30,
   phase: vm.runInContext("phaseOf", ctx)(c),
-  launchHistory: c.launchHistory.map(h => [h.d, h.v]), history: c.history.map(h => [h.d, h.v]),
+  launchHistory: c.launchHistory.map(h => [h.d, h.v]),
   maze: c.maze.rows.map(r => [r.id, r.reading, r.pts]) })) };
 process.stdout.write(JSON.stringify(out));

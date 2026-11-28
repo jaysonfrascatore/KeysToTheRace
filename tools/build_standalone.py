@@ -39,7 +39,7 @@ for src, dst in PAGES.items():
 # ---------- One file with everything: unlockthecount.html ----------
 # Each page sits in its own frame inside one file, and the tabs switch between them.
 import json
-ALL = [("index.html", "landing", ""), ("home/index.html", "home", "home/"), ("candidates/index.html", "candidates", "candidates/"), ("polls/index.html", "polls", "polls/"),
+ALL = [("index.html", "landing", ""), ("unlock/index.html", "unlock", "unlock/"), ("candidates/index.html", "candidates", "candidates/"), ("polls/index.html", "polls", "polls/"),
        ("races/index.html", "races", "races/"), ("matchups/index.html", "matchups", "matchups/"), ("tools/index.html", "tools", "tools/"), ("trackers/index.html", "trackers", "trackers/"), ("methodology/index.html", "methodology", "methodology/"), ("contact/index.html", "contact", "contact/"), ("press/index.html", "press", "press/"),
        ("dates/index.html", "dates", "dates/"), ("florida/index.html", "florida", "florida/"), ("collection/index.html", "collection", "collection/")]
 ALL_LINKS = {href: "ktr:" + view for _, view, href in ALL}
@@ -101,7 +101,7 @@ outer = """<!doctype html>
 /* Unlock The Count: every page in one file. */
 const PAGES = __PAGES__;
 const frames = {};
-const TITLES = { landing: "Key Candidates", home: "Home", candidates: "Key Candidates", polls: "Key Polls", races: "Key Races", matchups: "Key Matchups", tools: "Key Tools", trackers: "Key Trackers", methodology: "Methodology", contact: "Contact", press: "In the News", dates: "Key Dates", florida: "The Florida Keys", collection: "The Collection" };
+const TITLES = { landing: "Home", unlock: "Unlock The Data", candidates: "Candidates", polls: "Polls", races: "Races", matchups: "Matchups", tools: "Tools", trackers: "Trackers", methodology: "Methodology", contact: "Contact", press: "In the News", dates: "Dates", florida: "Florida", collection: "Collection" };
 let toastT;
 function send(f, msg){ try { f.contentWindow.postMessage(msg, "*"); } catch (e) {} }
 function show(view, hash){

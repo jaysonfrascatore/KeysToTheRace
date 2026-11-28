@@ -43,13 +43,12 @@ def compute(args):
     s1 = Stage1(cfg, read_csv(data_path("polls.csv")), read_csv(data_path("pollsters.csv")),
                 read_csv(data_path("news.csv")), today=args.date).run()
     s2 = run_stage2(cfg, s1, sims=args.sims, scenarios=not args.no_scenarios)
-    s2["indexUnlock"] = cfg["stage1"]["indexUnlock"]
-    s2["stage1"] = [{"name": c["name"], "party": c["party"], "launch": round(c["launch"], 6), "index": round(c["index"], 4),
-                     "indexUnlocked": c["indexUnlocked"], "status": c["status"]} for c in s1["candidates"]]
+    s2["stage1"] = [{"name": c["name"], "party": c["party"], "launch": round(c["launch"], 6), "simulations": c["sim"]["runs"],
+                     "declares": c["sim"]["yes"], "status": c["status"]} for c in s1["candidates"]]
     return cfg, s1, s2
 
 
-def new_log_rows(s1, log_rows, method="v2"):
+def new_log_rows(s1, log_rows, method="v3"):
     """Rows for complete days (before today) that aren't in the log yet. Logged days are never rewritten."""
     have = {(r["candidate"], r["date"]) for r in log_rows}
     rows = []
@@ -66,13 +65,13 @@ def report(s1, s2, log_rows, new_rows):
     for r in log_rows:
         if r["date"] < s1["today"] and (r["candidate"] not in last or r["date"] > last[r["candidate"]][0]):
             last[r["candidate"]] = (r["date"], float(r["yes"]))
-    lines = ["# Model run, %s" % s1["today"], "", "## Stage 1: chance they run", "",
-             "| Candidate | Today | Last logged | Change | Index |", "|---|---|---|---|---|"]
+    lines = ["# Model run, %s" % s1["today"], "", "## Part 1: Presidential Probability", "",
+             "| Candidate | Today | Last logged | Change | Simulations |", "|---|---|---|---|---|"]
     for c in sorted(s1["candidates"], key=lambda c: -c["launch"]):
         prev = last.get(c["name"])
         ch = c["launch"] * 100 - prev[1] if prev else 0
         ch = 0.0 if abs(ch) < 0.005 else ch
-        idx = "%.1f" % c["index"] if c["indexUnlocked"] else "locked"
+        idx = "%s of %s" % (format(c["sim"]["yes"], ","), format(c["sim"]["runs"], ","))
         lines.append("| %s | %.2f%% | %s | %+.2f | %s |" % (c["name"], c["launch"] * 100, "%.2f%% (%s)" % (prev[1], prev[0]) if prev else "none", ch, idx))
     lines += ["", "## Stage 2: the primaries", ""]
     for p, r in s2["parties"].items():

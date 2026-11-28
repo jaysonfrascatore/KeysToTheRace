@@ -49,10 +49,12 @@ Workers & Pages > unlockthecount > Deployments and roll back to an earlier one.
 
 The model runs in two stages, each a chain:
 
-    Stage 1:  news or a quote -> Decision Maze -> chance they run -> Index (unlocks above 64.9%)
-    Stage 2:  announcement -> early states and Super Tuesday -> Attention Index
+    Part 1, Presidential Probability:  news or a quote -> Decision Maze -> chance they declare -> 11,111 seeded simulations
+    Part 2, Viability Market:          declaration -> early states and Super Tuesday -> nomination
 
-Stage 1 also runs live in the browser (assets/market.js), so the site works with no server.
+Part 1 also runs live in the browser (assets/market.js builds the numbers, assets/count.js draws the pages),
+so the site works with no server. The simulations are seeded by each candidate's name, so Python and the
+browser get the same count.
 Stage 2 runs 11,111 simulated primaries, so it runs in Python and writes `public/data/primary.json`.
 
 ### Set up once
@@ -71,8 +73,8 @@ From the `engine/` folder:
 or `python -m ktr run --env live` to run and publish in one step.
 Options: `--date 2026-11-20` scores as of that day, `--sims 3000` for a quick run.
 
-Publishing never rewrites history: it only adds Launch Watch rows for finished days that
-aren't in `public/data/launch-log.csv` yet. Each row records the method version (`v2`).
+Publishing never rewrites history: it only adds Presidential Probability rows for finished days that
+aren't in `public/data/launch-log.csv` yet. Each row records the method version (`v3`).
 When you change a Stage 1 weight, bump `stage1.method` in `config/model.json`.
 
 ### Tests
@@ -80,7 +82,7 @@ When you change a Stage 1 weight, bump `stage1.method` in `config/model.json`.
     cd engine
     python -m unittest discover -s tests -v
 
-They check the Statement Scale rules, the 64.9% gate, that history is append-only, that the
+They check the Statement Scale rules, the Contender label at 64.9%, the 11,111-run Monte Carlo, that history is append-only, that the
 simulator adds up, and (with Node.js installed) that the Python engine and the website's
 JavaScript give the same numbers for every candidate on every day, with the same weights.
 
@@ -94,7 +96,14 @@ JavaScript give the same numbers for every candidate on every day, with the same
 - To publish new numbers: Actions > Model > Run workflow > target: live. It commits the numbers to `main`,
   and Cloudflare deploys them.
 
-## Key Legislation
+## Candidate pages
+
+Every candidate has a profile at `candidates/<id>/` and a Viability Market at `candidates/<id>/market/`.
+After adding a candidate to `config/model.json`, run:
+
+    python tools/build_candidate_pages.py
+
+## Trackers: legislation
 
 A whip count for every big bill: all 100 senators and every House member, like The 29th Vote.
 Everything lives in `public/data/legislation/`:

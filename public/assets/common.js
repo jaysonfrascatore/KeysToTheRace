@@ -8,7 +8,7 @@ const pHex   = p => p === "D" ? "#2F6FD0" : "#D64545";
 const fmt = n => (n >= 0 ? "+" : "") + n.toFixed(1);
 const chip = s => `<span class="chip ${s}">${s === "soon" ? "Coming soon" : s}</span>`;
 
-/* Calendar: feeds the countdown's "next up" line and the Key Dates page.
+/* Calendar: feeds the countdown's "next up" line and the Dates page.
    2028 primary dates aren't final; add them as states set them. */
 const CALENDAR = [
   { date: "2027-01-31", label: "FEC year-end reports due",   kind: "Money" },
@@ -21,20 +21,19 @@ const CALENDAR = [
 /* Every tool on the site. key = which section it lives in, page = where it links.
    status: "live" | "beta" | "soon" */
 const TOOLS = [
-  { key: "Key Races",      name: "2028 Forecast",       page: "races/",                desc: "Who's likely to win the nomination and the White House.", status: "soon" },
-  { key: "Key Races",      name: "Senate 2028",         page: "races/#senate",         desc: "Probability tracker and path to the majority.", status: "soon" },
-  { key: "Key Matchups",   name: "Electoral Analysis",  page: "matchups/#forecast",    desc: "The 2028 forecast, simulations and a build-your-own map.", status: "beta" },
-  { key: "Key Matchups",   name: "Primary Map",         page: "matchups/#primary",     desc: "Pick a winner in every state for each party's primary.", status: "beta" },
-  { key: "Key Polls",      name: "Polling Averages",    page: "polls/",                desc: "Primary and general polls, weighted by pollster grade.", status: "beta" },
-  { key: "Key Candidates", name: "Endorsement Tracker", page: "candidates/#endorsements", desc: "Every governor, senator and House endorsement, logged.", status: "soon" },
-  { key: "Key Candidates", name: "Dropout Wall",        page: "candidates/#dropouts",  desc: "Every campaign that ended, and when.", status: "beta" },
-  { key: "Key Tools",      name: "The Chain",           page: "tools/#chain",          desc: "Follow one quote through the maze, the odds and the Index.", status: "beta" },
-  { key: "Key Tools",      name: "Launch Watch",        page: "tools/#launch",         desc: "The chance every hopeful runs, and why.", status: "beta" },
-  { key: "Key Tools",      name: "Decision Maze",       page: "tools/#maze",           desc: "Every weight behind Launch Watch.", status: "beta" },
-  { key: "Key Tools",      name: "Primary Path",        page: "tools/#path",           desc: "Early states, Super Tuesday and where dropouts' voters go.", status: "beta" },
-  { key: "Key Legislation", name: "Whip Counts",        page: "legislation/",          desc: "Every big bill: all 535 members, where they stand and the chance it passes.", status: "beta" },
-  { key: "Key Dates",      name: "Debates",             page: "dates/#debates",        desc: "Qualifying thresholds, stages and who made the cut.", status: "soon" },
-  { key: "Key Dates",      name: "Campaign Trail",      page: "dates/#trail",          desc: "Map of every stop, rally and early-state trip.", status: "soon" }
+  { key: "Races",           name: "2028 Forecast",       page: "races/",                desc: "Who's likely to win the nomination and the White House.", status: "soon" },
+  { key: "Races",           name: "Senate 2028",         page: "races/#senate",         desc: "Probability tracker and path to the majority.", status: "soon" },
+  { key: "Matchups",     name: "Electoral Analysis",  page: "matchups/#forecast",    desc: "The 2028 forecast, simulations and a build-your-own map.", status: "beta" },
+  { key: "Matchups",     name: "Primary Map",         page: "matchups/#primary",     desc: "Pick a winner in every state for each party's primary.", status: "beta" },
+  { key: "Polls",           name: "Polling Averages",    page: "polls/",                desc: "Primary and general polls, weighted by pollster grade.", status: "beta" },
+  { key: "Candidates", name: "Endorsement Tracker", page: "candidates/#endorsements", desc: "Every governor, senator and House endorsement, logged.", status: "soon" },
+  { key: "Candidates", name: "Dropout Wall",        page: "candidates/#dropouts",  desc: "Every campaign that ended, and when.", status: "beta" },
+  { key: "Candidates",     name: "Presidential Probability", page: "candidates/",      desc: "The chance each person declares a candidacy, simulated 11,111 times.", status: "beta" },
+  { key: "Tools",          name: "Decision Maze",       page: "tools/#maze",           desc: "Measures the chance to enter, with every weight.", status: "beta" },
+  { key: "Tools",          name: "Primary Path",        page: "tools/#path",           desc: "Measures early state odds, Super Tuesday and where dropouts' voters go.", status: "beta" },
+  { key: "Trackers", name: "Whip Counts",        page: "legislation/",          desc: "Every big bill: all 535 members, where they stand and the chance it passes.", status: "beta" },
+  { key: "Dates",           name: "Debates",             page: "dates/#debates",        desc: "Qualifying thresholds, stages and who made the cut.", status: "soon" },
+  { key: "Dates",           name: "Campaign Trail",      page: "dates/#trail",          desc: "Map of every stop, rally and early-state trip.", status: "soon" }
 ];
 
 const FLORIDA_TOOLS = [
@@ -75,6 +74,7 @@ function startCountdown(){
    the site. Candidates use #c-<id>, projects use #p-<id>, so a
    product page has its own link you can share.
    PDP.register("c", id => ({ accent, iconHTML, eyebrow, title, tag, bodyHTML, boxHTML }))
+   or, for a page with its own layout: PDP.register("m", id => ({ full: html, after }))
    ========================================================= */
 const PDP = (() => {
   const makers = {};
@@ -93,7 +93,8 @@ const PDP = (() => {
     if (!d) return false;
     const o = ensure();
     o.style.setProperty("--ac", d.accent || "#8a6a26");
-    o.querySelector(".pdp-inner").innerHTML = `
+    o.classList.toggle("full", !!d.full);
+    o.querySelector(".pdp-inner").innerHTML = d.full ? `<div class="wrap pdp-full">${d.full}</div>` : `
       <div class="pdp-hero"><div class="icon">${d.iconHTML || ""}</div>
         <div class="wrap"><div class="eyebrow">${d.eyebrow || ""}</div><h2>${d.title}</h2>${d.tag ? `<p class="tag">${d.tag}</p>` : ""}</div></div>
       <div class="wrap pdp-body"><div class="pdp-main">${d.bodyHTML || ""}</div><aside class="buybox">${d.boxHTML || ""}</aside></div>`;

@@ -33,7 +33,7 @@ def _readings(s2, c, lanes_row, center, standing, overrides):
         "fundraising": 0.0,
         "sentiment": max(-1.0, min(1.0, c.get("boost30", 0) * 5)),
         "policy": max(-1.0, min(1.0, 1 - 2.5 * dist)),
-        "rank": 1.0 if st.get("nextInLine") else 0.5 if st.get("national") else 0.0,
+        "rank": max(st.get("govCurrent", 0), st.get("govFormer", 0)),
         "favorability": 0.0,
         "nameRecognition": 1.0 if st.get("national") else 0.25 if st.get("congress") else 0.0,
     }

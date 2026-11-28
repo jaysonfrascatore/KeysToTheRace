@@ -1,8 +1,8 @@
 """Stage 1: will they run?
 
-    news or a quote  ->  Decision Maze  ->  chance they run  ->  Index (unlocks above 64.9%)
+    news or a quote  ->  Decision Maze  ->  chance they declare  ->  Monte Carlo (11,111 seeded runs)
 
-A port of the Launch Watch and Index code in public/assets/market.js. The test suite runs the
+A port of the Presidential Probability code in public/assets/market.js. The test suite runs the
 site's JavaScript in Node and checks that this file gives the same numbers, day by day.
 """
 import math
@@ -15,6 +15,39 @@ from .polls import average_as_of, build_polls, is_named, latest_for
 
 def logit(p):
     return math.log(p / (1 - p))
+
+
+def seed_of(s):
+    """FNV-1a hash of the name, the same seed the site uses."""
+    h = 2166136261
+    for ch in s:
+        h ^= ord(ch)
+        h = (h * 16777619) & 0xFFFFFFFF
+    return h
+
+
+def mulberry32(a):
+    """The site's seeded random numbers (mulberry32), bit for bit."""
+    M = 0xFFFFFFFF
+
+    def imul(x, y):
+        return (x * y) & M
+
+    def nxt():
+        nonlocal a
+        a = (a + 0x6D2B79F5) & M
+        t = a
+        t = imul(t ^ (t >> 15), t | 1)
+        t = (t ^ ((t + imul(t ^ (t >> 7), t | 61)) & M)) & M
+        return ((t ^ (t >> 14)) & M) / 4294967296
+    return nxt
+
+
+def simulate_declare(name, p, runs=11111):
+    """Each run draws a number; they declare when it lands under p."""
+    r = mulberry32(seed_of(name))
+    yes = sum(1 for _ in range(runs) if r() < p)
+    return {"yes": yes, "no": runs - yes, "runs": runs, "odds": yes / runs}
 
 
 def logistic(x):
@@ -178,7 +211,7 @@ class Stage1:
     # ---------- the whole run ----------
     def run(self):
         out = {"today": self.today, "days": self.days, "lwDays": self.lw_days, "candidates": []}
-        unlock = self.s1["indexUnlock"]
+        unlock = self.s1["contenderAt"]
         for race, party in self.cfg["polls"]["races"].items():
             as_of = latest_for(self.polls, race)
             if not as_of:
@@ -186,33 +219,6 @@ class Stage1:
             named = [c for c in average_as_of(self.polls, race, as_of, self.grades, self.cfg)["list"] if is_named(c["name"])]
             names = [c["name"] for c in named]
             pct_of = {c["name"]: c["pct"] for c in named}
-            share_by_day, last = {}, None
-            for d in self.days:
-                a = average_as_of(self.polls, race, d, self.grades, self.cfg)
-                if a["list"]:
-                    last = a
-                share_by_day[d] = {c["name"]: c["pct"] for c in last["list"] if is_named(c["name"])} if last else None
-
-            w = self.s1["indexWeights"]
-
-            def index_on(d):
-                """Strength score, 0 to 100 for each candidate on their own:
-                polling against the leader (with any news lift, capped at full marks) plus chance to run."""
-                sh = share_by_day.get(d)
-                if not sh:
-                    return None
-                lead = max(sh.get(n, 0) for n in names) or 1
-                out = {}
-                for n in names:
-                    if self.status_on(n, d) == "dropped":
-                        out[n] = 0.0
-                        continue
-                    poll = min(1.0, sh.get(n, 0) / lead * (1 + self.boost_on(n, d)))
-                    out[n] = 100 * (w["poll"] * poll + w["run"] * self.launch_on(n, pct_of[n], d))
-                return out
-
-            by_day = [(d, index_on(d)) for d in self.days]
-            now = by_day[-1][1]
             for c in named:
                 n = c["name"]
                 launch_hist = [[d, self.launch_on(n, c["pct"], d) * 100] for d in self.lw_days]
@@ -223,9 +229,8 @@ class Stage1:
                 phase = "candidate" if status == "declared" else "out" if status in ("ruled_out", "dropped") else "contender" if launch > unlock else "watching"
                 out["candidates"].append({
                     "name": n, "party": party, "pct": c["pct"], "status": status, "launch": launch,
-                    "index": now[n], "indexUnlocked": status == "declared" or launch > unlock, "phase": phase, "announce30": announce30,
+                    "sim": simulate_declare(n, launch, self.s1["simulations"]), "phase": phase, "announce30": announce30,
                     "launchHistory": launch_hist,
-                    "history": [[d, m[n]] for d, m in by_day if m],
                     "maze": [[r["id"], r["reading"], r["pts"]] for r in maze["rows"]],
                     "statements": [{k: w[k] for k in ("date", "kind", "r", "share", "wiped", "text", "source", "url")}
                                    for w in next((r["words"] for r in maze["rows"] if r["id"] == "statement"), [])],

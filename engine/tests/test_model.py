@@ -59,9 +59,12 @@ class StatementScale(Base):
 
 
 class Gate(Base):
-    def test_index_unlocks_above_64_9(self):
+    def test_monte_carlo_matches_the_chance(self):
         for c in self.s1["candidates"]:
-            self.assertEqual(c["indexUnlocked"], c["status"] == "declared" or c["launch"] > 0.649, c["name"])
+            sim = c["sim"]
+            self.assertEqual(sim["runs"], 11111)
+            self.assertEqual(sim["yes"] + sim["no"], 11111)
+            self.assertLess(abs(sim["odds"] - c["launch"]), 0.02, c["name"])
 
     def test_two_stage_gate(self):
         for c in self.s1["candidates"]:
@@ -127,9 +130,7 @@ class Parity(Base):
             for (d1, a), (d2, b) in zip(c["launchHistory"], jc[n]["launchHistory"]):
                 self.assertEqual(d1, d2)
                 self.assertAlmostEqual(a, b, places=9, msg=(n, d1))
-            for (d1, a), (d2, b) in zip(c["history"], jc[n]["history"]):
-                self.assertAlmostEqual(a, b, places=9, msg=(n, d1))
-            self.assertAlmostEqual(c["index"], jc[n]["index"], places=9)
+            self.assertEqual(c["sim"]["yes"], jc[n]["yes"], n)
             self.assertEqual(c["phase"], jc[n]["phase"], n)
             if c["announce30"] is None:
                 self.assertIsNone(jc[n]["announce30"])
@@ -140,7 +141,7 @@ class Parity(Base):
         js = json.loads(subprocess.check_output([NODE, JS, PUBLIC, "--config"]))
         s1 = self.cfg["stage1"]
         for k in ("base", "intentScale", "strengthScale", "ruledOut", "keyStates", "standing", "home", "standingFrom",
-                  "elements", "statementScale", "launchWatchStart", "status", "newsHalfLife", "indexUnlock", "indexWeights"):
+                  "elements", "statementScale", "launchWatchStart", "status", "newsHalfLife", "contenderAt", "simulations"):
             self.assertEqual(js[k], s1[k], k)
         js_a, cfg_a = js["announce"], {k: v for k, v in s1["announce"].items() if not k.startswith("_")}
         self.assertEqual(js_a, cfg_a)

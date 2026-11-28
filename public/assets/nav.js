@@ -17,22 +17,23 @@ window.SITE = {
   brandHTML: "Unlock The Count",
   domain: "UnlockTheCount.com",
   descriptor: "Election data for every level.",
-  tagline: "The keys to every race, vote and candidate.",
   updated: "Last updated on November 20th, 2026",
   kofi: "https://ko-fi.com/jaysonfras",
   creator: "Jayson Frascatore",
   sources: "Polls: AtlasIntel, McLaughlin & Associates via PollCheck, RealClearPolling and USA Today",
   nav: [
-    { id: "home",       label: "Home",             href: "home/" },
-    { id: "candidates", label: "Key Candidates",   href: "candidates/" },
-    { id: "polls",      label: "Key Polls",        href: "polls/" },
-    { id: "races",      label: "Key Races",        href: "races/" },
-    { id: "matchups",   label: "Key Matchups",     href: "matchups/" },
-    { id: "tools",      label: "Key Tools",        href: "tools/" },
-    { id: "trackers",    label: "Key Trackers",     href: "trackers/" },
-    { id: "dates",      label: "Key Dates",        href: "dates/" },
-    { id: "florida",    label: "The Florida Keys", href: "florida/" },
-    { id: "collection", label: "The Collection",   href: "collection/" }
+    { id: "home",       label: "Home",            href: "" },
+    { id: "candidates", label: "Candidates",      href: "candidates/" },
+    { id: "data",       label: "Unlock The Data", href: "unlock/", children: [
+      { id: "polls",    label: "Polls",    href: "polls/",    note: "National primary averages" },
+      { id: "races",    label: "Races",    href: "races/",    note: "The White House, Senate and governors" },
+      { id: "matchups", label: "Matchups", href: "matchups/", note: "The forecast map and the states in play" },
+      { id: "dates",    label: "Dates",    href: "dates/",    note: "Deadlines, debates and primaries" },
+      { id: "florida",  label: "Florida",  href: "florida/",  note: "Florida Vote Tracker and the Legislature" }
+    ] },
+    { id: "tools",      label: "Tools",           href: "tools/" },
+    { id: "trackers",   label: "Trackers",        href: "trackers/" },
+    { id: "collection", label: "Collection",      href: "collection/" }
   ],
   // The three line menu next to Home
   menu: [
@@ -97,6 +98,7 @@ window.setTheme = function (t, quiet) {
   const MOON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg>`;
   const MENU = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>`;
   const CAMERA = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`;
+  const CARET = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`;
   const CUP = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>`;
 
   /* ---------- Top bar ---------- */
@@ -116,9 +118,12 @@ window.setTheme = function (t, quiet) {
             </div>
           </div>
           <nav class="navlinks" aria-label="Sections">
-            ${S.nav.map(n => `<a class="${n.id === active ? "on" : ""}" href="${page(root, n.href)}" ${n.id === active ? 'aria-current="page"' : ""}>${n.label}</a>`).join("")}
+            ${S.nav.map(n => { const on = n.id === active || (n.children || []).some(k => k.id === active);
+              return `<a class="${on ? "on" : ""}" href="${page(root, n.href)}" ${n.id === active ? 'aria-current="page"' : ""}>${n.label}</a>` +
+                (n.children ? `<button class="dd-btn ${on ? "on" : ""}" type="button" aria-expanded="false" aria-controls="ddPanel" aria-label="${n.label}: ${n.children.map(k => k.label).join(", ")}">${CARET}</button>` : ""); }).join("")}
           </nav>
         </div>
+        ${S.nav.filter(n => n.children).map(n => `<div class="dd-panel" id="ddPanel" role="menu">${n.children.map(k => `<a role="menuitem" class="${k.id === active ? "on" : ""}" href="${page(root, k.href)}"><b>${k.label}</b><span>${k.note}</span></a>`).join("")}<a role="menuitem" class="dd-all" href="${page(root, n.href)}"><b>All of ${n.label}</b></a></div>`).join("")}
         <button class="icon-btn" id="themeBtn" type="button"></button>
         <button class="icon-btn" id="shotBtn" type="button" aria-label="Take a screenshot of this page" title="Screenshot">${CAMERA}</button>
       </div>`;
@@ -127,6 +132,27 @@ window.setTheme = function (t, quiet) {
     if (links && on) {
       const l = on.getBoundingClientRect(), r = links.getBoundingClientRect();
       if (l.right > r.right || l.left < r.left) links.scrollLeft += l.left - r.left - 16;
+    }
+    // On a narrow screen the row scrolls sideways; a fade at the edge shows there's more
+    const edges = () => { if (!links) return; const max = links.scrollWidth - links.clientWidth;
+      links.classList.toggle("more-r", links.scrollLeft < max - 4); links.classList.toggle("more-l", links.scrollLeft > 4); };
+    if (links) { links.addEventListener("scroll", edges, { passive: true }); addEventListener("resize", edges); edges(); }
+    // Unlock The Data: the arrow opens its pages
+    const dd = el.querySelector(".dd-btn"), panel = el.querySelector(".dd-panel"), bar = el.querySelector(".topbar");
+    if (dd && panel) {
+      const set = open => {
+        if (open) { const b = dd.getBoundingClientRect(), t = bar.getBoundingClientRect();
+          panel.style.left = Math.max(0, Math.min(t.width - 260, b.right - t.left - 240)) + "px"; panel.style.top = (b.bottom - t.top + 8) + "px"; }
+        panel.classList.toggle("open", open); dd.setAttribute("aria-expanded", open);
+      };
+      let at = 0;
+      dd.addEventListener("click", e => { e.stopPropagation(); set(!panel.classList.contains("open") || Date.now() - at < 500); });
+      document.addEventListener("click", e => { if (!panel.contains(e.target)) set(false); });
+      document.addEventListener("keydown", e => { if (e.key === "Escape") set(false); });
+      if (links) links.addEventListener("scroll", () => set(false), { passive: true });
+      const link = dd.previousElementSibling;
+      if (matchMedia("(hover: hover)").matches) [link, dd].forEach(n => n.addEventListener("mouseenter", () => { if (!panel.classList.contains("open")) at = Date.now(); set(true); }));
+      bar.addEventListener("mouseleave", () => matchMedia("(hover: hover)").matches && set(false));
     }
   });
 
@@ -171,7 +197,7 @@ window.setTheme = function (t, quiet) {
         <div class="foot-brand">${S.brandHTML}</div>
         <p class="fnote">${S.descriptor}</p>
         <a class="kofi" href="${S.kofi}" target="_blank" rel="noopener" data-noshot>${CUP} Support on Ko-fi</a>
-        <p class="src">${S.sources}<br>${S.nav.map(n => `<a href="${page(root, n.href)}">${n.label}</a>`).join(" &nbsp;·&nbsp; ")}<br>${S.menu.map(m => `<a href="${page(root, m.href)}">${m.label}</a>`).join(" &nbsp;·&nbsp; ")}<br><span style="white-space:nowrap">Created by ${S.creator}</span></p>
+        <p class="src">${S.sources}<br>${S.nav.flatMap(n => [n, ...(n.children || [])]).map(n => `<a href="${page(root, n.href)}">${n.label}</a>`).join(" &nbsp;·&nbsp; ")}<br>${S.menu.map(m => `<a href="${page(root, m.href)}">${m.label}</a>`).join(" &nbsp;·&nbsp; ")}<br><span style="white-space:nowrap">Created by ${S.creator}</span></p>
       </div>`;
   });
 
